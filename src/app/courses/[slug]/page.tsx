@@ -2,7 +2,7 @@ import { courses } from '@/lib/courses';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { CalendarDays, Clock, Banknote, Video, Users, BookOpen, Lightbulb, Package, Laptop, Target } from 'lucide-react';
+import { CalendarDays, Clock, Banknote, Video, Users, BookOpen, Lightbulb, Package, Laptop, Target, QrCode } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 export default function CourseDetailPage({ params }: { params: { slug: string } }) {
@@ -94,22 +94,37 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
                           {course.price}
                         </span>
                     </div>
-                    <div className="border-t pt-4">
-                        <h3 className="font-semibold mb-2">Instrucciones de Pago</h3>
-                        <p className="text-sm text-muted-foreground mb-2">Para confirmar tu inscripción, por favor realiza una transferencia bancaria a la siguiente cuenta:</p>
-                        <ul className="text-sm space-y-1 bg-background p-3 rounded-md">
-                            <li><strong>Banco:</strong> Banco Ficticio S.A.</li>
-                            <li><strong>Titular:</strong> Morty Smith</li>
-                            <li><strong>Nº de Cuenta:</strong> ES00 1234 5678 9012 3456 7890</li>
-                            <li><strong>Concepto:</strong> {course.title}</li>
-                        </ul>
-                        <p className="text-xs text-muted-foreground mt-2">Una vez realizado el pago, envía el comprobante a nuestro correo electrónico para finalizar la inscripción.</p>
-                    </div>
+
+                    {course.slug === 'mi-primera-tarta' ? (
+                       <div className="border-t pt-4 text-center">
+                          <h3 className="font-semibold mb-2">Paga cómodamente con Bizum</h3>
+                          <p className="text-sm text-muted-foreground mb-4">Puedes escanear el código QR desde tu móvil o pulsar el botón para pagar.</p>
+                          <div className="flex justify-center my-4">
+                            <Image src="https://picsum.photos/200/200" alt="Bizum QR Code" data-ai-hint="QR code" width={200} height={200} className="rounded-lg" />
+                          </div>
+                          <Button size="lg" className="w-full mt-2 bg-[#33A1F2] hover:bg-[#2a8ad0] text-white">
+                            <QrCode className="mr-2" /> Pagar con Bizum
+                          </Button>
+                           <p className="text-xs text-muted-foreground mt-2">Enviaremos el link de la clase a tu correo una vez confirmado el pago.</p>
+                       </div>
+                    ) : (
+                      <div className="border-t pt-4">
+                          <h3 className="font-semibold mb-2">Instrucciones de Pago</h3>
+                          <p className="text-sm text-muted-foreground mb-2">Para confirmar tu inscripción, por favor realiza una transferencia bancaria a la siguiente cuenta:</p>
+                          <ul className="text-sm space-y-1 bg-background p-3 rounded-md">
+                              <li><strong>Banco:</strong> Banco Ficticio S.A.</li>
+                              <li><strong>Titular:</strong> Morty Smith</li>
+                              <li><strong>Nº de Cuenta:</strong> ES00 1234 5678 9012 3456 7890</li>
+                              <li><strong>Concepto:</strong> {course.title}</li>
+                          </ul>
+                          <p className="text-xs text-muted-foreground mt-2">Una vez realizado el pago, envía el comprobante a nuestro correo electrónico para finalizar la inscripción.</p>
+                           <Button size="lg" className="w-full mt-6" disabled>
+                            <Banknote className="mr-2" /> Pagar con Transferencia
+                          </Button>
+                      </div>
+                    )}
                 </div>
-                 <Button size="lg" className="w-full mt-6">
-                  <Banknote className="mr-2" /> Pagar con Transferencia
-                </Button>
-                <p className="text-center text-xs text-muted-foreground mt-2">El link para la clase se compartirá en las primeras 24 horas después de confirmado el pago.</p>
+                 <p className="text-center text-xs text-muted-foreground mt-4">El link para la clase se compartirá en las primeras 24 horas después de confirmado el pago.</p>
             </div>
         </div>
       </div>
