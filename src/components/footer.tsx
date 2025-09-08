@@ -12,11 +12,11 @@ const Footer = () => {
               <h3 className="font-bold text-lg mb-4 font-headline">Contacto</h3>
               <div className="flex items-center gap-3 mb-2">
                 <MapPin className="h-5 w-5 shrink-0" />
-                <span>123 Calle Ficticia, Ciudad, País</span>
+                <span>Rúa Valle Inclán, 23, Bajo 11, 32004 Ourense, Province of Ourense</span>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="h-5 w-5 shrink-0" />
-                <span>+34 123 456 789</span>
+                <span>616 28 44 63</span>
               </div>
             </div>
             <div className="flex flex-col items-center">
