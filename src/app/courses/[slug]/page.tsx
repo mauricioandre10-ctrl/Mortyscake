@@ -2,7 +2,7 @@ import { courses } from '@/lib/courses';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { CalendarDays, Clock, Banknote } from 'lucide-react';
+import { CalendarDays, Clock, Banknote, Video, Users } from 'lucide-react';
 
 export default function CourseDetailPage({ params }: { params: { slug: string } }) {
   const course = courses.find((c) => c.slug === params.slug);
@@ -24,7 +24,7 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
               className="object-cover"
             />
           </div>
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
                 <CalendarDays className="h-4 w-4" />
                 <span>{course.schedule}</span>
@@ -40,6 +40,33 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
             <p className="text-muted-foreground text-lg mb-6">{course.description}</p>
             
             <div className="bg-muted/50 rounded-lg p-6 mb-6">
+                <h2 className="font-headline text-2xl font-bold mb-4">Detalles del Curso</h2>
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-start">
+                    <Video className="h-4 w-4 mr-3 mt-1 shrink-0" />
+                    <div>
+                      <span className="font-semibold">Modalidad:</span> Online (Live View)
+                      <p className="text-muted-foreground text-xs">Clases en vivo y en directo con el instructor.</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start">
+                    <Clock className="h-4 w-4 mr-3 mt-1 shrink-0" />
+                    <div>
+                      <span className="font-semibold">Duración por sesión:</span> 4 horas
+                      <p className="text-muted-foreground text-xs">{course.duration} en total.</p>
+                    </div>
+                  </div>
+                   <div className="flex items-start">
+                    <Users className="h-4 w-4 mr-3 mt-1 shrink-0" />
+                    <div>
+                      <span className="font-semibold">Acceso:</span> Grupos reducidos
+                      <p className="text-muted-foreground text-xs">Plazas limitadas para una experiencia personalizada.</p>
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+            <div className="border rounded-lg p-6">
                 <h2 className="font-headline text-2xl font-bold mb-4">Detalles de la Inscripción</h2>
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -58,12 +85,11 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
                         <p className="text-xs text-muted-foreground mt-2">Una vez realizado el pago, envía el comprobante a nuestro correo electrónico para finalizar la inscripción.</p>
                     </div>
                 </div>
+                 <Button size="lg" className="w-full mt-6">
+                  <Banknote className="mr-2" /> Pagar con Transferencia
+                </Button>
+                <p className="text-center text-xs text-muted-foreground mt-2">El link para la clase se compartirá en las primeras 24 horas después de confirmado el pago.</p>
             </div>
-
-            <Button size="lg" className="w-full">
-              <Banknote className="mr-2" /> Pagar con Transferencia
-            </Button>
-            <p className="text-center text-xs text-muted-foreground mt-2">Serás contactado por correo para confirmar tu plaza.</p>
         </div>
       </div>
     </div>
