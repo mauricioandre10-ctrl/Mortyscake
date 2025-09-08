@@ -4,6 +4,45 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { CalendarDays, Clock, Banknote, Video, Users, BookOpen, Lightbulb, Package, Laptop, Target, QrCode } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import Link from 'next/link';
+import { Metadata } from 'next';
+
+// Generate metadata for each course page (SEO Optimization)
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const course = courses.find((c) => c.slug === params.slug);
+
+  if (!course) {
+    return {
+      title: 'Curso no encontrado',
+      description: 'La página que buscas no existe.',
+    };
+  }
+
+  return {
+    title: `${course.title} | Pastelería de Morty`,
+    description: course.description,
+    openGraph: {
+      title: course.title,
+      description: course.description,
+      images: [
+        {
+          url: course.image.src,
+          width: course.image.width,
+          height: course.image.height,
+          alt: course.title,
+        },
+      ],
+    },
+  };
+}
+
+// Generate static pages for each course at build time (Performance Optimization)
+export async function generateStaticParams() {
+  return courses.map((course) => ({
+    slug: course.slug,
+  }));
+}
+
 
 export default function CourseDetailPage({ params }: { params: { slug: string } }) {
   const course = courses.find((c) => c.slug === params.slug);
@@ -31,7 +70,7 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
       {
         icon: Lightbulb,
         title: '¿Qué aprenderé exactamente?',
-        description: 'Dominarás las técnicas esenciales de la repostería: desde preparar masas y hornear a la perfección, hasta crear rellenos y decoraciones con un acabado profesional.'
+        description: 'Dominarás las técnicas esenciales de la repostería:desde preparar masas y hornear a la perfección, hasta crear rellenos y decoraciones con un acabado profesional.'
       }
   ];
 
@@ -44,10 +83,11 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
           <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg mb-4">
             <Image
               src={course.image.src}
-              alt={course.title}
+              alt={`Imagen de ${course.title} - ${course.image.hint}`}
               data-ai-hint={course.image.hint}
               fill
               className="object-cover"
+              priority
             />
           </div>
            <div className="bg-muted/50 rounded-lg p-6 mb-6">
@@ -99,15 +139,28 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
 
                     {isEuroCourse(course.slug) ? (
                        <div className="border-t pt-4 text-center">
-                          <h3 className="font-semibold mb-2">Paga cómodamente con Bizum</h3>
-                          <p className="text-sm text-muted-foreground mb-4">Puedes escanear el código QR desde tu móvil o pulsar el botón para pagar.</p>
+                          <h3 className="font-semibold mb-2">1. Paga cómodamente con Bizum</h3>
+                          <p className="text-sm text-muted-foreground mb-4">Escanea el código QR desde tu móvil o pulsa el botón para agregar el contacto.</p>
                           <div className="flex justify-center my-4">
-                            <Image src="/image/bizum_qr_curso.svg" alt="Bizum QR Code" width={200} height={200} className="rounded-lg" />
+                            <Image src="/image/bizum_qr_curso.svg" alt="Bizum QR Code" width={100} height={100} className="rounded-lg" />
                           </div>
-                          <Button size="lg" className="w-full mt-2 bg-[#33A1F2] hover:bg-[#2a8ad0] text-white">
-                            <QrCode className="mr-2" /> Pagar con Bizum
+                           <Button asChild size="lg" className="w-full mt-2 bg-[#33A1F2] hover:bg-[#2a8ad0] text-white">
+                            <Link href="https://qrto.org/lGWCJi" target="_blank" rel="noopener noreferrer">
+                              <QrCode className="mr-2" /> Pagar con Bizum
+                            </Link>
                           </Button>
-                           <p className="text-xs text-muted-foreground mt-2">Enviaremos el link de la clase a tu correo una vez confirmado el pago.</p>
+                           <p className="text-xs text-muted-foreground mt-2">Recuerda guardar el comprobante de la transacción para adjuntarlo al formulario de inscripción.</p>
+                          
+                          <div className="border-t pt-4 mt-6 text-center">
+                              <h3 className="font-semibold mb-2">2. Completa tu Inscripción</h3>
+                              <p className="text-sm text-muted-foreground mb-4">Una vez realizado el pago, haz clic en el botón de abajo para completar tus datos y adjuntar el comprobante.</p>
+                              <Button asChild size="lg" className="w-full mt-2">
+                                <Link href={course.enrollmentUrl} target="_blank" rel="noopener noreferrer">
+                                  <BookOpen className="mr-2" /> Inscribirse Ahora
+                                </Link>
+                              </Button>
+                              <p className="text-xs text-muted-foreground mt-2">Enviaremos el link de la clase a tu correo una vez confirmado el pago.</p>
+                          </div>
                        </div>
                     ) : (
                       <div className="border-t pt-4">

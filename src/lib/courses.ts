@@ -44,6 +44,6 @@ export const courses: Course[] = [
       height: 401,
       hint: 'modern cake'
     },
-    enrollmentUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSeTQ6mlI0dHtjcORvo0KokTP6R9Z1yhQmo0zHlkzHoLtQSBVg/viewform?usp=preview'
+    enrollmentUrl: 'https://forms.gle/HKSD8Wu3cfcezpHs9'
   }
 ];

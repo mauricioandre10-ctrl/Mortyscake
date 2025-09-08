@@ -1,25 +1,38 @@
+'use client';
+
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { CalendarDays, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { courses } from '@/lib/courses';
+import { LiteYouTubeEmbed } from '@/components/LiteYouTubeEmbed';
+import * as gtag from '@/lib/gtag';
 
 export default function Home() {
   const isEuroCourse = (slug: string) => ['mi-primera-tarta', 'diseno-gourmet-de-pasteles'].includes(slug);
 
+  const handleCtaClick = (courseName: string) => {
+    gtag.event('iniciar_pago', {
+      nombre_curso: courseName,
+    });
+  };
+
   return (
     <div className="w-full flex justify-center items-center">
       <div className="w-full">
-        <section className="relative w-full h-0 pb-[25%] bg-black">
-          <iframe 
-            className="absolute top-0 left-0 w-full h-full"
-            src="https://www.youtube.com/embed/6McqHZrP-IY?autoplay=1&mute=1&loop=1&playlist=6McqHZrP-IY&controls=0&showinfo=0&autohide=1&modestbranding=1"
-            frameBorder="0"
-            allow="autoplay; encrypted-media"
-            allowFullScreen
-            title="Video de repostería"
-          ></iframe>
+        <section className="w-full h-auto bg-black py-8 md:py-12">
+          {/* SEO: El h1 está oculto visualmente pero disponible para los lectores de pantalla y buscadores */}
+          <h1 className="sr-only">Transforma tu Pasión por la Repostería en Arte</h1>
+          <div className="w-full md:w-[70%] mx-auto">
+            <LiteYouTubeEmbed
+                id="6McqHZrP-IY" 
+                title="Video de repostería"
+                noCookie={true}
+                params="autoplay=1&mute=1&loop=1&playlist=6McqHZrP-IY&controls=0&showinfo=0&autohide=1&modestbranding=1"
+                className="aspect-video rounded-lg shadow-2xl shadow-primary/20"
+            />
+          </div>
         </section>
 
         <section id="courses" className="w-full py-12 md:py-24 bg-background">
@@ -37,9 +50,10 @@ export default function Home() {
                     <div className="relative aspect-[4/3]">
                       <Image
                         src={course.image.src}
-                        alt={course.title}
+                        alt={`Imagen de ${course.title} - ${course.image.hint}`}
                         data-ai-hint={course.image.hint}
                         fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover"
                       />
                     </div>
@@ -65,7 +79,7 @@ export default function Home() {
                         {course.price}
                       </span>
                     </div>
-                    <Button asChild>
+                    <Button asChild onClick={() => handleCtaClick(course.title)}>
                       <Link href={`/courses/${course.slug}`}>
                         Inscribirse Ahora
                       </Link>

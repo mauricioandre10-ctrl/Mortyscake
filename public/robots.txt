@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://reposteria-cursos.com/sitemap.xml

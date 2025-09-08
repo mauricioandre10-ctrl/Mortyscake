@@ -6,7 +6,7 @@ import Image from 'next/image';
 
 const Header = () => {
   const navLinks = [
-    { href: '#courses', label: 'Cursos' },
+    { href: '/#courses', label: 'Cursos' },
     { href: '#', label: 'Sobre Nosotros' },
     { href: '/#contact', 'label': 'Contacto' },
   ];
@@ -15,7 +15,7 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2">
-           <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width={84} height={30} className="object-contain" />
+           <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width={84} height={30} className="object-contain h-auto w-auto" />
         </Link>
         
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
@@ -44,7 +44,7 @@ const Header = () => {
                 <SheetDescription className="sr-only">Navegación principal de la aplicación</SheetDescription>
                 <div className="flex flex-col gap-4 p-4">
                   <Link href="/" className="flex items-center gap-2 mb-4">
-                     <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width={180} height={64} className="object-contain" />
+                     <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width={180} height={64} className="object-contain h-auto w-auto" />
                   </Link>
                   {navLinks.map((link) => (
                     <Link

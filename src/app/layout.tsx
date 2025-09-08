@@ -1,37 +1,96 @@
-import type { Metadata } from 'next';
-import './globals.css';
-import { Toaster } from "@/components/ui/toaster";
-import Footer from '@/components/footer';
+import { Suspense } from 'react';
+import type { Metadata, Viewport } from 'next';
+import { Manrope, Lora } from 'next/font/google';
+import { Analytics } from '@/components/Analytics';
+import { cn } from '@/lib/utils';
 import Header from '@/components/header';
+import Footer from '@/components/footer';
+import { CookieBanner } from '@/components/CookieBanner';
+import WhatsAppButton from '@/components/WhatsAppButton';
 import InstagramButton from '@/components/InstagramButton';
+import './globals.css';
+
+const fontSans = Manrope({ 
+  subsets: ['latin'], 
+  variable: '--font-sans' 
+});
+const fontSerif = Lora({ 
+  subsets: ['latin'], 
+  variable: '--font-serif' 
+});
 
 export const metadata: Metadata = {
-  title: "Pastelería de Morty",
-  description: 'Cursos de repostería para el repostero moderno.',
+  metadataBase: new URL('https://reposteria-cursos.com'),
+  title: {
+    default: 'Cursos de Repostería Online y en Vivo | Transforma tu Pasión en Arte',
+    template: '%s | Cursos de Repostería',
+  },
+  description: 'Aprende repostería desde cero hasta un nivel experto con nuestros cursos online y en vivo. Únete a nuestra comunidad y convierte tu pasión en arte.',
+  keywords: ['cursos de repostería', 'repostería online', 'repostería en vivo', 'aprender repostería', 'tartas', 'pasteles', 'diseño de pasteles', 'repostería gourmet'],
+  openGraph: {
+    title: 'Cursos de Repostería Online y en Vivo',
+    description: 'Transforma tu pasión por la repostería en un arte. Cursos para todos los niveles.',
+    url: 'https://reposteria-cursos.com',
+    siteName: 'Cursos de Repostería',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Alumna sonriendo mientras decora un pastel.',
+      },
+    ],
+    locale: 'es_ES',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Cursos de Repostería Online y en Vivo',
+    description: 'De cero a experto en repostería con nuestros cursos prácticos.',
+    images: ['/twitter-image.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#F3EAD9',
+  colorScheme: 'light',
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;700&display=swap" rel="stylesheet" />
-      </head>
-      <body className="font-body antialiased">
-        <div className="min-h-screen flex flex-col">
-          <Header />
-          <main className="flex-1">
-            {children}
-          </main>
-          <Footer />
-        </div>
+      <head />
+      <body
+        className={cn(
+          'min-h-screen bg-background font-sans antialiased',
+          fontSans.variable,
+          fontSerif.variable
+        )}
+      >
+        <Suspense fallback={null}>
+          <Analytics />
+        </Suspense>
+        <Header />
+        <main className="flex-grow">{children}</main>
+        <Footer />
+        <CookieBanner />
+        <WhatsAppButton />
         <InstagramButton />
-        <Toaster />
       </body>
     </html>
   );
