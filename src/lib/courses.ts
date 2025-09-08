@@ -33,7 +33,7 @@ export const courses: Course[] = [
   },
   {
     slug: 'diseno-moderno-de-pasteles',
-    title: 'Diseño Moderno de Pasteles',
+    title: 'Diseño Gourmet de Pasteles',
     description: 'Explora técnicas contemporáneas de decoración de pasteles, desde glaseados de espejo hasta trabajos abstractos con chocolate.',
     price: 249,
     schedule: 'Domingos, 10am - 2pm',
