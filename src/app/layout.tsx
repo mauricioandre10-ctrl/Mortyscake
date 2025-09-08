@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import Footer from '@/components/footer';
 import Header from '@/components/header';
+import InstagramButton from '@/components/InstagramButton';
 
 export const metadata: Metadata = {
   title: "Pastelería de Morty",
@@ -29,6 +30,7 @@ export default function RootLayout({
           </main>
           <Footer />
         </div>
+        <InstagramButton />
         <Toaster />
       </body>
     </html>
