@@ -1,27 +1,56 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { Facebook, Instagram, Phone, MapPin } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="w-full border-t bg-card">
-      <div className="container mx-auto py-8 px-4 md:px-6">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width={140} height={50} className="object-contain" />
+    <footer className="w-full border-t">
+      <div className="bg-[#513938] text-white">
+        <div className="container mx-auto py-8 px-4 md:px-6">
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="flex flex-col">
+              <h3 className="font-bold text-lg mb-4 font-headline">Contacto</h3>
+              <div className="flex items-center gap-3 mb-2">
+                <MapPin className="h-5 w-5 shrink-0" />
+                <span>123 Calle Ficticia, Ciudad, País</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Phone className="h-5 w-5 shrink-0" />
+                <span>+34 123 456 789</span>
+              </div>
+            </div>
+            <div className="flex flex-col items-center">
+               <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width={180} height={64} className="object-contain" />
+            </div>
+            <div className="flex flex-col items-end">
+              <h3 className="font-bold text-lg mb-4 font-headline">Síguenos</h3>
+              <div className="flex gap-4">
+                <Link href="#" className="text-white hover:opacity-80">
+                  <Facebook className="h-7 w-7" />
+                </Link>
+                <Link href="#" className="text-white hover:opacity-80">
+                  <Instagram className="h-7 w-7" />
+                </Link>
+              </div>
+            </div>
           </div>
-          <div className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()}{' '}
-            <Link href="https://tecnovacenter.es/" target="_blank" rel="noopener noreferrer" className="hover:text-primary">
-              TecnovaCenter
-            </Link>
-            . Todos los derechos reservados.
-          </div>
-          <nav className="flex gap-4">
-            <Link href="#" className="text-sm hover:text-primary">Política de Privacidad</Link>
-            <Link href="#" className="text-sm hover:text-primary">Términos de Servicio</Link>
-          </nav>
         </div>
       </div>
+       <div className="bg-card">
+        <div className="container mx-auto py-4 px-4 md:px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="text-sm text-muted-foreground">
+              © {new Date().getFullYear()}{' '}
+              <Link href="https://tecnovacenter.es/" target="_blank" rel="noopener noreferrer" className="hover:text-primary">
+                TecnovaCenter
+              </Link>
+              . Todos los derechos reservados.
+            </div>
+            <nav className="flex gap-4">
+              <Link href="#" className="text-sm hover:text-primary">Política de Privacidad</Link>
+              <Link href="#" className="text-sm hover:text-primary">Términos de Servicio</Link>
+            </nav>
+        </div>
+       </div>
     </footer>
   );
 };
