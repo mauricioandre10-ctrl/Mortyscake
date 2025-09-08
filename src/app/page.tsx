@@ -9,28 +9,31 @@ export default function Home() {
   return (
     <div className="w-full flex justify-center items-center">
       <div className="w-full">
-        <section className="relative w-full h-[60vh] min-h-[400px] flex items-center justify-center text-center text-white">
-          <Image
-            src="https://picsum.photos/1600/900"
-            alt="Pasteles artesanales sobre un fondo oscuro"
-            data-ai-hint="pastry background"
-            fill
-            className="object-cover -z-10 brightness-[0.4]"
-          />
-          <div className="container px-4 md:px-6">
-            <div className="max-w-3xl mx-auto">
-              <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-                Descubre el Arte de la Repostería
-              </h1>
-              <p className="mt-4 md:mt-6 text-lg md:text-xl text-primary-foreground/80">
-                Únete a nuestros cursos prácticos y transforma tu pasión por la repostería en una habilidad profesional.
-              </p>
-              <div className="mt-8">
-                <Button size="lg" asChild>
-                  <a href="#courses">Explorar Cursos</a>
-                </Button>
+        <section className="relative w-full h-0 pb-[56.25%] bg-black">
+          <iframe 
+            className="absolute top-0 left-0 w-full h-full"
+            src="https://www.youtube.com/embed/b-Zkz9_T9bQ?autoplay=1&mute=1&loop=1&playlist=b-Zkz9_T9bQ&controls=0&showinfo=0&autohide=1&modestbranding=1"
+            frameBorder="0"
+            allow="autoplay; encrypted-media"
+            allowFullScreen
+            title="Video de repostería"
+          ></iframe>
+           <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-center text-white">
+              <div className="container px-4 md:px-6">
+                <div className="max-w-3xl mx-auto">
+                  <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
+                    Descubre el Arte de la Repostería
+                  </h1>
+                  <p className="mt-4 md:mt-6 text-lg md:text-xl text-primary-foreground/80">
+                    Únete a nuestros cursos prácticos y transforma tu pasión por la repostería en una habilidad profesional.
+                  </p>
+                  <div className="mt-8">
+                    <Button size="lg" asChild>
+                      <a href="#courses">Explorar Cursos</a>
+                    </Button>
+                  </div>
+                </div>
               </div>
-            </div>
           </div>
         </section>
 
