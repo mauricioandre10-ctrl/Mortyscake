@@ -9,15 +9,15 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CakeSlice } from "lucide-react";
+import Image from "next/image";
 
 export default function LoginPage() {
   return (
-    <div className="flex w-full items-center justify-center py-12 px-4 md:px-6">
+    <div className="w-full flex justify-center items-center py-12 px-4 md:px-6">
       <div className="w-full max-w-md space-y-6">
         <div className="flex flex-col items-center text-center">
             <Link href="/" className="flex items-center gap-2 mb-4">
-                <CakeSlice className="h-10 w-10 text-primary" />
+                <Image src="/logo.png" alt="Pastelería de Morty" width={180} height={64} className="object-contain" />
             </Link>
             <h1 className="font-headline text-3xl font-bold">¡Bienvenido de Nuevo!</h1>
             <p className="text-muted-foreground">Introduce tus credenciales para acceder a tus cursos.</p>

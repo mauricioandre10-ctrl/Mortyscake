@@ -1,14 +1,13 @@
-import { CakeSlice } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 
 const Footer = () => {
   return (
-    <footer className="border-t bg-card">
+    <footer className="w-full border-t bg-card">
       <div className="container mx-auto py-8 px-4 md:px-6">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2">
-            <CakeSlice className="h-6 w-6 text-primary" />
-            <span className="font-headline text-xl font-bold">Pastelería de Morty</span>
+            <Image src="/logo.png" alt="Pastelería de Morty" width={140} height={50} className="object-contain" />
           </div>
           <div className="text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} Pastelería de Morty. Todos los derechos reservados.

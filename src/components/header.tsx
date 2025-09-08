@@ -1,21 +1,21 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
-import { CakeSlice, Menu } from 'lucide-react';
+import { Menu } from 'lucide-react';
+import Image from 'next/image';
 
 const Header = () => {
   const navLinks = [
     { href: '#courses', label: 'Cursos' },
     { href: '#', label: 'Sobre Nosotros' },
-    { href: '#', label: 'Contacto' },
+    { href: '#', 'label': 'Contacto' },
   ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
+      <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2">
-          <CakeSlice className="h-6 w-6 text-primary" />
-          <span className="font-bold">Pastelería de Morty</span>
+          <Image src="/logo.png" alt="Pastelería de Morty" width={140} height={50} className="object-contain" />
         </Link>
         
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
@@ -47,8 +47,7 @@ const Header = () => {
                 <SheetDescription className="sr-only">Navegación principal de la aplicación</SheetDescription>
                 <div className="flex flex-col gap-4 p-4">
                   <Link href="/" className="flex items-center gap-2 mb-4">
-                    <CakeSlice className="h-6 w-6 text-primary" />
-                    <span className="font-bold">Pastelería de Morty</span>
+                    <Image src="/logo.png" alt="Pastelería de Morty" width={140} height={50} className="object-contain" />
                   </Link>
                   {navLinks.map((link) => (
                     <Link
