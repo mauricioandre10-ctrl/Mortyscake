@@ -61,20 +61,20 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
-        <div className="mr-4 flex">
+        <div className="flex items-center">
           <Link href="/" className="flex items-center gap-2">
             <CakeSlice className="h-8 w-8 text-primary" />
             <span className="font-headline text-2xl font-bold">Morty's Cake</span>
           </Link>
         </div>
         
-        <nav className="hidden md:flex md:flex-1 md:items-center md:justify-center md:gap-6 text-sm font-medium">
+        <nav className="hidden md:flex flex-1 items-center justify-center gap-6 text-sm font-medium">
           {navLinks.map((link) => (
             <Link key={link.href} href={link.href} className="transition-colors hover:text-primary">{link.label}</Link>
           ))}
         </nav>
         
-        <div className="flex flex-1 items-center justify-end gap-2 md:gap-4">
+        <div className="flex items-center justify-end gap-2 md:gap-4 ml-auto">
           <div className="hidden md:block">
             {IS_LOGGED_IN ? <UserDropdown /> : (
               <Button asChild>
