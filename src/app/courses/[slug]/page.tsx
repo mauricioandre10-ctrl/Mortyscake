@@ -2,7 +2,8 @@ import { courses } from '@/lib/courses';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { CalendarDays, Clock, Banknote, Video, Users } from 'lucide-react';
+import { CalendarDays, Clock, Banknote, Video, Users, BookOpen, Lightbulb, Package, Laptop } from 'lucide-react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 export default function CourseDetailPage({ params }: { params: { slug: string } }) {
   const course = courses.find((c) => c.slug === params.slug);
@@ -88,6 +89,55 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
                 <p className="text-center text-xs text-muted-foreground mt-2">El link para la clase se compartirá en las primeras 24 horas después de confirmado el pago.</p>
             </div>
         </div>
+      </div>
+       <div className="max-w-6xl mx-auto mt-12 pt-8 border-t">
+        <h2 className="font-headline text-3xl font-bold text-center mb-8">Preguntas Frecuentes</h2>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="item-1">
+            <AccordionTrigger>
+              <div className="flex items-center gap-3">
+                <BookOpen className="h-5 w-5" />
+                <span>¿A quién está dirigido el curso?</span>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <p className="text-muted-foreground">Este curso es perfecto para cualquier persona apasionada por la repostería, sin importar su nivel de experiencia. Si eres un principiante con ganas de aprender desde cero o si ya tienes algunas nociones y quieres perfeccionar tu técnica, ¡este es tu lugar! </p>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-2">
+            <AccordionTrigger>
+              <div className="flex items-center gap-3">
+                <Package className="h-5 w-5" />
+                <span>¿Qué materiales necesito?</span>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <p className="text-muted-foreground">Te enviaremos una lista detallada de ingredientes y utensilios básicos de repostería que necesitarás. ¡No te preocupes! La mayoría son cosas que probablemente ya tienes en casa. Nos aseguraremos de que todo sea fácil de conseguir para que solo te enfoques en disfrutar y aprender.</p>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-3">
+            <AccordionTrigger>
+                <div className="flex items-center gap-3">
+                <Laptop className="h-5 w-5" />
+                <span>¿Cómo funciona la modalidad 100% online?</span>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <p className="text-muted-foreground">El curso es totalmente en vivo a través de una plataforma de video. Podrás interactuar con el instructor, hacer preguntas en tiempo real y compartir tus avances con otros compañeros. La clase quedará grabada, por si quieres repasar alguna técnica más tarde. ¡Es como tener un taller de repostería en la comodidad de tu hogar!</p>
+            </AccordionContent>
+          </AccordionItem>
+           <AccordionItem value="item-4">
+            <AccordionTrigger>
+                <div className="flex items-center gap-3">
+                <Lightbulb className="h-5 w-5" />
+                <span>¿Qué aprenderé exactamente?</span>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <p className="text-muted-foreground">En este curso, te guiaremos paso a paso para que domines las bases de la repostería. Aprenderás a preparar la masa perfecta, a hornear como un profesional, a crear rellenos deliciosos y a decorar tu tarta con un acabado espectacular. ¡Saldrás con la confianza para crear tus propias obras maestras!</p>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
     </div>
   );
