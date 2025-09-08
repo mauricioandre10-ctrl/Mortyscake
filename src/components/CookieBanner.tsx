@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { CookieSettingsDialog, ConsentPreferences } from '@/components/CookieSettingsDialog';
+import { useCookieConsent } from '@/hooks/useCookieConsent';
 
 // Function to stringify consent object and set the cookie
 const setConsentCookie = (consent: object) => {
@@ -13,28 +14,28 @@ const setConsentCookie = (consent: object) => {
 
 export const CookieBanner = () => {
   const [showBanner, setShowBanner] = useState(false);
+  const { isConsentLoading, hasCookieConsent, setConsent } = useCookieConsent();
 
   useEffect(() => {
-    // Banner is only shown if no consent cookie is found
-    const hasConsent = document.cookie.split(';').some(item => item.trim().startsWith('cookie_consent='));
-    if (!hasConsent) {
+    // Banner is only shown if consent has been determined and no cookie is found
+    if (!isConsentLoading && !hasCookieConsent) {
       setShowBanner(true);
     }
-  }, []);
+  }, [isConsentLoading, hasCookieConsent]);
 
   const handleAllowAll = () => {
     // Set all preferences to true
     const fullConsent = { necessary: true, analytics: true, marketing: true };
     setConsentCookie(fullConsent);
+    setConsent(fullConsent); // Update the hook state
     setShowBanner(false);
-    // Manually reload to apply analytics scripts if consent was just given
-    window.location.reload();
   };
 
   const handleRejectAll = () => {
     // Set only necessary to true
     const minimalConsent = { necessary: true, analytics: false, marketing: false };
     setConsentCookie(minimalConsent);
+    setConsent(minimalConsent); // Update the hook state
     setShowBanner(false);
   };
 
@@ -42,9 +43,8 @@ export const CookieBanner = () => {
     // Save user-defined preferences, plus necessary cookies
     const customConsent = { necessary: true, ...preferences };
     setConsentCookie(customConsent);
+    setConsent(customConsent); // Update the hook state
     setShowBanner(false);
-    // Reload if analytics consent has changed to apply or remove scripts
-    window.location.reload();
   };
 
   if (!showBanner) {
