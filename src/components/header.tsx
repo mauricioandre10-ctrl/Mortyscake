@@ -17,6 +17,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 // For this scaffold, we'll assume the user is logged out by default.
 const IS_LOGGED_IN = false;
 
+const navLinks = [
+    { href: "#courses", label: "Courses" },
+    { href: "#about", label: "About" },
+    { href: "#contact", label: "Contact" },
+];
+
 const UserDropdown = () => (
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
@@ -53,18 +59,24 @@ const UserDropdown = () => (
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 m-4 rounded-lg">
-      <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 mr-4">
-          <CakeSlice className="h-8 w-8 text-primary" />
-          <span className="hidden sm:inline-block font-headline text-2xl font-bold">Morty's Cake</span>
-        </Link>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-16 max-w-screen-2xl items-center">
+        <div className="mr-4 hidden md:flex">
+            <Link href="/" className="flex items-center gap-2">
+            <CakeSlice className="h-8 w-8 text-primary" />
+            <span className="font-headline text-2xl font-bold">Morty's Cake</span>
+            </Link>
+        </div>
         
-        <nav className="hidden flex-grow items-center gap-6 text-sm font-medium md:flex">
-          <Link href="/" className="transition-colors hover:text-primary">Courses</Link>
-        </nav>
+        <div className="flex flex-1 items-center justify-between md:justify-center">
+            <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
+                {navLinks.map((link) => (
+                    <Link key={link.href} href={link.href} className="transition-colors hover:text-primary">{link.label}</Link>
+                ))}
+            </nav>
+        </div>
         
-        <div className="flex items-center gap-2 md:gap-4">
+        <div className="flex flex-1 items-center justify-end gap-2 md:gap-4">
           <div className="hidden md:block">
             {IS_LOGGED_IN ? <UserDropdown /> : (
               <Button asChild>
@@ -86,7 +98,9 @@ export default function Header() {
                     <CakeSlice className="h-8 w-8 text-primary" />
                     <span className="font-headline text-2xl font-bold">Morty's Cake</span>
                 </Link>
-                <Link href="/" className="text-muted-foreground hover:text-primary">Courses</Link>
+                {navLinks.map((link) => (
+                    <Link key={link.href} href={link.href} className="text-muted-foreground hover:text-primary">{link.label}</Link>
+                ))}
                 <hr className="border-border" />
                 {IS_LOGGED_IN ? (
                   <>
