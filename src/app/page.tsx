@@ -5,11 +5,11 @@ import { CalendarDays, Clock } from 'lucide-react';
 
 const courses = [
   {
-    title: 'Art of the Croissant',
-    description: 'Master the delicate art of French viennoiserie. Learn lamination, shaping, and baking to perfection.',
+    title: 'El Arte del Croissant',
+    description: 'Domina el delicado arte de la bollería francesa. Aprende a laminar, dar forma y hornear a la perfección.',
     price: 199,
-    schedule: 'Saturdays, 9am - 1pm',
-    duration: '4 weeks',
+    schedule: 'Sábados, 9am - 1pm',
+    duration: '4 semanas',
     image: {
       src: 'https://picsum.photos/600/400',
       width: 600,
@@ -18,11 +18,11 @@ const courses = [
     }
   },
   {
-    title: 'Modern Cake Design',
-    description: 'Explore contemporary cake decorating techniques, from mirror glazes to abstract chocolate work.',
+    title: 'Diseño Moderno de Pasteles',
+    description: 'Explora técnicas contemporáneas de decoración de pasteles, desde glaseados de espejo hasta trabajos abstractos con chocolate.',
     price: 249,
-    schedule: 'Sundays, 10am - 2pm',
-    duration: '5 weeks',
+    schedule: 'Domingos, 10am - 2pm',
+    duration: '5 semanas',
     image: {
       src: 'https://picsum.photos/600/401',
       width: 600,
@@ -31,11 +31,11 @@ const courses = [
     }
   },
   {
-    title: 'Sourdough Bread Science',
-    description: 'Dive deep into the science of wild yeast. Cultivate your own starter and bake rustic, flavorful loaves.',
+    title: 'La Ciencia del Pan de Masa Madre',
+    description: 'Sumérgete en la ciencia de la levadura salvaje. Cultiva tu propio iniciador y hornea panes rústicos y sabrosos.',
     price: 179,
-    schedule: 'Tues & Thurs, 6pm - 8pm',
-    duration: '3 weeks',
+    schedule: 'Martes y Jueves, 6pm - 8pm',
+    duration: '3 semanas',
     image: {
       src: 'https://picsum.photos/600/402',
       width: 600,
@@ -44,11 +44,11 @@ const courses = [
     }
   },
   {
-    title: 'Macaron & Meringue',
-    description: 'Perfect the notoriously tricky macaron and explore the versatility of meringue in various classic desserts.',
+    title: 'Macarons y Merengue',
+    description: 'Perfecciona el macaron, famoso por su dificultad, y explora la versatilidad del merengue en varios postres clásicos.',
     price: 159,
-    schedule: 'Mondays, 5pm - 8pm',
-    duration: '2 weeks',
+    schedule: 'Lunes, 5pm - 8pm',
+    duration: '2 semanas',
     image: {
       src: 'https://picsum.photos/600/403',
       width: 600,
@@ -60,11 +60,11 @@ const courses = [
 
 export default function Home() {
   return (
-    <div>
+    <div className="flex flex-col flex-1">
       <section className="relative w-full h-[60vh] min-h-[400px] flex items-center justify-center text-center text-white">
         <Image
           src="https://picsum.photos/1600/900"
-          alt="Artisanal pastries on a dark background"
+          alt="Pasteles artesanales sobre un fondo oscuro"
           data-ai-hint="pastry background"
           fill
           className="object-cover -z-10 brightness-[0.4]"
@@ -72,14 +72,14 @@ export default function Home() {
         <div className="container px-4 md:px-6">
           <div className="max-w-3xl mx-auto">
             <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-              Discover the Art of Pastry
+              Descubre el Arte de la Repostería
             </h1>
             <p className="mt-4 md:mt-6 text-lg md:text-xl text-primary-foreground/80">
-              Join our hands-on courses and transform your passion for baking into professional-level skill.
+              Únete a nuestros cursos prácticos y transforma tu pasión por la repostería en una habilidad profesional.
             </p>
             <div className="mt-8">
               <Button size="lg" asChild>
-                <a href="#courses">Explore Courses</a>
+                <a href="#courses">Explorar Cursos</a>
               </Button>
             </div>
           </div>
@@ -89,9 +89,9 @@ export default function Home() {
       <section id="courses" className="py-12 md:py-24 bg-background">
         <div className="container px-4 md:px-6">
           <div className="text-center mb-12">
-            <h2 className="font-headline text-3xl md:text-4xl font-bold">Our Courses</h2>
+            <h2 className="font-headline text-3xl md:text-4xl font-bold">Nuestros Cursos</h2>
             <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-              From foundational techniques to advanced decoration, find the perfect course to elevate your baking.
+              Desde técnicas fundamentales hasta decoración avanzada, encuentra el curso perfecto para elevar tu repostería.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -126,7 +126,7 @@ export default function Home() {
                   <div className="flex items-center gap-1">
                      <span className="text-2xl font-bold text-primary">${course.price}</span>
                   </div>
-                  <Button>Enroll Now</Button>
+                  <Button>Inscribirse Ahora</Button>
                 </CardFooter>
               </Card>
             ))}

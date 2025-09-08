@@ -13,43 +13,43 @@ import { CakeSlice } from "lucide-react"
 
 export default function SignupPage() {
   return (
-    <div className="flex flex-grow items-center justify-center container mx-auto py-12 px-4 md:px-6">
+    <div className="flex flex-1 items-center justify-center container mx-auto py-12 px-4 md:px-6">
        <div className="w-full max-w-md space-y-6">
         <div className="flex flex-col items-center text-center">
             <Link href="/" className="flex items-center gap-2 mb-4">
                 <CakeSlice className="h-10 w-10 text-primary" />
             </Link>
-            <h1 className="font-headline text-3xl font-bold">Create an Account</h1>
-            <p className="text-muted-foreground">Join our community of passionate bakers.</p>
+            <h1 className="font-headline text-3xl font-bold">Crear una Cuenta</h1>
+            <p className="text-muted-foreground">Únete a nuestra comunidad de apasionados reposteros.</p>
         </div>
         <Card>
           <CardContent className="p-6">
             <form className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="full-name">Full Name</Label>
+                <Label htmlFor="full-name">Nombre Completo</Label>
                 <Input id="full-name" placeholder="Morty Smith" required />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">Correo Electrónico</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="m@ejemplo.com"
                   required
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Contraseña</Label>
                 <Input id="password" type="password" required />
               </div>
               <Button type="submit" className="w-full mt-2">
-                Create account
+                Crear cuenta
               </Button>
             </form>
             <div className="mt-4 text-center text-sm">
-              Already have an account?{" "}
+              ¿Ya tienes una cuenta?{" "}
               <Link href="/login" className="underline text-primary font-medium">
-                Login
+                Iniciar Sesión
               </Link>
             </div>
           </CardContent>

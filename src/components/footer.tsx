@@ -8,14 +8,14 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2">
             <CakeSlice className="h-6 w-6 text-primary" />
-            <span className="font-headline text-xl font-bold">Morty's Cake</span>
+            <span className="font-headline text-xl font-bold">Pastelería de Morty</span>
           </div>
           <div className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Morty's Cake. All rights reserved.
+            &copy; {new Date().getFullYear()} Pastelería de Morty. Todos los derechos reservados.
           </div>
           <nav className="flex gap-4">
-            <Link href="#" className="text-sm hover:text-primary">Privacy Policy</Link>
-            <Link href="#" className="text-sm hover:text-primary">Terms of Service</Link>
+            <Link href="#" className="text-sm hover:text-primary">Política de Privacidad</Link>
+            <Link href="#" className="text-sm hover:text-primary">Términos de Servicio</Link>
           </nav>
         </div>
       </div>

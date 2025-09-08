@@ -5,8 +5,8 @@ import Footer from '@/components/footer';
 import Header from '@/components/header';
 
 export const metadata: Metadata = {
-  title: "Morty's Cake",
-  description: 'Gourmand pastry courses for the modern baker.',
+  title: "Pastelería de Morty",
+  description: 'Cursos de repostería para el repostero moderno.',
 };
 
 export default function RootLayout({
@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -24,7 +24,7 @@ export default function RootLayout({
       <body className="font-body antialiased">
         <div className="min-h-screen flex flex-col">
           <Header />
-          <main className="flex-grow">
+          <main className="flex-1">
             {children}
           </main>
           <Footer />

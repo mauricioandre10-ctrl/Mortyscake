@@ -1,24 +1,26 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { CakeSlice, Menu } from 'lucide-react';
 
 const Header = () => {
   const navLinks = [
-    { href: '#courses', label: 'Courses' },
-    { href: '#', label: 'About' },
-    { href: '#', label: 'Contact' },
+    { href: '#courses', label: 'Cursos' },
+    { href: '#', label: 'Sobre Nosotros' },
+    { href: '#', label: 'Contacto' },
   ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between px-4 md:px-6">
-        <Link href="/" className="flex items-center gap-2">
-          <CakeSlice className="h-6 w-6 text-primary" />
-          <span className="font-bold">Morty's Cake</span>
-        </Link>
+      <div className="container flex h-16 items-center">
+        <div className="mr-auto flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
+            <CakeSlice className="h-6 w-6 text-primary" />
+            <span className="font-bold">Pastelería de Morty</span>
+          </Link>
+        </div>
         
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+        <nav className="hidden md:flex items-center justify-center gap-6 text-sm font-medium">
           {navLinks.map((link) => (
             <Link
               key={link.label}
@@ -30,24 +32,25 @@ const Header = () => {
           ))}
         </nav>
         
-        <div className="flex items-center gap-2">
-           <Button asChild>
-              <Link href="/login">Login</Link>
+        <div className="ml-auto flex items-center gap-2">
+          <Button asChild>
+            <Link href="/login">Iniciar Sesión</Link>
           </Button>
           <div className="md:hidden">
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
                   <Menu />
-                  <span className="sr-only">Toggle Menu</span>
+                  <span className="sr-only">Abrir Menú</span>
                 </Button>
               </SheetTrigger>
               <SheetContent side="left">
-                <SheetTitle className="sr-only">Menu</SheetTitle>
+                <SheetTitle className="sr-only">Menú</SheetTitle>
+                <SheetDescription className="sr-only">Navegación principal de la aplicación</SheetDescription>
                 <div className="flex flex-col gap-4 p-4">
                   <Link href="/" className="flex items-center gap-2 mb-4">
                     <CakeSlice className="h-6 w-6 text-primary" />
-                    <span className="font-bold">Morty's Cake</span>
+                    <span className="font-bold">Pastelería de Morty</span>
                   </Link>
                   {navLinks.map((link) => (
                     <Link
