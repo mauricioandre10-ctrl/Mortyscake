@@ -31,9 +31,6 @@ const Header = () => {
         </nav>
         
         <div className="flex items-center gap-2">
-          <Button asChild>
-            <Link href="/login">Iniciar Sesión</Link>
-          </Button>
           <div className="md:hidden">
             <Sheet>
               <SheetTrigger asChild>
