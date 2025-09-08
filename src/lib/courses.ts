@@ -39,7 +39,7 @@ export const courses: Course[] = [
     schedule: '30 de septiembre 2 pm',
     duration: '4 horas',
     image: {
-      src: 'https://picsum.photos/600/401',
+      src: '/image/Diseño_Gourmet_de_pasteles.webp',
       width: 600,
       height: 401,
       hint: 'modern cake'
