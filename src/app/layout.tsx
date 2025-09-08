@@ -13,11 +13,8 @@ import './globals.css';
 
 const fontSans = Alegreya({ 
   subsets: ['latin'], 
-  variable: '--font-sans' 
-});
-const fontSerif = Alegreya({ 
-  subsets: ['latin'], 
-  variable: '--font-serif' 
+  variable: '--font-sans',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -29,16 +26,16 @@ export const metadata: Metadata = {
   description: 'Aprende repostería desde cero hasta un nivel experto con nuestros cursos online y en vivo. Únete a nuestra comunidad y convierte tu pasión en arte.',
   keywords: ['cursos de repostería', 'repostería online', 'repostería en vivo', 'aprender repostería', 'tartas', 'pasteles', 'diseño de pasteles', 'repostería gourmet'],
   openGraph: {
-    title: 'Cursos de Repostería Online y en Vivo',
-    description: 'Transforma tu pasión por la repostería en un arte. Cursos para todos los niveles.',
+    title: 'Cursos de Repostería Online y en Vivo | Pastelería de Morty',
+    description: 'Transforma tu pasión por la repostería en un arte. Cursos para todos los niveles, impartidos por expertos y con acceso a una comunidad vibrante.',
     url: 'https://reposteria-cursos.com',
-    siteName: 'Cursos de Repostería',
+    siteName: 'Cursos de Repostería de Morty',
     images: [
       {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Alumna sonriendo mientras decora un pastel.',
+        alt: 'Alumna sonriendo mientras decora un pastel en un curso de repostería online.',
       },
     ],
     locale: 'es_ES',
@@ -46,8 +43,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Cursos de Repostería Online y en Vivo',
-    description: 'De cero a experto en repostería con nuestros cursos prácticos.',
+    title: 'Cursos de Repostería Online y en Vivo | Pastelería de Morty',
+    description: 'De cero a experto en repostería con nuestros cursos prácticos. Aprende, crea y comparte tu pasión.',
     images: ['/twitter-image.jpg'],
   },
   robots: {
@@ -78,9 +75,8 @@ export default function RootLayout({
       <head />
       <body
         className={cn(
-          'min-h-screen bg-background font-sans antialiased',
-          fontSans.variable,
-          fontSerif.variable
+          'min-h-screen bg-background font-body antialiased',
+          fontSans.variable
         )}
       >
         <Suspense fallback={null}>
