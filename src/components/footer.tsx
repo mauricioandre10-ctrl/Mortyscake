@@ -10,7 +10,9 @@ const Footer = () => {
             <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width={140} height={50} className="object-contain" />
           </div>
           <div className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Pastelería de Morty. Todos los derechos reservados.
+            <Link href="https://tecnovacenter.es/" target="_blank" rel="noopener noreferrer" className="hover:text-primary">
+              &copy; {new Date().getFullYear()} TecnovaCenter
+            </Link>
           </div>
           <nav className="flex gap-4">
             <Link href="#" className="text-sm hover:text-primary">Política de Privacidad</Link>
