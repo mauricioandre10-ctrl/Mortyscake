@@ -1,6 +1,7 @@
+
 import { Suspense } from 'react';
 import type { Metadata, Viewport } from 'next';
-import { Manrope, Lora } from 'next/font/google';
+import { Alegreya } from 'next/font/google';
 import { Analytics } from '@/components/Analytics';
 import { cn } from '@/lib/utils';
 import Header from '@/components/header';
@@ -10,11 +11,11 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import InstagramButton from '@/components/InstagramButton';
 import './globals.css';
 
-const fontSans = Manrope({ 
+const fontSans = Alegreya({ 
   subsets: ['latin'], 
   variable: '--font-sans' 
 });
-const fontSerif = Lora({ 
+const fontSerif = Alegreya({ 
   subsets: ['latin'], 
   variable: '--font-serif' 
 });

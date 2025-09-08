@@ -47,3 +47,5 @@ export const courses: Course[] = [
     enrollmentUrl: 'https://forms.gle/HKSD8Wu3cfcezpHs9'
   }
 ];
+
+export const isEuroCourse = (slug: string) => ['mi-primera-tarta', 'diseno-gourmet-de-pasteles'].includes(slug);

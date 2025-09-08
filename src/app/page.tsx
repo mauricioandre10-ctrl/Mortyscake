@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -5,13 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { CalendarDays, Clock } from 'lucide-react';
 import Link from 'next/link';
-import { courses } from '@/lib/courses';
+import { courses, isEuroCourse } from '@/lib/courses';
 import { LiteYouTubeEmbed } from '@/components/LiteYouTubeEmbed';
 import * as gtag from '@/lib/gtag';
 
 export default function Home() {
-  const isEuroCourse = (slug: string) => ['mi-primera-tarta', 'diseno-gourmet-de-pasteles'].includes(slug);
-
   const handleCtaClick = (courseName: string) => {
     gtag.event('iniciar_pago', {
       nombre_curso: courseName,

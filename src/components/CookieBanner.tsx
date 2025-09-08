@@ -1,8 +1,9 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogTrigger, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { CookieSettingsDialog, ConsentPreferences } from '@/components/CookieSettingsDialog';
 
 // Function to stringify consent object and set the cookie

@@ -1,4 +1,5 @@
-import { courses } from '@/lib/courses';
+
+import { courses, isEuroCourse } from '@/lib/courses';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -73,8 +74,6 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
         description: 'Dominarás las técnicas esenciales de la repostería:desde preparar masas y hornear a la perfección, hasta crear rellenos y decoraciones con un acabado profesional.'
       }
   ];
-
-  const isEuroCourse = (slug: string) => ['mi-primera-tarta', 'diseno-gourmet-de-pasteles'].includes(slug);
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
