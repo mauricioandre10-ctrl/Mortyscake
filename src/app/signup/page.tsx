@@ -17,7 +17,7 @@ export default function SignupPage() {
        <div className="w-full max-w-md space-y-6">
         <div className="flex flex-col items-center text-center">
             <Link href="/" className="flex items-center gap-2 mb-4">
-                 <Image src="/logo.png" alt="Pastelería de Morty" width={180} height={64} className="object-contain" />
+                 <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width={180} height={64} className="object-contain" />
             </Link>
             <h1 className="font-headline text-3xl font-bold">Crear una Cuenta</h1>
             <p className="text-muted-foreground">Únete a nuestra comunidad de apasionados reposteros.</p>

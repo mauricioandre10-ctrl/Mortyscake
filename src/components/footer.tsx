@@ -7,7 +7,7 @@ const Footer = () => {
       <div className="container mx-auto py-8 px-4 md:px-6">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2">
-            <Image src="/logo.png" alt="Pastelería de Morty" width={140} height={50} className="object-contain" />
+            <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width={140} height={50} className="object-contain" />
           </div>
           <div className="text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} Pastelería de Morty. Todos los derechos reservados.
