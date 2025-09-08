@@ -24,7 +24,7 @@ export const courses: Course[] = [
     schedule: 'Sábados, 9am - 1pm',
     duration: '4 semanas',
     image: {
-      src: 'https://picsum.photos/600/400',
+      src: '/image/mi_primera_tarta.webp',
       width: 600,
       height: 400,
       hint: 'first cake'
