@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { CalendarDays, Clock } from 'lucide-react';
+import Link from 'next/link';
 
 const courses = [
   {
@@ -15,7 +16,8 @@ const courses = [
       width: 600,
       height: 400,
       hint: 'croissant pastry'
-    }
+    },
+    enrollmentUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSc_1234567890abcdefghijklmnopqrstuvwxyz/viewform'
   },
   {
     title: 'Diseño Moderno de Pasteles',
@@ -28,7 +30,8 @@ const courses = [
       width: 600,
       height: 401,
       hint: 'modern cake'
-    }
+    },
+    enrollmentUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSc_1234567890abcdefghijklmnopqrstuvwxyz/viewform'
   },
   {
     title: 'La Ciencia del Pan de Masa Madre',
@@ -41,7 +44,8 @@ const courses = [
       width: 600,
       height: 402,
       hint: 'sourdough bread'
-    }
+    },
+    enrollmentUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSc_1234567890abcdefghijklmnopqrstuvwxyz/viewform'
   },
   {
     title: 'Macarons y Merengue',
@@ -54,7 +58,8 @@ const courses = [
       width: 600,
       height: 403,
       hint: 'macaron cookies'
-    }
+    },
+    enrollmentUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSc_1234567890abcdefghijklmnopqrstuvwxyz/viewform'
   },
 ];
 
@@ -126,7 +131,11 @@ export default function Home() {
                   <div className="flex items-center gap-1">
                      <span className="text-2xl font-bold text-primary">${course.price}</span>
                   </div>
-                  <Button>Inscribirse Ahora</Button>
+                  <Button asChild>
+                    <Link href={course.enrollmentUrl} target="_blank" rel="noopener noreferrer">
+                      Inscribirse Ahora
+                    </Link>
+                  </Button>
                 </CardFooter>
               </Card>
             ))}
