@@ -24,12 +24,7 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
               className="object-cover"
             />
           </div>
-        </div>
-        <div className="flex flex-col justify-center">
-            <h1 className="font-headline text-3xl md:text-4xl font-bold mb-2">{course.title}</h1>
-            <p className="text-muted-foreground text-lg mb-6">{course.description}</p>
-            
-            <div className="bg-muted/50 rounded-lg p-6 mb-6">
+           <div className="bg-muted/50 rounded-lg p-6 mb-6">
                 <h2 className="font-headline text-2xl font-bold mb-4">Detalles del Curso</h2>
                 <div className="space-y-3 text-sm">
                   <div className="flex items-start">
@@ -55,7 +50,11 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
                   </div>
                 </div>
             </div>
-
+        </div>
+        <div className="flex flex-col justify-center">
+            <h1 className="font-headline text-3xl md:text-4xl font-bold mb-2">{course.title}</h1>
+            <p className="text-muted-foreground text-lg mb-6">{course.description}</p>
+            
             <div className="border rounded-lg p-6">
                 <h2 className="font-headline text-2xl font-bold mb-4">Detalles de la Inscripción</h2>
                 <div className="space-y-4">
