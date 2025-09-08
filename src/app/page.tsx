@@ -17,7 +17,7 @@ const courses = [
       height: 400,
       hint: 'croissant pastry'
     },
-    enrollmentUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSc_1234567890abcdefghijklmnopqrstuvwxyz/viewform'
+    enrollmentUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSeTQ6mlI0dHtjcORvo0KokTP6R9Z1yhQmo0zHlkzHoLtQSBVg/viewform?usp=preview'
   },
   {
     title: 'Diseño Moderno de Pasteles',
@@ -31,7 +31,7 @@ const courses = [
       height: 401,
       hint: 'modern cake'
     },
-    enrollmentUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSc_1234567890abcdefghijklmnopqrstuvwxyz/viewform'
+    enrollmentUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSeTQ6mlI0dHtjcORvo0KokTP6R9Z1yhQmo0zHlkzHoLtQSBVg/viewform?usp=preview'
   },
   {
     title: 'La Ciencia del Pan de Masa Madre',
@@ -45,7 +45,7 @@ const courses = [
       height: 402,
       hint: 'sourdough bread'
     },
-    enrollmentUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSc_1234567890abcdefghijklmnopqrstuvwxyz/viewform'
+    enrollmentUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSeTQ6mlI0dHtjcORvo0KokTP6R9Z1yhQmo0zHlkzHoLtQSBVg/viewform?usp=preview'
   },
   {
     title: 'Macarons y Merengue',
@@ -59,7 +59,7 @@ const courses = [
       height: 403,
       hint: 'macaron cookies'
     },
-    enrollmentUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSc_1234567890abcdefghijklmnopqrstuvwxyz/viewform'
+    enrollmentUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSeTQ6mlI0dHtjcORvo0KokTP6R9Z1yhQmo0zHlkzHoLtQSBVg/viewform?usp=preview'
   },
 ];
 
