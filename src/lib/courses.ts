@@ -20,7 +20,7 @@ export const courses: Course[] = [
     slug: 'mi-primera-tarta',
     title: 'Mi Primera Tarta',
     description: 'Aprende a hornear y decorar tu primera tarta desde cero. Ideal para principiantes.',
-    price: 199,
+    price: 60,
     schedule: '25 de septiembre 2 pm',
     duration: '4 horas',
     image: {

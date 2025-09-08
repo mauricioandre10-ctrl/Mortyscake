@@ -34,11 +34,16 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
                       <p className="text-muted-foreground text-xs">Clases en vivo y en directo con el instructor.</p>
                     </div>
                   </div>
+                   <div className="flex items-start">
+                    <CalendarDays className="h-4 w-4 mr-3 mt-1 shrink-0" />
+                    <div>
+                      <span className="font-semibold">Fecha:</span> {course.schedule}
+                    </div>
+                  </div>
                   <div className="flex items-start">
                     <Clock className="h-4 w-4 mr-3 mt-1 shrink-0" />
                     <div>
-                      <span className="font-semibold">Duración por sesión:</span> 4 horas
-                      <p className="text-muted-foreground text-xs">{course.duration} en total.</p>
+                      <span className="font-semibold">Duración:</span> {course.duration}
                     </div>
                   </div>
                    <div className="flex items-start">
@@ -60,7 +65,10 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">Precio del curso</span>
-                        <span className="font-bold text-2xl text-primary">${course.price}</span>
+                        <span className="font-bold text-2xl text-primary">
+                          {course.slug === 'mi-primera-tarta' ? '€' : '$'}
+                          {course.price}
+                        </span>
                     </div>
                     <div className="border-t pt-4">
                         <h3 className="font-semibold mb-2">Instrucciones de Pago</h3>
