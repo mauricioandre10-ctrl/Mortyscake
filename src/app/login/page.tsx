@@ -13,7 +13,7 @@ import { CakeSlice } from "lucide-react";
 
 export default function LoginPage() {
   return (
-    <div className="flex items-center justify-center py-12 px-4">
+    <div className="flex flex-grow items-center justify-center container mx-auto py-12 px-4 md:px-6">
       <div className="w-full max-w-md space-y-6">
         <div className="flex flex-col items-center text-center">
             <Link href="/" className="flex items-center gap-2 mb-4">
