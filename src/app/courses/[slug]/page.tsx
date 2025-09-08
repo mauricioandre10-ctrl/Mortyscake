@@ -45,7 +45,7 @@ export async function generateStaticParams() {
 }
 
 
-export default function CourseDetailPage({ params }: { params: { slug: string } }) {
+export default async function CourseDetailPage({ params }: { params: { slug: string } }) {
   const course = courses.find((c) => c.slug === params.slug);
 
   if (!course) {
