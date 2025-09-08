@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from '@/components/ui/sheet';
 import { CakeSlice, Menu } from 'lucide-react';
 
 const Header = () => {
@@ -12,13 +12,14 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center">
-        <div className="mr-4 hidden md:flex">
+      <div className="container flex h-16 items-center justify-between">
+        <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
             <CakeSlice className="h-6 w-6 text-primary" />
             <span className="font-bold">Morty's Cake</span>
           </Link>
         </div>
+        
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
           {navLinks.map((link) => (
             <Link
@@ -30,7 +31,11 @@ const Header = () => {
             </Link>
           ))}
         </nav>
-        <div className="flex flex-1 items-center justify-between md:justify-end">
+        
+        <div className="flex items-center gap-2">
+           <Button asChild>
+              <Link href="/login">Login</Link>
+          </Button>
           <div className="md:hidden">
             <Sheet>
               <SheetTrigger asChild>
@@ -40,6 +45,9 @@ const Header = () => {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left">
+                <SheetHeader>
+                  <SheetTitle className="sr-only">Menu</SheetTitle>
+                </SheetHeader>
                 <div className="flex flex-col gap-4 p-4">
                   <Link href="/" className="flex items-center gap-2 mb-4">
                     <CakeSlice className="h-6 w-6 text-primary" />
@@ -57,11 +65,6 @@ const Header = () => {
                 </div>
               </SheetContent>
             </Sheet>
-          </div>
-          <div className="flex items-center gap-2">
-             <Button asChild>
-                <Link href="/login">Login</Link>
-            </Button>
           </div>
         </div>
       </div>
