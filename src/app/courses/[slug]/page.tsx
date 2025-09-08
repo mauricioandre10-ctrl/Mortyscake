@@ -24,16 +24,6 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
               className="object-cover"
             />
           </div>
-          <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-                <CalendarDays className="h-4 w-4" />
-                <span>{course.schedule}</span>
-            </div>
-            <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                <span>{course.duration}</span>
-            </div>
-          </div>
         </div>
         <div className="flex flex-col justify-center">
             <h1 className="font-headline text-3xl md:text-4xl font-bold mb-2">{course.title}</h1>
