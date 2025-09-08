@@ -6,10 +6,12 @@ import Link from 'next/link';
 import { courses } from '@/lib/courses';
 
 export default function Home() {
+  const isEuroCourse = (slug: string) => ['mi-primera-tarta', 'diseno-gourmet-de-pasteles'].includes(slug);
+
   return (
     <div className="w-full flex justify-center items-center">
       <div className="w-full">
-        <section className="relative w-full h-0 pb-[40%] bg-black">
+        <section className="relative w-full h-0 pb-[25%] bg-black">
           <iframe 
             className="absolute top-0 left-0 w-full h-full"
             src="https://www.youtube.com/embed/6McqHZrP-IY?autoplay=1&mute=1&loop=1&playlist=6McqHZrP-IY&controls=0&showinfo=0&autohide=1&modestbranding=1"
@@ -59,7 +61,7 @@ export default function Home() {
                   <CardFooter className="flex justify-between items-center bg-muted/30 p-4">
                     <div className="flex items-center gap-1">
                       <span className="text-2xl font-bold text-primary">
-                        {course.slug === 'mi-primera-tarta' ? '€' : '$'}
+                        {isEuroCourse(course.slug) ? '€' : '$'}
                         {course.price}
                       </span>
                     </div>

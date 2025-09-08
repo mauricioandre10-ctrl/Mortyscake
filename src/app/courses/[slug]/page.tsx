@@ -35,6 +35,8 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
       }
   ];
 
+  const isEuroCourse = (slug: string) => ['mi-primera-tarta', 'diseno-gourmet-de-pasteles'].includes(slug);
+
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto">
@@ -90,7 +92,7 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
                     <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">Precio del curso</span>
                         <span className="font-bold text-2xl text-primary">
-                          {course.slug === 'mi-primera-tarta' ? '€' : '$'}
+                          {isEuroCourse(course.slug) ? '€' : '$'}
                           {course.price}
                         </span>
                     </div>

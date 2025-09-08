@@ -32,12 +32,12 @@ export const courses: Course[] = [
     enrollmentUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSeTQ6mlI0dHtjcORvo0KokTP6R9Z1yhQmo0zHlkzHoLtQSBVg/viewform?usp=preview'
   },
   {
-    slug: 'diseno-moderno-de-pasteles',
+    slug: 'diseno-gourmet-de-pasteles',
     title: 'Diseño Gourmet de Pasteles',
     description: 'Explora técnicas contemporáneas de decoración de pasteles, desde glaseados de espejo hasta trabajos abstractos con chocolate.',
-    price: 249,
-    schedule: 'Domingos, 10am - 2pm',
-    duration: '5 semanas',
+    price: 150,
+    schedule: '30 de septiembre 2 pm',
+    duration: '4 horas',
     image: {
       src: 'https://picsum.photos/600/401',
       width: 600,
