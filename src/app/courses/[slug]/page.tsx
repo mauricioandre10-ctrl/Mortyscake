@@ -141,7 +141,7 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
                           <h3 className="font-semibold mb-2">1. Paga cómodamente con Bizum</h3>
                           <p className="text-sm text-muted-foreground mb-4">Escanea el código QR desde tu móvil o pulsa el botón para agregar el contacto.</p>
                           <div className="flex justify-center my-4">
-                            <Image src="/image/bizum_qr_curso.svg" alt="Bizum QR Code" width={100} height={100} className="rounded-lg" />
+                            <Image src="/image/bizum_qr_curso.svg" alt="Bizum QR Code" width={100} height={100} className="rounded-lg h-auto" />
                           </div>
                            <Button asChild size="lg" className="w-full mt-2 bg-[#33A1F2] hover:bg-[#2a8ad0] text-white">
                             <Link href="https://qrto.org/lGWCJi" target="_blank" rel="noopener noreferrer">
