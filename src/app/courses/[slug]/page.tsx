@@ -97,7 +97,7 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
                         </span>
                     </div>
 
-                    {course.slug === 'mi-primera-tarta' ? (
+                    {isEuroCourse(course.slug) ? (
                        <div className="border-t pt-4 text-center">
                           <h3 className="font-semibold mb-2">Paga cómodamente con Bizum</h3>
                           <p className="text-sm text-muted-foreground mb-4">Puedes escanear el código QR desde tu móvil o pulsar el botón para pagar.</p>
