@@ -60,7 +60,7 @@ const courses = [
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1">
+    <div className="flex flex-col w-full">
       <section className="relative w-full h-[60vh] min-h-[400px] flex items-center justify-center text-center text-white">
         <Image
           src="https://picsum.photos/1600/900"
@@ -86,8 +86,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="courses" className="py-12 md:py-24 bg-background">
-        <div className="container px-4 md:px-6">
+      <section id="courses" className="w-full py-12 md:py-24 bg-background">
+        <div className="container px-4 md:px-6 mx-auto">
           <div className="text-center mb-12">
             <h2 className="font-headline text-3xl md:text-4xl font-bold">Nuestros Cursos</h2>
             <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
