@@ -86,6 +86,7 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
               data-ai-hint={course.image.hint}
               fill
               className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
               priority
             />
           </div>
