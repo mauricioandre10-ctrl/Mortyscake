@@ -9,10 +9,10 @@ export default function Home() {
   return (
     <div className="w-full flex justify-center items-center">
       <div className="w-full">
-        <section className="relative w-full h-0 pb-[56.25%] bg-black">
+        <section className="relative w-full h-0 pb-[40%] bg-black">
           <iframe 
             className="absolute top-0 left-0 w-full h-full"
-            src="https://www.youtube.com/embed/zxTdyNwb6Og?autoplay=1&mute=1&loop=1&playlist=zxTdyNwb6Og&controls=0&showinfo=0&autohide=1&modestbranding=1"
+            src="https://www.youtube.com/embed/6McqHZrP-IY?autoplay=1&mute=1&loop=1&playlist=6McqHZrP-IY&controls=0&showinfo=0&autohide=1&modestbranding=1"
             frameBorder="0"
             allow="autoplay; encrypted-media"
             allowFullScreen
