@@ -75,8 +75,7 @@ export default function Home() {
                   <CardFooter className="flex justify-between items-center bg-muted/30 p-4">
                     <div className="flex items-center gap-1">
                       <span className="text-2xl font-bold text-primary">
-                        {isEuroCourse(course.slug) ? '€' : '$'}
-                        {course.price}
+                        {course.price === 0 ? 'Gratis' : `${isEuroCourse(course.slug) ? '€' : '$'}${course.price}`}
                       </span>
                     </div>
                     <Button asChild onClick={() => handleCtaClick(course.title)}>

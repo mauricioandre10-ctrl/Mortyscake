@@ -132,12 +132,23 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
                     <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">Precio del curso</span>
                         <span className="font-bold text-2xl text-primary">
-                          {isEuroCourse(course.slug) ? '€' : '$'}
-                          {course.price}
+                          {course.price === 0 ? 'Gratis' : `${isEuroCourse(course.slug) ? '€' : '$'}${course.price}`}
                         </span>
                     </div>
 
                     {isEuroCourse(course.slug) ? (
+                      course.price === 0 ? (
+                        <div className="border-t pt-4 text-center">
+                          <h3 className="font-semibold mb-2">¡Curso Gratuito!</h3>
+                          <p className="text-sm text-muted-foreground mb-4">Completa el formulario para asegurar tu plaza en este curso gratuito.</p>
+                          <Button asChild size="lg" className="w-full mt-2">
+                            <Link href={course.enrollmentUrl} target="_blank" rel="noopener noreferrer">
+                              <BookOpen className="mr-2" /> Inscribirse Ahora
+                            </Link>
+                          </Button>
+                          <p className="text-xs text-muted-foreground mt-2">Recibirás el enlace de acceso a la clase en tu correo electrónico.</p>
+                        </div>
+                      ) : (
                        <div className="border-t pt-4 text-center">
                           <h3 className="font-semibold mb-2">1. Paga cómodamente con Bizum</h3>
                           <p className="text-sm text-muted-foreground mb-4">Escanea el código QR desde tu móvil o pulsa el botón para agregar el contacto.</p>
@@ -162,6 +173,7 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
                               <p className="text-xs text-muted-foreground mt-2">Enviaremos el link de la clase a tu correo una vez confirmado el pago.</p>
                           </div>
                        </div>
+                      )
                     ) : (
                       <div className="border-t pt-4">
                           <h3 className="font-semibold mb-2">Instrucciones de Pago</h3>
