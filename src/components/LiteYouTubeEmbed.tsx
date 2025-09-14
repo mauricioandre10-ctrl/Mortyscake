@@ -1,5 +1,5 @@
 'use client';
-import React, 'useState' from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { PlayCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
