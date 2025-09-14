@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription, SheetHeader } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 import Image from 'next/image';
 
@@ -8,7 +8,7 @@ const Header = () => {
   const navLinks = [
     { href: '/#courses', label: 'Cursos' },
     { href: '#', label: 'Sobre Nosotros' },
-    { href: '/', 'label': 'Contacto' },
+    { href: '/#footer', 'label': 'Contacto' },
   ];
 
   return (
@@ -40,8 +40,10 @@ const Header = () => {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left">
-                <SheetTitle>Menú</SheetTitle>
-                <SheetDescription className="sr-only">Navegación principal de la aplicación</SheetDescription>
+                <SheetHeader>
+                  <SheetTitle>Menú</SheetTitle>
+                  <SheetDescription>Navegación principal del sitio.</SheetDescription>
+                </SheetHeader>
                 <div className="flex flex-col gap-4 p-4">
                   <Link href="/" className="flex items-center gap-2 mb-4">
                      <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width={180} height={64} className="object-contain h-auto max-w-[100px]" />

@@ -1,7 +1,7 @@
 
 import { Suspense } from 'react';
 import type { Metadata, Viewport } from 'next';
-import { Alegreya } from 'next/font/google';
+import { Alegreya as FontSans } from 'next/font/google';
 import { Analytics } from '@/components/Analytics';
 import { cn } from '@/lib/utils';
 import Header from '@/components/header';
@@ -11,7 +11,7 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import InstagramButton from '@/components/InstagramButton';
 import './globals.css';
 
-const fontSans = Alegreya({ 
+const fontSans = FontSans({ 
   subsets: ['latin'], 
   variable: '--font-sans',
   display: 'swap',

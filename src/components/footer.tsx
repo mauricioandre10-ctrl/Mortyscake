@@ -4,7 +4,7 @@ import { Facebook, Instagram, Phone, MapPin } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="w-full border-t">
+    <footer id="footer" className="w-full border-t">
       <div className="bg-[#513938] text-white">
         <div className="container mx-auto py-8 px-4 md:px-6">
           <div className="grid md:grid-cols-3 gap-8">

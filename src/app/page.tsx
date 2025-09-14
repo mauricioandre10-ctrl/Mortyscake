@@ -59,8 +59,8 @@ export default function Home() {
                     </div>
                   </CardHeader>
                   <CardContent className="flex flex-col flex-grow p-6">
-                    <CardTitle className="font-headline text-xl mb-2">{course.title}</CardTitle>
-                    <CardDescription className="flex-grow">{course.description}</CardDescription>
+                    <CardTitle as="h3" className="font-headline text-xl mb-2">{course.title}</CardTitle>
+                    <CardDescription>{course.description}</CardDescription>
                     <div className="mt-4 space-y-2 text-sm text-muted-foreground">
                       <div className="flex items-center gap-2">
                         <CalendarDays className="h-4 w-4" />
