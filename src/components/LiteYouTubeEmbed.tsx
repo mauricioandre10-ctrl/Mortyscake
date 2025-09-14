@@ -1,9 +1,8 @@
 'use client';
-import React, { useState } from 'react';
+import React, 'useState' from 'react';
 import Image from 'next/image';
 import { PlayCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import * as gtag from '@/lib/gtag';
 
 interface LiteYouTubeEmbedProps {
   id: string;
@@ -28,9 +27,6 @@ export const LiteYouTubeEmbed: React.FC<LiteYouTubeEmbedProps> = ({
   const iframeSrc = `${ytUrl}/embed/${videoId}?${params}`;
 
   const handlePlay = () => {
-    gtag.event('reproducir_video', {
-      titulo_video: title,
-    });
     setIframe(true);
   };
 

@@ -8,14 +8,8 @@ import { CalendarDays, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { courses, isEuroCourse } from '@/lib/courses';
 import { LiteYouTubeEmbed } from '@/components/LiteYouTubeEmbed';
-import * as gtag from '@/lib/gtag';
 
 export default function Home() {
-  const handleCtaClick = (courseName: string) => {
-    gtag.event('iniciar_pago', {
-      nombre_curso: courseName,
-    });
-  };
 
   return (
     <div className="w-full flex justify-center items-center">
@@ -78,7 +72,7 @@ export default function Home() {
                         {course.price === 0 ? 'Gratis' : `${isEuroCourse(course.slug) ? '€' : '$'}${course.price}`}
                       </span>
                     </div>
-                    <Button asChild onClick={() => handleCtaClick(course.title)}>
+                    <Button asChild>
                       <Link href={`/courses/${course.slug}`}>
                         Inscribirse Ahora
                       </Link>
