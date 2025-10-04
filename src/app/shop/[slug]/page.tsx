@@ -4,25 +4,45 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { notFound } from 'next/navigation';
-import { products } from '@/lib/products';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star, Truck, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { AddToCart } from '@/components/AddToCart';
-
-// This part is commented out because we are using client-side rendering for now
-// to enable router.back(). We can revisit this for SSG optimization later.
-// export async function generateStaticParams() {
-//   return products.map((product) => ({
-//     slug: product.slug,
-//   }));
-// }
+import { wooCommerce } from '@/lib/woocommerce';
+import { useEffect, useState } from 'react';
 
 export default function ProductDetailPage({ params }: { params: { slug: string } }) {
   const router = useRouter();
-  const product = products.find((p) => p.slug === params.slug);
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await wooCommerce.get('products', {
+          slug: params.slug,
+        });
+        if (response.data && response.data.length > 0) {
+          setProduct(response.data[0]);
+        } else {
+          notFound();
+        }
+      } catch (error) {
+        console.error("Failed to fetch product", error);
+        notFound();
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProduct();
+  }, [params.slug]);
+
+
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
+  
   if (!product) {
-    notFound();
+    return notFound();
   }
 
   return (
@@ -39,9 +59,8 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto">
         <div className="relative aspect-square w-full overflow-hidden rounded-lg">
           <Image
-            src={product.image.src}
+            src={product.images[0].src}
             alt={product.name}
-            data-ai-hint={product.image.hint}
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 50vw"
@@ -58,25 +77,25 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
                     <Star className="w-5 h-5 fill-current" />
                     <Star className="w-5 h-5 text-muted-foreground fill-muted" />
                 </div>
-                <span className="text-sm text-muted-foreground">(12 reseñas)</span>
+                <span className="text-sm text-muted-foreground">({product.rating_count} reseñas)</span>
             </div>
-            <p className="text-muted-foreground text-lg mb-6">{product.description}</p>
+            <div className="text-muted-foreground text-lg mb-6" dangerouslySetInnerHTML={{ __html: product.description }} />
             
             <Card className="border">
                 <CardContent className="p-6 space-y-4">
                     <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">Precio</span>
                         <span className="font-bold text-3xl text-primary">
-                            €{product.price.toFixed(2)}
+                            €{product.price}
                         </span>
                     </div>
                      <AddToCart 
                         name={product.name}
-                        description={product.description}
-                        id={product.slug}
-                        price={product.price}
+                        description={product.short_description || ''}
+                        id={String(product.id)}
+                        price={parseFloat(product.price)}
                         currency="EUR"
-                        image={product.image.src}
+                        image={product.images?.[0]?.src || ''}
                         className="w-full"
                         size="lg"
                      />

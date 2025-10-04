@@ -1,12 +1,27 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { products } from '@/lib/products';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { AddToCart } from '@/components/AddToCart';
+import { wooCommerce } from '@/lib/woocommerce';
 
-export default function ShopPage() {
+async function getProducts() {
+  try {
+    const response = await wooCommerce.get('products');
+    if (response.status !== 200) {
+      console.error('Error fetching products:', response.statusText);
+      return [];
+    }
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching products from WooCommerce:', error);
+    return [];
+  }
+}
+
+export default async function ShopPage() {
+  const products = await getProducts();
+
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
       <header className="text-center mb-12">
@@ -16,37 +31,42 @@ export default function ShopPage() {
         </p>
       </header>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {products.map((product) => (
-          <Card key={product.slug} className="flex flex-col overflow-hidden hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
+        {products.map((product: any) => (
+          <Card key={product.id} className="flex flex-col overflow-hidden hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
             <CardHeader className="p-0">
               <Link href={`/shop/${product.slug}`} className="block relative aspect-square">
-                <Image
-                  src={product.image.src}
-                  alt={product.name}
-                  data-ai-hint={product.image.hint}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover"
-                />
+                {product.images && product.images[0] ? (
+                  <Image
+                    src={product.images[0].src}
+                    alt={product.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground">
+                    Sin imagen
+                  </div>
+                )}
               </Link>
             </CardHeader>
             <CardContent className="flex flex-col flex-grow p-6">
               <CardTitle as="h3" className="font-headline text-xl mb-2">
                  <Link href={`/shop/${product.slug}`}>{product.name}</Link>
               </CardTitle>
-              <CardDescription className="text-sm">{product.description}</CardDescription>
+              <CardDescription className="text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
             </CardContent>
             <CardFooter className="flex justify-between items-center bg-muted/30 p-4">
               <span className="text-2xl font-bold text-primary">
-                €{product.price.toFixed(2)}
+                €{product.price}
               </span>
-              <AddToCart 
+              <AddToCart
                 name={product.name}
-                description={product.description}
-                id={product.slug}
-                price={product.price}
+                description={product.short_description || ''}
+                id={String(product.id)}
+                price={parseFloat(product.price)}
                 currency="EUR"
-                image={product.image.src}
+                image={product.images?.[0]?.src || ''}
               />
             </CardFooter>
           </Card>
