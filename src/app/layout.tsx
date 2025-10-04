@@ -80,6 +80,9 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
+        <Suspense fallback={null}>
+          <Analytics />
+        </Suspense>
         <CartProvider
           cartMode="client-only"
           stripe={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string}
@@ -89,9 +92,6 @@ export default function RootLayout({
           allowedCountries={['ES', 'FR', 'DE', 'IT', 'PT']}
           billingAddressCollection={true}
         >
-          <Suspense fallback={null}>
-            <Analytics />
-          </Suspense>
           <Header />
           <main className="flex-grow">{children}</main>
           <Footer />
