@@ -78,11 +78,11 @@ export default function Home() {
             <Link href="/shop" className="group block">
               <Card className="overflow-hidden h-full flex flex-col">
                 <div className="relative aspect-[4/3] w-full">
-                  <Image src="/image/category-shop.webp" alt="Utensilios de repostería a la venta" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="baking tools" />
+                  <Image src="/image/category-shop.webp" alt="Productos de repostería de alta calidad" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="baking products" />
                 </div>
                 <CardHeader>
-                  <CardTitle className="font-headline text-2xl">Tienda de Utensilios</CardTitle>
-                  <CardDescription>Encuentra todo lo que necesitas para hornear.</CardDescription>
+                  <CardTitle className="font-headline text-2xl">Nuestros Productos</CardTitle>
+                  <CardDescription>Ingredientes y herramientas de alta calidad.</CardDescription>
                 </CardHeader>
                 <CardFooter>
                    <span className="flex items-center text-primary font-semibold">
