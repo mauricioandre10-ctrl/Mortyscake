@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -8,6 +7,7 @@ import { CalendarDays, Clock, ArrowRight, Star } from 'lucide-react';
 import Link from 'next/link';
 import { courses, isEuroCourse } from '@/lib/courses';
 import { testimonials } from '@/lib/testimonials';
+import { products } from '@/lib/products';
 
 // Datos simulados para el blog
 const blogPosts = [
@@ -82,7 +82,7 @@ export default function Home() {
                 </div>
                 <CardHeader>
                   <CardTitle className="font-headline text-2xl">Nuestros Productos</CardTitle>
-                  <CardDescription>Ingredientes y herramientas de alta calidad.</CardDescription>
+                  <CardDescription>Ingredientes y herramientas de alta calidad para tus creaciones.</CardDescription>
                 </CardHeader>
                 <CardFooter>
                    <span className="flex items-center text-primary font-semibold">
@@ -151,8 +151,59 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. About Us Section */}
-      <section id="about" className="py-16 md:py-24 bg-muted/30">
+      {/* New Products Section */}
+      <section id="products" className="w-full py-16 md:py-24 bg-muted/30">
+        <div className="container px-4 md:px-6 mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="font-headline text-3xl md:text-4xl font-bold">Nuestros Productos Destacados</h2>
+            <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
+              Selección de ingredientes y herramientas de alta calidad para llevar tus creaciones al siguiente nivel.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {products.slice(0, 9).map((product) => (
+              <Card key={product.slug} className="flex flex-col overflow-hidden hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
+                <CardHeader className="p-0">
+                  <div className="relative aspect-square">
+                    <Image
+                      src={product.image.src}
+                      alt={product.name}
+                      data-ai-hint={product.image.hint}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover"
+                    />
+                  </div>
+                </CardHeader>
+                <CardContent className="flex flex-col flex-grow p-6">
+                  <CardTitle as="h3" className="font-headline text-xl mb-2">{product.name}</CardTitle>
+                  <CardDescription className="text-sm">{product.description}</CardDescription>
+                </CardContent>
+                <CardFooter className="flex justify-between items-center bg-muted/30 p-4">
+                  <span className="text-2xl font-bold text-primary">
+                    €{product.price.toFixed(2)}
+                  </span>
+                  <Button asChild variant="secondary">
+                    <Link href={`/shop/${product.slug}`}>
+                      Ver Producto
+                    </Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+           <div className="text-center mt-12">
+              <Button asChild size="lg">
+                  <Link href="/shop">
+                      Ver todos los productos
+                  </Link>
+              </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* About Us Section */}
+      <section id="about" className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
             <div className="relative w-full aspect-square md:aspect-[4/5] rounded-lg overflow-hidden shadow-lg">
@@ -182,8 +233,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. Testimonials Section */}
-      <section id="testimonials" className="py-16 md:py-24 bg-background">
+      {/* Testimonials Section */}
+      <section id="testimonials" className="py-16 md:py-24 bg-muted/30">
           <div className="container mx-auto px-4 md:px-6 text-center">
               <h2 className="font-headline text-3xl md:text-4xl font-bold">Lo que dicen nuestros alumnos</h2>
               <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
@@ -220,8 +271,8 @@ export default function Home() {
           </div>
       </section>
 
-      {/* 6. Blog Section */}
-      <section id="blog" className="py-16 md:py-24 bg-muted/30">
+      {/* Blog Section */}
+      <section id="blog" className="py-16 md:py-24 bg-background">
           <div className="container mx-auto px-4 md:px-6">
               <div className="text-center mb-12">
                   <h2 className="font-headline text-3xl md:text-4xl font-bold">Desde nuestra cocina</h2>
@@ -262,5 +313,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
