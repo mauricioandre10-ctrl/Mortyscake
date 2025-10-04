@@ -1,10 +1,10 @@
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { products } from '@/lib/products';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Star, Truck, ShieldCheck } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Star, Truck, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { AddToCart } from '@/components/AddToCart';
 
 // Generate static pages for each product
@@ -23,6 +23,12 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
+       <div className="mb-8">
+        <Link href="/shop" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+          <ArrowLeft className="w-4 h-4" />
+          <span>Volver a la tienda</span>
+        </Link>
+      </div>
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto">
         <div className="relative aspect-square w-full overflow-hidden rounded-lg">
           <Image
