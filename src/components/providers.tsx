@@ -3,7 +3,7 @@
 
 import { CartProvider } from 'use-shopping-cart';
 
-const WOOCOMMERCE_CHECKOUT_URL = process.env.NEXT_PUBLIC_WOOCOMMERCE_CHECKOUT_URL || '';
+const WOOCOMMERCE_CHECKOUT_URL = 'https://tecnovacenter.shop/checkout/';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
