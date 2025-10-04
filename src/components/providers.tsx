@@ -3,13 +3,15 @@
 
 import { CartProvider } from 'use-shopping-cart';
 
+const WOOCOMMERCE_CHECKOUT_URL = process.env.NEXT_PUBLIC_WOOCOMMERCE_CHECKOUT_URL || '';
+
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <CartProvider
       cartMode="client-only"
-      stripe={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string}
-      successUrl="https://example.com/success"
-      cancelUrl="https://example.com/cancel"
+      stripe="" // This is not needed for WooCommerce
+      successUrl={`${WOOCOMMERCE_CHECKOUT_URL}?session_id={CHECKOUT_SESSION_ID}`}
+      cancelUrl={WOOCOMMERCE_CHECKOUT_URL || ''}
       currency="EUR"
       allowedCountries={['ES', 'FR', 'DE', 'IT', 'PT']}
       billingAddressCollection={true}

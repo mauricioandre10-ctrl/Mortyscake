@@ -11,7 +11,7 @@ import { useShoppingCart } from 'use-shopping-cart';
 import { Separator } from './ui/separator';
 
 const Header = () => {
-  const { cartCount, cartDetails, removeItem, totalPrice } = useShoppingCart();
+  const { cartCount, cartDetails, removeItem, totalPrice, redirectToCheckout } = useShoppingCart();
   const [isCartOpen, setIsCartOpen] = React.useState(false);
 
   const navLinks = [
@@ -20,6 +20,18 @@ const Header = () => {
     { href: '/#about', label: 'Sobre Nosotros' },
     { href: '/#footer', 'label': 'Contacto' },
   ];
+
+  async function handleCheckoutClick(event: React.MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    try {
+      const result = await redirectToCheckout();
+      if (result?.error) {
+        console.error(result.error.message);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -98,7 +110,7 @@ const Header = () => {
                         <span>Total:</span>
                         <span>€{totalPrice?.toFixed(2) ?? '0.00'}</span>
                       </div>
-                      <Button className="w-full" disabled>
+                      <Button className="w-full" onClick={handleCheckoutClick}>
                         Finalizar Compra
                       </Button>
                       <p className="text-xs text-center text-muted-foreground">El checkout se redirigirá a WooCommerce.</p>
