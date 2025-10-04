@@ -9,7 +9,7 @@ import Footer from '@/components/footer';
 import { CookieBanner } from '@/components/CookieBanner';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import InstagramButton from '@/components/InstagramButton';
-import { CartProvider } from 'use-shopping-cart';
+import { Providers } from '@/components/providers';
 import './globals.css';
 
 const fontSans = FontSans({ 
@@ -83,22 +83,14 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <Analytics />
         </Suspense>
-        <CartProvider
-          cartMode="client-only"
-          stripe={process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string}
-          successUrl="https://example.com/success"
-          cancelUrl="https://example.com/cancel"
-          currency="EUR"
-          allowedCountries={['ES', 'FR', 'DE', 'IT', 'PT']}
-          billingAddressCollection={true}
-        >
+        <Providers>
           <Header />
           <main className="flex-grow">{children}</main>
           <Footer />
-          <CookieBanner />
-          <WhatsAppButton />
-          <InstagramButton />
-        </CartProvider>
+        </Providers>
+        <CookieBanner />
+        <WhatsAppButton />
+        <InstagramButton />
       </body>
     </html>
   );
