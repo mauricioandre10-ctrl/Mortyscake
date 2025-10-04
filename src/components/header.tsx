@@ -1,10 +1,18 @@
+
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription, SheetHeader } from '@/components/ui/sheet';
-import { Menu } from 'lucide-react';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription, SheetHeader, SheetFooter } from '@/components/ui/sheet';
+import { Menu, ShoppingCart, X } from 'lucide-react';
 import Image from 'next/image';
+import { useShoppingCart } from 'use-shopping-cart';
+import { Separator } from './ui/separator';
 
 const Header = () => {
+  const { cartCount, cartDetails, removeItem, totalPrice } = useShoppingCart();
+  const [isCartOpen, setIsCartOpen] = React.useState(false);
+
   const navLinks = [
     { href: '/#categories', label: 'Tienda' },
     { href: '/#courses', label: 'Cursos' },
@@ -32,6 +40,83 @@ const Header = () => {
         </nav>
         
         <div className="flex items-center gap-2">
+           <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="relative">
+                <ShoppingCart />
+                {cartCount !== undefined && cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                    {cartCount}
+                  </span>
+                )}
+                <span className="sr-only">Abrir carrito</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>Tu Carrito</SheetTitle>
+                <SheetDescription>
+                  {cartCount === 0
+                    ? 'Tu carrito está vacío.'
+                    : `Tienes ${cartCount} artículo(s) en tu carrito.`}
+                </SheetDescription>
+              </SheetHeader>
+              <div className="flex flex-col h-full">
+                {cartCount !== undefined && cartCount > 0 ? (
+                  <>
+                    <div className="flex-1 overflow-y-auto pr-4 my-4">
+                      {Object.values(cartDetails ?? {}).map((item) => (
+                        <div key={item.id} className="flex items-center gap-4 py-4">
+                          <Image
+                            src={item.image as string}
+                            alt={item.name}
+                            width={64}
+                            height={64}
+                            className="rounded-md object-cover"
+                          />
+                          <div className="flex-1">
+                            <p className="font-medium">{item.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {item.quantity} x {item.formattedValue}
+                            </p>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeItem(item.id)}
+                            aria-label={`Eliminar ${item.name} del carrito`}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                    <Separator />
+                    <SheetFooter className="mt-auto p-4 space-y-4">
+                      <div className="flex justify-between items-center font-semibold">
+                        <span>Total:</span>
+                        <span>€{totalPrice?.toFixed(2) ?? '0.00'}</span>
+                      </div>
+                      <Button className="w-full" disabled>
+                        Finalizar Compra
+                      </Button>
+                      <p className="text-xs text-center text-muted-foreground">El checkout se redirigirá a WooCommerce.</p>
+                    </SheetFooter>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full">
+                    <ShoppingCart className="w-16 h-16 text-muted-foreground" />
+                    <p className="mt-4 text-muted-foreground">¡Empieza a llenarlo!</p>
+                     <Button variant="outline" className="mt-6" onClick={() => setIsCartOpen(false)}>
+                        Seguir comprando
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
+
+
           <div className="md:hidden">
             <Sheet>
               <SheetTrigger asChild>
@@ -69,5 +154,3 @@ const Header = () => {
 };
 
 export default Header;
-
-    
