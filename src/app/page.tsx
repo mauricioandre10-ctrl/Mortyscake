@@ -4,7 +4,7 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Clock, MessageCircle, Star } from 'lucide-react';
+import { CalendarDays, Clock, ArrowRight, Star } from 'lucide-react';
 import Link from 'next/link';
 import { courses, isEuroCourse } from '@/lib/courses';
 import { testimonials } from '@/lib/testimonials';
@@ -55,11 +55,51 @@ export default function Home() {
          </div>
       </section>
 
-      {/* 2. Courses Section */}
+      {/* 2. Categories Section (Shop & Courses) */}
+      <section id="categories" className="w-full py-16 md:py-24 bg-muted/30">
+        <div className="container px-4 md:px-6 mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <Link href="/#courses" className="group block">
+              <Card className="overflow-hidden h-full flex flex-col">
+                <div className="relative aspect-[4/3] w-full">
+                  <Image src="/image/category-courses.webp" alt="Alumna decorando un pastel en un curso" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="pastry class" />
+                </div>
+                <CardHeader>
+                  <CardTitle className="font-headline text-2xl">Cursos de Repostería</CardTitle>
+                  <CardDescription>Aprende técnicas profesionales desde casa.</CardDescription>
+                </CardHeader>
+                <CardFooter>
+                  <span className="flex items-center text-primary font-semibold">
+                    Explorar Cursos <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                  </span>
+                </CardFooter>
+              </Card>
+            </Link>
+            <Link href="/shop" className="group block">
+              <Card className="overflow-hidden h-full flex flex-col">
+                <div className="relative aspect-[4/3] w-full">
+                  <Image src="/image/category-shop.webp" alt="Utensilios de repostería a la venta" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="baking tools" />
+                </div>
+                <CardHeader>
+                  <CardTitle className="font-headline text-2xl">Tienda de Utensilios</CardTitle>
+                  <CardDescription>Encuentra todo lo que necesitas para hornear.</CardDescription>
+                </CardHeader>
+                <CardFooter>
+                   <span className="flex items-center text-primary font-semibold">
+                    Ir a la Tienda <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                  </span>
+                </CardFooter>
+              </Card>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. Courses Section */}
       <section id="courses" className="w-full py-16 md:py-24 bg-background">
         <div className="container px-4 md:px-6 mx-auto">
           <div className="text-center mb-12">
-            <h2 className="font-headline text-3xl md:text-4xl font-bold">Nuestros Cursos</h2>
+            <h2 className="font-headline text-3xl md:text-4xl font-bold">Próximos Cursos</h2>
             <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
               Desde técnicas fundamentales hasta decoración avanzada, encuentra el curso perfecto para elevar tu repostería.
             </p>
@@ -76,7 +116,6 @@ export default function Home() {
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover"
-                      priority
                     />
                   </div>
                 </CardHeader>
@@ -112,7 +151,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. About Us Section */}
+      {/* 4. About Us Section */}
       <section id="about" className="py-16 md:py-24 bg-muted/30">
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
@@ -134,7 +173,7 @@ export default function Home() {
                 En Morty's Cake, cada tarta es una obra de arte y cada curso una oportunidad para compartir los secretos que he aprendido. Mi misión es darte la confianza y las herramientas para que tú también puedas crear postres que no solo deleiten el paladar, sino que también cuenten tu propia historia. ¡Vamos a hornear juntos!
               </p>
               <Button asChild variant="link" className="mt-4 text-base px-0">
-                  <Link href="#">
+                  <Link href="/#about">
                       Conoce más sobre mi historia
                   </Link>
               </Button>
@@ -143,7 +182,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. Testimonials Section */}
+      {/* 5. Testimonials Section */}
       <section id="testimonials" className="py-16 md:py-24 bg-background">
           <div className="container mx-auto px-4 md:px-6 text-center">
               <h2 className="font-headline text-3xl md:text-4xl font-bold">Lo que dicen nuestros alumnos</h2>
@@ -181,7 +220,7 @@ export default function Home() {
           </div>
       </section>
 
-      {/* 5. Blog Section */}
+      {/* 6. Blog Section */}
       <section id="blog" className="py-16 md:py-24 bg-muted/30">
           <div className="container mx-auto px-4 md:px-6">
               <div className="text-center mb-12">
