@@ -1,20 +1,24 @@
 
+'use client';
+
 import Image from 'next/image';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { notFound } from 'next/navigation';
 import { products } from '@/lib/products';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star, Truck, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { AddToCart } from '@/components/AddToCart';
 
-// Generate static pages for each product
-export async function generateStaticParams() {
-  return products.map((product) => ({
-    slug: product.slug,
-  }));
-}
+// This part is commented out because we are using client-side rendering for now
+// to enable router.back(). We can revisit this for SSG optimization later.
+// export async function generateStaticParams() {
+//   return products.map((product) => ({
+//     slug: product.slug,
+//   }));
+// }
 
-export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
+export default function ProductDetailPage({ params }: { params: { slug: string } }) {
+  const router = useRouter();
   const product = products.find((p) => p.slug === params.slug);
 
   if (!product) {
@@ -24,10 +28,13 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
        <div className="mb-8">
-        <Link href="/shop" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+        <button
+          onClick={() => router.back()}
+          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+        >
           <ArrowLeft className="w-4 h-4" />
           <span>Volver a la tienda</span>
-        </Link>
+        </button>
       </div>
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto">
         <div className="relative aspect-square w-full overflow-hidden rounded-lg">
