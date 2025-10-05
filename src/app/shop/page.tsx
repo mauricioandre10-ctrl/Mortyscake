@@ -7,13 +7,24 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { AddToCart } from '@/components/AddToCart';
 import { wooCommerce } from '@/lib/woocommerce';
 import { useEffect, useState, useMemo } from 'react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { ArrowUpDown, ArrowDown, ArrowUp, CaseSensitive } from 'lucide-react';
+
+type SortOption = 'default' | 'price-asc' | 'price-desc' | 'alpha-asc' | 'alpha-desc';
+
+const sortOptions: { value: SortOption; label: string }[] = [
+    { value: 'default', label: 'Popularidad' },
+    { value: 'price-asc', label: 'Precio: Menor a Mayor' },
+    { value: 'price-desc', label: 'Precio: Mayor a Menor' },
+    { value: 'alpha-asc', label: 'Alfabético: A-Z' },
+    { value: 'alpha-desc', label: 'Alfabético: Z-A' },
+];
 
 export default function ShopPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortOrder, setSortOrder] = useState('default');
+  const [sortOrder, setSortOrder] = useState<SortOption>('default');
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -46,6 +57,7 @@ export default function ShopPage() {
         return sorted.sort((a, b) => b.name.localeCompare(a.name));
       case 'default':
       default:
+        // WooCommerce's default sort is usually based on popularity or custom order
         return products;
     }
   }, [products, sortOrder]);
@@ -85,20 +97,21 @@ export default function ShopPage() {
         </p>
       </header>
 
-      <div className="flex justify-end mb-8">
-        <Select value={sortOrder} onValueChange={setSortOrder}>
-          <SelectTrigger className="w-[240px]">
-            <SelectValue placeholder="Ordenar por" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="default">Orden por defecto</SelectItem>
-            <SelectItem value="price-asc">Precio: de menor a mayor</SelectItem>
-            <SelectItem value="price-desc">Precio: de mayor a menor</SelectItem>
-            <SelectItem value="alpha-asc">Alfabéticamente, A-Z</SelectItem>
-            <SelectItem value="alpha-desc">Alfabéticamente, Z-A</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
+        <span className="text-sm font-medium mr-2 text-muted-foreground">Ordenar por:</span>
+        {sortOptions.map(option => (
+          <Button
+            key={option.value}
+            variant={sortOrder === option.value ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setSortOrder(option.value)}
+            className="rounded-full"
+          >
+            {option.label}
+          </Button>
+        ))}
       </div>
+
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {sortedProducts.map((product: any) => (
