@@ -62,8 +62,8 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
                 <Card>
                     <CardContent className="p-6 space-y-4">
                         <div className="flex items-center justify-between">
-                            <Skeleton className="h-6 w-1/4" />
-                            <Skeleton className="h-10 w-1/3" />
+                            <Skeleton className="h-8 w-1/4" />
+                            <Skeleton className="h-12 w-1/3" />
                         </div>
                         <Skeleton className="h-12 w-full" />
                          <div className="border-t pt-4 space-y-3 text-sm">
@@ -74,6 +74,13 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
                 </Card>
             </div>
         </div>
+         <div className="max-w-6xl mx-auto mt-16 pt-8 border-t">
+            <Skeleton className="h-10 w-1/2 mx-auto mb-8" />
+            <div className="grid md:grid-cols-2 gap-6">
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-24 w-full" />
+            </div>
+        </div>
       </div>
     );
   }
@@ -82,9 +89,7 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
     return notFound();
   }
 
-  // NOTE: This section now dynamically pulls from WooCommerce attributes.
-  // You can manage these in WordPress under Product -> Attributes.
-   const courseInfo = course.attributes.map((attr: any) => ({
+  const courseInfo = course.attributes.map((attr: any) => ({
       icon: iconMap[attr.name] || iconMap.default,
       title: attr.name,
       description: attr.options.join(', ')
@@ -123,7 +128,7 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
                 </div>
                 <span className="text-sm text-muted-foreground">({course.rating_count} reseñas)</span>
             </div>
-            <div className="text-muted-foreground text-lg mb-6" dangerouslySetInnerHTML={{ __html: course.description }} />
+            <div className="text-muted-foreground text-lg mb-6 prose" dangerouslySetInnerHTML={{ __html: course.description }} />
             
             <Card className="border">
                 <CardContent className="p-6 space-y-4">
@@ -173,7 +178,7 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
             {courseInfo.map((info: any, index: number) => {
                 const Icon = info.icon
                 return (
-                    <Card key={index} className="bg-muted/30">
+                    <Card key={index} className="bg-muted/50">
                         <CardContent className="p-6">
                             <div className="flex items-center gap-4">
                                 <Icon className="h-8 w-8 text-primary shrink-0" />
@@ -192,3 +197,5 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
     </div>
   );
 }
+
+    
