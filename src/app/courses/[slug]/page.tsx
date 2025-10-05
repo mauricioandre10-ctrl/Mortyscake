@@ -4,15 +4,11 @@
 import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { CalendarDays, Clock, Banknote, Video, Users, BookOpen, Lightbulb, Package, Laptop, Target, QrCode, ArrowLeft, Star } from 'lucide-react';
+import { CalendarDays, Clock, Video, Target, Package, Laptop, Lightbulb, ArrowLeft, Star } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import Link from 'next/link';
 import { AddToCart } from '@/components/AddToCart';
 import { wooCommerce } from '@/lib/woocommerce';
 import { useEffect, useState } from 'react';
-
-// This page now functions similarly to the product detail page,
-// but can be styled differently to better suit courses.
 
 export default function CourseDetailPage({ params }: { params: { slug: string } }) {
   const router = useRouter();
@@ -22,7 +18,6 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        // We assume courses are just another type of product in WooCommerce
         const response = await wooCommerce.get('products', {
           slug: params.slug,
         });
@@ -43,7 +38,7 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
 
 
   if (loading) {
-    return <div>Cargando curso...</div>;
+    return <div className="container mx-auto py-12 px-4 md:px-6">Cargando curso...</div>;
   }
   
   if (!course) {

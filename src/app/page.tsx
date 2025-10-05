@@ -3,13 +3,13 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, Star } from 'lucide-react';
+import { ArrowRight, Star, CalendarDays, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { testimonials } from '@/lib/testimonials';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AddToCart } from '@/components/AddToCart';
-import { getFeaturedProducts } from '@/app/actions/product-actions';
+import { getFeaturedProducts, getCourseProducts } from '@/app/actions/product-actions';
 
 // Datos simulados para el blog
 const blogPosts = [
@@ -32,7 +32,9 @@ const blogPosts = [
 
 export default function Home() {
   const [products, setProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [courses, setCourses] = useState<any[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [loadingCourses, setLoadingCourses] = useState(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -42,10 +44,22 @@ export default function Home() {
       } catch (error) {
         console.error('Error fetching products from WooCommerce:', error);
       } finally {
-        setLoading(false);
+        setLoadingProducts(false);
       }
     };
+     const fetchCourses = async () => {
+      try {
+        const courseProducts = await getCourseProducts();
+        setCourses(courseProducts);
+      } catch (error) {
+        console.error('Error fetching courses from WooCommerce:', error);
+      } finally {
+        setLoadingCourses(false);
+      }
+    };
+    
     fetchProducts();
+    fetchCourses();
   }, []);
 
   return (
@@ -112,8 +126,8 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* 3. Courses Section - Comentado temporalmente
+      
+      {/* 3. Courses Section */}
       <section id="courses" className="w-full py-16 md:py-24 bg-background">
         <div className="container px-4 md:px-6 mx-auto">
           <div className="text-center mb-12">
@@ -123,40 +137,53 @@ export default function Home() {
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {courses.map((course) => (
-              <Card key={course.title} className="flex flex-col overflow-hidden hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
+             {loadingCourses ? (
+              [...Array(2)].map((_, i) => (
+                <Card key={i} className="shadow-md">
+                  <Skeleton className="aspect-[4/3] w-full" />
+                  <CardContent className="p-6 space-y-2">
+                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-1/2 mt-2" />
+                  </CardContent>
+                  <CardFooter className="flex justify-between items-center bg-muted/30 p-4">
+                    <Skeleton className="h-8 w-1/4" />
+                    <Skeleton className="h-10 w-1/2" />
+                  </CardFooter>
+                </Card>
+              ))
+            ) : (
+            courses.map((course) => (
+              <Card key={course.id} className="flex flex-col overflow-hidden hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
                 <CardHeader className="p-0">
-                  <div className="relative aspect-[4/3]">
+                  <Link href={`/courses/${course.slug}`} className="block relative aspect-[4/3]">
                     <Image
-                      src={course.image.src}
-                      alt={`Imagen de ${course.title} - ${course.image.hint}`}
-                      data-ai-hint={course.image.hint}
+                      src={course.images[0].src}
+                      alt={course.name}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover"
                     />
-                  </div>
+                   </Link>
                 </CardHeader>
                 <CardContent className="flex flex-col flex-grow p-6">
-                  <CardTitle as="h3" className="font-headline text-xl mb-2">{course.title}</CardTitle>
-                  <CardDescription>{course.description}</CardDescription>
+                  <CardTitle as="h3" className="font-headline text-xl mb-2">{course.name}</CardTitle>
+                  <CardDescription dangerouslySetInnerHTML={{ __html: course.short_description || '' }} />
                   <div className="mt-4 space-y-2 text-sm text-muted-foreground">
                     <div className="flex items-center gap-2">
                       <CalendarDays className="h-4 w-4" />
-                      <span>{course.schedule}</span>
+                      <span>Fecha por determinar</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4" />
-                      <span>{course.duration}</span>
+                      <span>4 horas</span>
                     </div>
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-between items-center bg-muted/30 p-4">
-                  <div className="flex items-center gap-1">
-                    <span className="text-2xl font-bold text-primary">
-                      {course.price === 0 ? 'Gratis' : `${isEuroCourse(course.slug) ? '€' : '$'}${course.price}`}
-                    </span>
-                  </div>
+                  <span className="text-2xl font-bold text-primary">
+                      {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
+                  </span>
                   <Button asChild>
                     <Link href={`/courses/${course.slug}`}>
                       Ver Detalles
@@ -164,11 +191,10 @@ export default function Home() {
                   </Button>
                 </CardFooter>
               </Card>
-            ))}
+            )))}
           </div>
         </div>
       </section>
-      */}
 
       {/* New Products Section */}
       <section id="products" className="w-full py-16 md:py-24 bg-muted/30">
@@ -180,7 +206,7 @@ export default function Home() {
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {loading ? (
+            {loadingProducts ? (
               [...Array(3)].map((_, i) => (
                 <Card key={i} className="shadow-md">
                   <Skeleton className="aspect-square w-full" />
