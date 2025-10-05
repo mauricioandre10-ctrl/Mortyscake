@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowRight, Star, CalendarDays, Clock } from 'lucide-react';
+import { ArrowRight, Star } from 'lucide-react';
 import Link from 'next/link';
 import { testimonials } from '@/lib/testimonials';
 import { useEffect, useState } from 'react';
@@ -168,19 +168,9 @@ export default function Home() {
                 </CardHeader>
                 <CardContent className="flex flex-col flex-grow p-6">
                   <CardTitle as="h3" className="font-headline text-xl mb-2">{course.name}</CardTitle>
-                  <CardDescription dangerouslySetInnerHTML={{ __html: course.short_description || '' }} />
-                  <div className="mt-4 space-y-2 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <CalendarDays className="h-4 w-4" />
-                      <span>Fecha por determinar</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4" />
-                      <span>4 horas</span>
-                    </div>
-                  </div>
+                  <CardDescription className="flex-grow" dangerouslySetInnerHTML={{ __html: course.short_description || '' }} />
                 </CardContent>
-                <CardFooter className="flex justify-between items-center bg-muted/30 p-4">
+                <CardFooter className="flex justify-between items-center bg-muted/30 p-4 mt-auto">
                   <span className="text-2xl font-bold text-primary">
                       {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
                   </span>

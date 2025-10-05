@@ -4,11 +4,21 @@
 import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { CalendarDays, Clock, Video, Target, Package, Laptop, Lightbulb, ArrowLeft, Star } from 'lucide-react';
+import { Video, Target, Package, Laptop, Lightbulb, ArrowLeft, Star, Info } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { AddToCart } from '@/components/AddToCart';
 import { wooCommerce } from '@/lib/woocommerce';
 import { useEffect, useState } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const iconMap: { [key: string]: React.ElementType } = {
+  '¿A quién está dirigido?': Target,
+  '¿Qué materiales necesito?': Package,
+  'Modalidad': Laptop,
+  '¿Qué aprenderé exactamente?': Lightbulb,
+  'default': Info,
+};
+
 
 export default function CourseDetailPage({ params }: { params: { slug: string } }) {
   const router = useRouter();
@@ -38,37 +48,47 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
 
 
   if (loading) {
-    return <div className="container mx-auto py-12 px-4 md:px-6">Cargando curso...</div>;
+    return (
+      <div className="container mx-auto py-12 px-4 md:px-6">
+        <div className="mb-8">
+            <Skeleton className="h-6 w-24" />
+        </div>
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto">
+            <Skeleton className="aspect-square w-full rounded-lg" />
+            <div className="space-y-4">
+                <Skeleton className="h-10 w-3/4" />
+                <Skeleton className="h-6 w-1/4" />
+                <Skeleton className="h-20 w-full" />
+                <Card>
+                    <CardContent className="p-6 space-y-4">
+                        <div className="flex items-center justify-between">
+                            <Skeleton className="h-6 w-1/4" />
+                            <Skeleton className="h-10 w-1/3" />
+                        </div>
+                        <Skeleton className="h-12 w-full" />
+                         <div className="border-t pt-4 space-y-3 text-sm">
+                            <Skeleton className="h-5 w-full" />
+                            <Skeleton className="h-5 w-full" />
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+      </div>
+    );
   }
   
   if (!course) {
     return notFound();
   }
 
-  // NOTE: The following section uses placeholder data.
-  // You should fetch this from WooCommerce, probably using product meta fields.
-   const courseInfo = [
-      {
-        icon: Target,
-        title: '¿A quién está dirigido?',
-        description: 'Perfecto para apasionados por la repostería, desde principiantes que quieren aprender las bases hasta aficionados que buscan perfeccionar su técnica y explorar nuevos sabores.'
-      },
-      {
-        icon: Package,
-        title: '¿Qué materiales necesito?',
-        description: 'Recibirás una lista detallada de ingredientes y utensilios básicos. La mayoría son fáciles de encontrar y probablemente ya los tienes en tu cocina.'
-      },
-      {
-        icon: Laptop,
-        title: 'Modalidad 100% Online',
-        description: 'Las clases son en vivo a través de una plataforma de video, permitiéndote interactuar en tiempo real. Además, la sesión quedará grabada para que puedas repasarla cuando quieras.'
-      },
-      {
-        icon: Lightbulb,
-        title: '¿Qué aprenderé exactamente?',
-        description: 'Dominarás las técnicas esenciales de la repostería:desde preparar masas y hornear a la perfección, hasta crear rellenos y decoraciones con un acabado profesional.'
-      }
-  ];
+  // NOTE: This section now dynamically pulls from WooCommerce attributes.
+  // You can manage these in WordPress under Product -> Attributes.
+   const courseInfo = course.attributes.map((attr: any) => ({
+      icon: iconMap[attr.name] || iconMap.default,
+      title: attr.name,
+      description: attr.options.join(', ')
+  }));
 
 
   return (
@@ -97,11 +117,9 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
             <h1 className="font-headline text-3xl md:text-4xl font-bold mb-2">{course.name}</h1>
              <div className="flex items-center gap-2 mb-4">
                 <div className="flex text-yellow-400">
-                    <Star className="w-5 h-5 fill-current" />
-                    <Star className="w-5 h-5 fill-current" />
-                    <Star className="w-5 h-5 fill-current" />
-                    <Star className="w-5 h-5 fill-current" />
-                    <Star className="w-5 h-5 text-muted-foreground fill-muted" />
+                    {[...Array(5)].map((_, i) => (
+                        <Star key={i} className={`w-5 h-5 ${i < course.average_rating ? 'fill-current' : 'text-muted-foreground fill-muted'}`} />
+                    ))}
                 </div>
                 <span className="text-sm text-muted-foreground">({course.rating_count} reseñas)</span>
             </div>
@@ -132,30 +150,27 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
                         <Video className="h-4 w-4 mr-3 mt-1 shrink-0" />
                         <div>
                           <span className="font-semibold">Modalidad:</span> Online (Live View)
-                          <p className="text-muted-foreground text-xs">Clases en vivo y en directo con el instructor.</p>
+                          <p className="text-muted-foreground text-xs">Clases en vivo y en directo con el instructor. Grabación disponible.</p>
                         </div>
                       </div>
-                       <div className="flex items-start">
-                        <CalendarDays className="h-4 w-4 mr-3 mt-1 shrink-0" />
-                        <div>
-                          <span className="font-semibold">Fecha:</span> A determinar
-                        </div>
-                      </div>
-                      <div className="flex items-start">
-                        <Clock className="h-4 w-4 mr-3 mt-1 shrink-0" />
-                        <div>
-                          <span className="font-semibold">Duración:</span> 4 horas
-                        </div>
-                      </div>
+                      {course.attributes.map((attr: any) => (
+                         <div key={attr.id} className="flex items-start">
+                            <Info className="h-4 w-4 mr-3 mt-1 shrink-0" />
+                            <div>
+                                <span className="font-semibold">{attr.name}:</span> {attr.options.join(', ')}
+                            </div>
+                         </div>
+                      ))}
                     </div>
                 </CardContent>
             </Card>
         </div>
       </div>
+      {courseInfo.length > 0 && (
        <div className="max-w-6xl mx-auto mt-16 pt-8 border-t">
         <h2 className="font-headline text-3xl font-bold text-center mb-8">Todo lo que necesitas saber</h2>
         <div className="grid md:grid-cols-2 gap-6">
-            {courseInfo.map((info, index) => {
+            {courseInfo.map((info: any, index: number) => {
                 const Icon = info.icon
                 return (
                     <Card key={index} className="bg-muted/30">
@@ -173,6 +188,7 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
             })}
         </div>
       </div>
+      )}
     </div>
   );
 }
