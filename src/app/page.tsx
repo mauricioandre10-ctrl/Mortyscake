@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -92,7 +93,7 @@ export default function Home() {
         <div className="container px-4 md:px-6 mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             <Link href="/#courses" className="group block">
-              <Card className="overflow-hidden h-full flex flex-col">
+              <Card className="overflow-hidden h-full flex flex-col shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300">
                 <div className="relative aspect-[4/3] w-full">
                   <Image src="/image/category-courses.webp" alt="Alumna decorando un pastel en un curso" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="pastry class" />
                 </div>
@@ -108,7 +109,7 @@ export default function Home() {
               </Card>
             </Link>
             <Link href="/shop" className="group block">
-              <Card className="overflow-hidden h-full flex flex-col">
+              <Card className="overflow-hidden h-full flex flex-col shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300">
                 <div className="relative aspect-[4/3] w-full">
                   <Image src="/image/category-shop.webp" alt="Productos de repostería de alta calidad" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="baking products" />
                 </div>
@@ -154,7 +155,7 @@ export default function Home() {
               ))
             ) : (
             courses.map((course) => (
-              <Card key={course.id} className="flex flex-col overflow-hidden hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
+              <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
                 <CardHeader className="p-0">
                   <Link href={`/courses/${course.slug}`} className="block relative aspect-[4/3]">
                     <Image
@@ -303,7 +304,7 @@ export default function Home() {
               </p>
               <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {testimonials.map((testimonial, index) => (
-                      <Card key={index} className="text-left bg-card flex flex-col">
+                      <Card key={index} className="text-left bg-card flex flex-col shadow-md">
                           <CardContent className="p-6 flex-grow">
                               <div className="flex mb-4">
                                   {[...Array(5)].map((_, i) => (
@@ -343,7 +344,7 @@ export default function Home() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                   {blogPosts.map(post => (
-                      <Card key={post.slug} className="overflow-hidden group">
+                      <Card key={post.slug} className="overflow-hidden group shadow-md">
                         <Link href={`/blog/${post.slug}`} className="block">
                           <div className="relative aspect-[16/9]">
                               <Image 

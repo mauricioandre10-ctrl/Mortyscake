@@ -149,8 +149,8 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
                       <div className="flex items-start">
                         <Video className="h-4 w-4 mr-3 mt-1 shrink-0" />
                         <div>
-                          <span className="font-semibold">Modalidad:</span> Online (Live View)
-                          <p className="text-muted-foreground text-xs">Clases en vivo y en directo con el instructor. Grabación disponible.</p>
+                          <span className="font-semibold">Acceso:</span> Inmediato y de por vida.
+                          <p className="text-muted-foreground text-xs">Aprende a tu ritmo, cuando y donde quieras.</p>
                         </div>
                       </div>
                       {course.attributes.map((attr: any) => (
