@@ -4,11 +4,19 @@ import { wooCommerce } from '@/lib/woocommerce';
 
 export async function getFeaturedProducts() {
   try {
-    // Se cambia featured:true por una consulta más general para obtener los últimos 9 productos.
+    // Primero, encontrar el ID de la categoría "cursos" para excluirla.
+    const categoriesResponse = await wooCommerce.get('products/categories', { slug: 'cursos' });
+    let courseCategoryId;
+    if (categoriesResponse.status === 200 && categoriesResponse.data && categoriesResponse.data.length > 0) {
+      courseCategoryId = categoriesResponse.data[0].id;
+    }
+
     const response = await wooCommerce.get('products', {
       per_page: 9,
       orderby: 'date',
-      order: 'desc'
+      order: 'desc',
+      // Excluir la categoría de cursos si se encontró su ID.
+      ...(courseCategoryId && { category: `not-in:${courseCategoryId}` })
     });
 
     if (response.status === 200) {
