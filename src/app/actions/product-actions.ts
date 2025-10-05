@@ -4,9 +4,11 @@ import { wooCommerce } from '@/lib/woocommerce';
 
 export async function getFeaturedProducts() {
   try {
+    // Se cambia featured:true por una consulta más general para obtener los últimos 9 productos.
     const response = await wooCommerce.get('products', {
-      featured: true,
-      per_page: 3,
+      per_page: 9,
+      orderby: 'date',
+      order: 'desc'
     });
 
     if (response.status === 200) {
