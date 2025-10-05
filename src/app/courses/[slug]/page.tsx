@@ -197,5 +197,3 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
     </div>
   );
 }
-
-    

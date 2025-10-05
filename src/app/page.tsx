@@ -169,7 +169,15 @@ export default function Home() {
                 </CardHeader>
                 <CardContent className="flex flex-col flex-grow p-6">
                   <CardTitle as="h3" className="font-headline text-xl mb-2">{course.name}</CardTitle>
-                  <CardDescription className="flex-grow" dangerouslySetInnerHTML={{ __html: course.short_description || '' }} />
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="flex text-yellow-400">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className={`w-4 h-4 ${i < course.average_rating ? 'fill-current' : 'text-muted-foreground fill-muted'}`} />
+                      ))}
+                    </div>
+                    <span className="text-xs text-muted-foreground">({course.rating_count} reseñas)</span>
+                  </div>
+                  <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: course.short_description || '' }} />
                 </CardContent>
                 <CardFooter className="flex justify-between items-center bg-muted/30 p-4 mt-auto">
                   <span className="text-2xl font-bold text-primary">
