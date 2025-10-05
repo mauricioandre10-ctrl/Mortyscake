@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -7,7 +8,10 @@ import { CalendarDays, Clock, ArrowRight, Star } from 'lucide-react';
 import Link from 'next/link';
 import { courses, isEuroCourse } from '@/lib/courses';
 import { testimonials } from '@/lib/testimonials';
-import { products } from '@/lib/products';
+import { useEffect, useState } from 'react';
+import { wooCommerce } from '@/lib/woocommerce';
+import { Skeleton } from '@/components/ui/skeleton';
+import { AddToCart } from '@/components/AddToCart';
 
 // Datos simulados para el blog
 const blogPosts = [
@@ -29,6 +33,29 @@ const blogPosts = [
 
 
 export default function Home() {
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await wooCommerce.get('products', {
+          featured: true,
+          per_page: 3
+        });
+        if (response.status === 200) {
+          setProducts(response.data);
+        } else {
+          console.error('Error fetching products:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching products from WooCommerce:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   return (
     <div className="w-full">
@@ -161,36 +188,62 @@ export default function Home() {
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {products.slice(0, 9).map((product) => (
-              <Card key={product.slug} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
-                <CardHeader className="p-0">
-                  <div className="relative aspect-square">
-                    <Image
-                      src={product.image.src}
-                      alt={product.name}
-                      data-ai-hint={product.image.hint}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover"
-                    />
-                  </div>
-                </CardHeader>
-                <CardContent className="flex flex-col flex-grow p-6">
-                  <CardTitle as="h3" className="font-headline text-xl mb-2">{product.name}</CardTitle>
-                  <CardDescription className="text-sm">{product.description}</CardDescription>
-                </CardContent>
-                <CardFooter className="flex justify-between items-center bg-muted/30 p-4">
-                  <span className="text-2xl font-bold text-primary">
-                    €{product.price.toFixed(2)}
-                  </span>
-                  <Button asChild variant="secondary">
-                    <Link href={`/shop/${product.slug}`}>
-                      Ver Producto
+            {loading ? (
+              [...Array(3)].map((_, i) => (
+                <Card key={i}>
+                  <Skeleton className="aspect-square w-full" />
+                  <CardContent className="p-6 space-y-2">
+                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                  </CardContent>
+                  <CardFooter className="flex justify-between items-center bg-muted/30 p-4">
+                    <Skeleton className="h-8 w-1/4" />
+                    <Skeleton className="h-10 w-1/2" />
+                  </CardFooter>
+                </Card>
+              ))
+            ) : (
+              products.map((product) => (
+                <Card key={product.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
+                   <CardHeader className="p-0">
+                    <Link href={`/shop/${product.slug}`} className="block relative aspect-square">
+                      {product.images && product.images[0] ? (
+                        <Image
+                          src={product.images[0].src}
+                          alt={product.name}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground">
+                          Sin imagen
+                        </div>
+                      )}
                     </Link>
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
+                  </CardHeader>
+                  <CardContent className="flex flex-col flex-grow p-6">
+                    <CardTitle as="h3" className="font-headline text-xl mb-2">
+                      <Link href={`/shop/${product.slug}`}>{product.name}</Link>
+                    </CardTitle>
+                    <CardDescription className="text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
+                  </CardContent>
+                  <CardFooter className="flex justify-between items-center bg-muted/30 p-4 mt-auto">
+                    <span className="text-2xl font-bold text-primary">
+                      €{product.price}
+                    </span>
+                    <AddToCart
+                      name={product.name}
+                      description={product.short_description || ''}
+                      id={String(product.id)}
+                      price={parseFloat(product.price)}
+                      currency="EUR"
+                      image={product.images?.[0]?.src || ''}
+                    />
+                  </CardFooter>
+                </Card>
+              ))
+            )}
           </div>
            <div className="text-center mt-12">
               <Button asChild size="lg">
