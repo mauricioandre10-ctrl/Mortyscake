@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -9,9 +8,9 @@ import Link from 'next/link';
 import { courses, isEuroCourse } from '@/lib/courses';
 import { testimonials } from '@/lib/testimonials';
 import { useEffect, useState } from 'react';
-import { wooCommerce } from '@/lib/woocommerce';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AddToCart } from '@/components/AddToCart';
+import { getFeaturedProducts } from '@/app/actions/product-actions';
 
 // Datos simulados para el blog
 const blogPosts = [
@@ -39,15 +38,8 @@ export default function Home() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await wooCommerce.get('products', {
-          featured: true,
-          per_page: 3
-        });
-        if (response.status === 200) {
-          setProducts(response.data);
-        } else {
-          console.error('Error fetching products:', response.statusText);
-        }
+        const featuredProducts = await getFeaturedProducts();
+        setProducts(featuredProducts);
       } catch (error) {
         console.error('Error fetching products from WooCommerce:', error);
       } finally {
@@ -190,7 +182,7 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {loading ? (
               [...Array(3)].map((_, i) => (
-                <Card key={i}>
+                <Card key={i} className="shadow-md">
                   <Skeleton className="aspect-square w-full" />
                   <CardContent className="p-6 space-y-2">
                     <Skeleton className="h-6 w-3/4" />
