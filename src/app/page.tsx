@@ -3,9 +3,8 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Clock, ArrowRight, Star } from 'lucide-react';
+import { ArrowRight, Star } from 'lucide-react';
 import Link from 'next/link';
-import { courses, isEuroCourse } from '@/lib/courses';
 import { testimonials } from '@/lib/testimonials';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -114,7 +113,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. Courses Section */}
+      {/* 3. Courses Section - Comentado temporalmente
       <section id="courses" className="w-full py-16 md:py-24 bg-background">
         <div className="container px-4 md:px-6 mx-auto">
           <div className="text-center mb-12">
@@ -169,6 +168,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      */}
 
       {/* New Products Section */}
       <section id="products" className="w-full py-16 md:py-24 bg-muted/30">
@@ -283,7 +283,7 @@ export default function Home() {
           <div className="container mx-auto px-4 md:px-6 text-center">
               <h2 className="font-headline text-3xl md:text-4xl font-bold">Lo que dicen nuestros alumnos</h2>
               <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-                  La mayor satisfacción es ver cómo mis alumnos descubren su propio talento.
+                  La mayor satisfaction es ver cómo mis alumnos descubren su propio talento.
               </p>
               <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {testimonials.map((testimonial, index) => (
