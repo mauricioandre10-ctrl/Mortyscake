@@ -162,7 +162,7 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {products.slice(0, 9).map((product) => (
-              <Card key={product.slug} className="flex flex-col overflow-hidden hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
+              <Card key={product.slug} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
                 <CardHeader className="p-0">
                   <div className="relative aspect-square">
                     <Image
