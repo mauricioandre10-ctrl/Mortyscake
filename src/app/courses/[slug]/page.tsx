@@ -1,7 +1,7 @@
 
 'use client';
 
-import { notFound, useRouter } from 'next/navigation';
+import { notFound, useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Video, Target, Package, Laptop, Lightbulb, ArrowLeft, Star, Info } from 'lucide-react';
@@ -21,17 +21,19 @@ const iconMap: { [key: string]: React.ElementType } = {
 };
 
 
-export default function CourseDetailPage({ params }: { params: { slug: string } }) {
+export default function CourseDetailPage({ params: serverParams }: { params: { slug: string } }) {
   const router = useRouter();
+  const params = useParams();
   const [course, setCourse] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCourse = async () => {
-      if (!params.slug) return;
+      const slug = params.slug;
+      if (!slug) return;
       try {
         const response = await wooCommerce.get('products', {
-          slug: params.slug,
+          slug: Array.isArray(slug) ? slug[0] : slug,
         });
         if (response.data && response.data.length > 0) {
           setCourse(response.data[0]);

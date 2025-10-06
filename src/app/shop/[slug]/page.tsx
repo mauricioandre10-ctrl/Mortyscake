@@ -2,7 +2,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { notFound } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star, Truck, ShieldCheck, ArrowLeft, Info } from 'lucide-react';
@@ -11,17 +11,19 @@ import { wooCommerce } from '@/lib/woocommerce';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export default function ProductDetailPage({ params }: { params: { slug: string } }) {
+export default function ProductDetailPage({ params: serverParams }: { params: { slug: string } }) {
   const router = useRouter();
+  const params = useParams();
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProduct = async () => {
-      if (!params.slug) return;
+      const slug = params.slug;
+      if (!slug) return;
       try {
         const response = await wooCommerce.get('products', {
-          slug: params.slug,
+          slug: Array.isArray(slug) ? slug[0] : slug,
         });
         if (response.data && response.data.length > 0) {
           setProduct(response.data[0]);
