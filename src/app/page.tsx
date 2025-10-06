@@ -83,7 +83,7 @@ export default function Home() {
               Aprende desde cero con nuestros cursos online y en vivo, y crea postres que cuenten una historia.
             </p>
             <Button asChild size="lg" className="mt-8">
-              <Link href="/#courses">Ver Próximos Cursos</Link>
+              <Link href="/courses">Ver Próximos Cursos</Link>
             </Button>
          </div>
       </section>
@@ -92,7 +92,7 @@ export default function Home() {
       <section id="categories" className="w-full py-16 md:py-24 bg-muted/30">
         <div className="container px-4 md:px-6 mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-            <Link href="/#courses" className="group block">
+            <Link href="/courses" className="group block">
               <Card className="overflow-hidden h-full flex flex-col shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300">
                 <div className="relative aspect-[4/3] w-full">
                   <Image src="/image/category-courses.webp" alt="Alumna decorando un pastel en un curso" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="pastry class" />

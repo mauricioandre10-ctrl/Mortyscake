@@ -15,8 +15,8 @@ const Header = () => {
   const [isCartOpen, setIsCartOpen] = React.useState(false);
 
   const navLinks = [
-    { href: '/#categories', label: 'Tienda' },
-    { href: '/#courses', label: 'Cursos' },
+    { href: '/shop', label: 'Tienda' },
+    { href: '/courses', label: 'Cursos' },
     { href: '/#about', label: 'Sobre Nosotros' },
     { href: '/#footer', 'label': 'Contacto' },
   ];
