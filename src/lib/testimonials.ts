@@ -9,26 +9,24 @@ export interface Testimonial {
 
 export const testimonials: Testimonial[] = [
   {
-    name: 'Ana García',
-    course: 'Mi Primera Tarta',
-    quote: '¡El curso superó mis expectativas! Morty explica de una manera tan clara y paciente que me sentí segura desde el primer momento. ¡Jamás pensé que podría hacer una tarta tan bonita!',
+    name: 'Raquel',
+    course: 'Tarta de Bautizo',
+    quote: 'Encargué una tarta para el bautizo de mi hijo y el resultado fue espectacular, ¡no sobraron ni las migas! La atención inmejorable y el trato súper cercano. Repetiré seguro.',
     avatar: '/image/avatar-1.webp',
     rating: 5,
   },
   {
-    name: 'Carlos Pérez',
-    course: 'Diseño Gourmet de Pasteles',
-    quote: 'Como aficionado, quería llevar mis habilidades al siguiente nivel y este curso fue exactamente lo que necesitaba. Las técnicas son modernas y el resultado es súper profesional.',
+    name: 'Rosa Maria',
+    course: 'Tarta de Cumpleaños',
+    quote: 'Una maravilla de tarta, estaba riquísima y era preciosa, con todos los detalles que le pedimos. El bizcocho súper jugoso. ¡Repetiremos seguro! Gracias por todo.',
     avatar: '/image/avatar-2.webp',
     rating: 5,
   },
   {
-    name: 'Sofía Rodríguez',
-    course: 'Mi Primera Tarta',
-    quote: 'Una experiencia increíble. El ambiente de la clase online es genial y muy participativo. Lo recomiendo al 100% para cualquiera que quiera empezar en este dulce mundo.',
+    name: 'Maria Jose',
+    course: 'Tarta Personalizada',
+    quote: 'Las tartas son impresionantes, tanto en sabor como en decoración. Se nota que le pone mucho mimo y cariño a todo lo que hace. Un trato de 10. Para repetir una y mil veces.',
     avatar: '/image/avatar-3.webp',
     rating: 5,
   },
 ];
-
-    
