@@ -25,12 +25,13 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
   const router = useRouter();
   const [course, setCourse] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const slug = params.slug;
 
   useEffect(() => {
     const fetchCourse = async () => {
       try {
         const response = await wooCommerce.get('products', {
-          slug: params.slug,
+          slug: slug,
         });
         if (response.data && response.data.length > 0) {
           setCourse(response.data[0]);
@@ -45,7 +46,7 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
       }
     };
     fetchCourse();
-  }, [params.slug]);
+  }, [slug]);
 
 
   if (loading) {
@@ -132,7 +133,7 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
                 </div>
                 <span className="text-sm text-muted-foreground">({course.rating_count} reseñas)</span>
             </div>
-            <div className="text-muted-foreground text-lg mb-6 prose" dangerouslySetInnerHTML={{ __html: course.description }} />
+            <div className="text-muted-foreground text-lg prose" dangerouslySetInnerHTML={{ __html: course.description }} />
             
             <Card className="border">
                 <CardContent className="p-6 space-y-4">

@@ -15,12 +15,13 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
   const router = useRouter();
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const slug = params.slug;
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await wooCommerce.get('products', {
-          slug: params.slug,
+          slug: slug,
         });
         if (response.data && response.data.length > 0) {
           setProduct(response.data[0]);
@@ -35,7 +36,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
       }
     };
     fetchProduct();
-  }, [params.slug]);
+  }, [slug]);
 
 
   if (loading) {
@@ -105,7 +106,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
                 </div>
                 <span className="text-sm text-muted-foreground">({product.rating_count} reseñas)</span>
             </div>
-            <div className="text-muted-foreground text-lg mb-6 prose" dangerouslySetInnerHTML={{ __html: product.description }} />
+            <div className="text-muted-foreground text-lg prose" dangerouslySetInnerHTML={{ __html: product.description }} />
             
             <Card className="border mt-auto">
                 <CardContent className="p-6 space-y-4">
