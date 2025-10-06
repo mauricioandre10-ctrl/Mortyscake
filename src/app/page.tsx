@@ -44,66 +44,45 @@ export default function Home() {
   )
 
   useEffect(() => {
-    // This function will fetch featured products (not courses)
-    const fetchProducts = async () => {
+    const fetchProductsAndCourses = async () => {
+      setLoadingProducts(true);
+      setLoadingCourses(true);
       try {
-        // STEP 1: Find the 'cursos' category ID
-        // Your PHP script should handle this logic.
-        // This example assumes you have a PHP endpoint that can find a category by slug and another to get products excluding that category.
-        // Example PHP endpoint: /api/get-category.php?slug=cursos
-        const catResponse = await fetch('/api/get-category-by-slug.php?slug=cursos');
-        const categories = await catResponse.json();
-        const courseCategory = categories[0];
+        // Fetch category for 'cursos'
+        const catResponse = await fetch('/wp-json/morty/v1/category-by-slug?slug=cursos');
+        const courseCategory = await catResponse.json();
 
-        let productParams = 'per_page=9&orderby=date&order=desc';
-
-        if (courseCategory) {
-            // STEP 2: Get course product IDs to exclude them
-            // Example PHP endpoint: /api/get-products.php?category=<id>&fields=id&per_page=100
-            const courseIdsResponse = await fetch(`/api/get-products.php?category=${courseCategory.id}&fields=id&per_page=100`);
-            const courseProducts = await courseIdsResponse.json();
-            const courseProductIds = courseProducts.map((p: any) => p.id);
-            if (courseProductIds.length > 0) {
-                 productParams += `&exclude=${courseProductIds.join(',')}`;
-            }
+        let courseProductIds: number[] = [];
+        if (courseCategory && !courseCategory.error) {
+            // Fetch courses
+            const coursesResponse = await fetch(`/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=9`);
+            const courseProducts = await coursesResponse.json();
+            setCourses(courseProducts);
+            courseProductIds = courseProducts.map((p: any) => p.id);
         }
-        
-        // STEP 3: Get the final list of products
-        // Example PHP endpoint: /api/get-products.php?per_page=9&...
-        const response = await fetch(`/api/get-products.php?${productParams}`);
-        const featuredProducts = await response.json();
-        setProducts(featuredProducts);
+        setLoadingCourses(false);
 
+        // Fetch featured products (excluding courses)
+        let productParams = 'per_page=9&orderby=date&order=desc';
+        if (courseProductIds.length > 0) {
+            productParams += `&exclude=${courseProductIds.join(',')}`;
+        }
+        const productsResponse = await fetch(`/wp-json/morty/v1/products?${productParams}`);
+        const featuredProducts = await productsResponse.json();
+        setProducts(featuredProducts);
+        
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error('Error fetching data:', error);
+        // Set loading to false even on error to not hang the UI
+        setLoadingCourses(false);
+        setLoadingProducts(false);
       } finally {
         setLoadingProducts(false);
-      }
-    };
-
-    const fetchCourses = async () => {
-      try {
-        // This logic assumes you have a PHP endpoint that finds the 'cursos' category and fetches its products.
-        // Example PHP endpoints: /api/get-category-by-slug.php?slug=cursos
-        // and then /api/get-products.php?category=<id>&per_page=9
-        const catResponse = await fetch('/api/get-category-by-slug.php?slug=cursos');
-        const categories = await catResponse.json();
-        const courseCategory = categories[0];
-        
-        if (courseCategory) {
-            const response = await fetch(`/api/get-products.php?category=${courseCategory.id}&per_page=9`);
-            const courseProducts = await response.json();
-            setCourses(courseProducts);
-        }
-      } catch (error) {
-        console.error('Error fetching courses:', error);
-      } finally {
         setLoadingCourses(false);
       }
     };
     
-    fetchProducts();
-    fetchCourses();
+    fetchProductsAndCourses();
   }, []);
 
   return (

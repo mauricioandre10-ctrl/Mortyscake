@@ -28,13 +28,10 @@ export default function CourseDetailPage({ params: serverParams }: { params: { s
 
   useEffect(() => {
     const fetchCourse = async () => {
-      // The slug is available directly from `params` provided by `useParams`
       const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
       if (!slug) return;
       try {
-        // This will be a call to your PHP endpoint.
-        // Example: /api/get-products.php?slug=your-course-slug
-        const response = await fetch(`/api/get-products.php?slug=${slug}`);
+        const response = await fetch(`/wp-json/morty/v1/products?slug=${slug}`);
         const data = await response.json();
         
         if (data && data.length > 0) {

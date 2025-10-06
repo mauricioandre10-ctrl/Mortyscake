@@ -28,10 +28,7 @@ export default function ShopPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        // This will be a call to your PHP endpoint.
-        // Example: /api/get-products.php
-        // Your PHP script will handle fetching all products from WooCommerce.
-        const response = await fetch('/api/get-products.php');
+        const response = await fetch('/wp-json/morty/v1/products');
         const data = await response.json();
         setProducts(data);
       } catch (error) {
@@ -56,8 +53,6 @@ export default function ShopPage() {
         return sorted.sort((a, b) => b.name.localeCompare(a.name));
       case 'default':
       default:
-        // WooCommerce's default sort is usually based on popularity or custom order
-        // Your PHP API could handle this with `orderby=popularity` or `orderby=menu_order`
         return products;
     }
   }, [products, sortOrder]);

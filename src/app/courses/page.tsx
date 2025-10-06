@@ -29,25 +29,16 @@ export default function CoursesPage() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        // This will be a call to your PHP endpoint.
-        // Example: /api/get-products.php?category=...
-        // Your PHP script would first need to find the ID for the 'cursos' category.
-        
-        // Step 1: Get category ID from a PHP endpoint
-        // Example endpoint: /api/get-category-by-slug.php?slug=cursos
-        const catResponse = await fetch('/api/get-category-by-slug.php?slug=cursos');
-        const categories = await catResponse.json();
+        const catResponse = await fetch('/wp-json/morty/v1/category-by-slug?slug=cursos');
+        const courseCategory = await catResponse.json();
 
-        if (!categories || categories.length === 0) {
-            console.error('Course category not found.');
+        if (!courseCategory || courseCategory.error) {
+            console.error('Course category not found or API error:', courseCategory?.error);
             setLoading(false);
             return;
         }
-        const courseCategory = categories[0];
-
-        // Step 2: Fetch products for that category from another PHP endpoint
-        // Example endpoint: /api/get-products.php?category=<ID>&per_page=100
-        const response = await fetch(`/api/get-products.php?category=${courseCategory.id}&per_page=100`);
+        
+        const response = await fetch(`/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=100`);
         const data = await response.json();
         setCourses(data);
 
