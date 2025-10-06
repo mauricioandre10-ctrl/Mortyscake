@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Video, Target, Package, Laptop, Lightbulb, ArrowLeft, Star, Info } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { AddToCart } from '@/components/AddToCart';
-import { wooCommerce } from '@/lib/woocommerce';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ShareButton } from '@/components/ShareButton';
@@ -29,19 +28,22 @@ export default function CourseDetailPage({ params: serverParams }: { params: { s
 
   useEffect(() => {
     const fetchCourse = async () => {
-      const slug = params.slug;
+      // The slug is available directly from `params` provided by `useParams`
+      const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
       if (!slug) return;
       try {
-        const response = await wooCommerce.get('products', {
-          slug: Array.isArray(slug) ? slug[0] : slug,
-        });
-        if (response.data && response.data.length > 0) {
-          setCourse(response.data[0]);
+        // This will be a call to your PHP endpoint.
+        // Example: /api/get-products.php?slug=your-course-slug
+        const response = await fetch(`/api/get-products.php?slug=${slug}`);
+        const data = await response.json();
+        
+        if (data && data.length > 0) {
+          setCourse(data[0]);
         } else {
           notFound();
         }
       } catch (error) {
-        console.error("Failed to fetch course product", error);
+        console.error("Failed to fetch course product from API", error);
         notFound();
       } finally {
         setLoading(false);

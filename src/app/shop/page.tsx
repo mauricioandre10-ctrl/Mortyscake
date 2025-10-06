@@ -5,7 +5,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AddToCart } from '@/components/AddToCart';
-import { wooCommerce } from '@/lib/woocommerce';
 import { useEffect, useState, useMemo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -29,14 +28,14 @@ export default function ShopPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await wooCommerce.get('products');
-        if (response.status === 200) {
-          setProducts(response.data);
-        } else {
-          console.error('Error fetching products:', response.statusText);
-        }
+        // This will be a call to your PHP endpoint.
+        // Example: /api/get-products.php
+        // Your PHP script will handle fetching all products from WooCommerce.
+        const response = await fetch('/api/get-products.php');
+        const data = await response.json();
+        setProducts(data);
       } catch (error) {
-        console.error('Error fetching products from WooCommerce:', error);
+        console.error('Error fetching products from API:', error);
       } finally {
         setLoading(false);
       }
@@ -58,6 +57,7 @@ export default function ShopPage() {
       case 'default':
       default:
         // WooCommerce's default sort is usually based on popularity or custom order
+        // Your PHP API could handle this with `orderby=popularity` or `orderby=menu_order`
         return products;
     }
   }, [products, sortOrder]);

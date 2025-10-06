@@ -4,7 +4,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { wooCommerce } from '@/lib/woocommerce';
 import { useEffect, useState, useMemo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -30,26 +29,30 @@ export default function CoursesPage() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const categoriesResponse = await wooCommerce.get('products/categories', { slug: 'cursos' });
-        if (categoriesResponse.status !== 200 || !categoriesResponse.data || categoriesResponse.data.length === 0) {
+        // This will be a call to your PHP endpoint.
+        // Example: /api/get-products.php?category=...
+        // Your PHP script would first need to find the ID for the 'cursos' category.
+        
+        // Step 1: Get category ID from a PHP endpoint
+        // Example endpoint: /api/get-category-by-slug.php?slug=cursos
+        const catResponse = await fetch('/api/get-category-by-slug.php?slug=cursos');
+        const categories = await catResponse.json();
+
+        if (!categories || categories.length === 0) {
             console.error('Course category not found.');
             setLoading(false);
             return;
         }
-        const courseCategory = categoriesResponse.data[0];
+        const courseCategory = categories[0];
 
-        const response = await wooCommerce.get('products', {
-          category: String(courseCategory.id),
-          per_page: 100, // Fetch all courses
-        });
+        // Step 2: Fetch products for that category from another PHP endpoint
+        // Example endpoint: /api/get-products.php?category=<ID>&per_page=100
+        const response = await fetch(`/api/get-products.php?category=${courseCategory.id}&per_page=100`);
+        const data = await response.json();
+        setCourses(data);
 
-        if (response.status === 200) {
-          setCourses(response.data);
-        } else {
-          console.error('Error fetching course products:', response.statusText);
-        }
       } catch (error) {
-        console.error('Error fetching course products from WooCommerce:', error);
+        console.error('Error fetching course products from API:', error);
       } finally {
         setLoading(false);
       }

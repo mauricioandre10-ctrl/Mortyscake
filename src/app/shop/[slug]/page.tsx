@@ -7,7 +7,6 @@ import { notFound } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star, Truck, ShieldCheck, ArrowLeft, Info } from 'lucide-react';
 import { AddToCart } from '@/components/AddToCart';
-import { wooCommerce } from '@/lib/woocommerce';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -19,19 +18,22 @@ export default function ProductDetailPage({ params: serverParams }: { params: { 
 
   useEffect(() => {
     const fetchProduct = async () => {
-      const slug = params.slug;
+      // The slug is available directly from `params` provided by `useParams`
+      const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
       if (!slug) return;
       try {
-        const response = await wooCommerce.get('products', {
-          slug: Array.isArray(slug) ? slug[0] : slug,
-        });
-        if (response.data && response.data.length > 0) {
-          setProduct(response.data[0]);
+        // This will be a call to your PHP endpoint.
+        // Example: /api/get-products.php?slug=your-product-slug
+        const response = await fetch(`/api/get-products.php?slug=${slug}`);
+        const data = await response.json();
+        
+        if (data && data.length > 0) {
+          setProduct(data[0]);
         } else {
           notFound();
         }
       } catch (error) {
-        console.error("Failed to fetch product", error);
+        console.error("Failed to fetch product from API", error);
         notFound();
       } finally {
         setLoading(false);

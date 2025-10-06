@@ -13,7 +13,6 @@ import { useEffect, useState, useRef } from 'react';
 import Autoplay from "embla-carousel-autoplay"
 import { Skeleton } from '@/components/ui/skeleton';
 import { AddToCart } from '@/components/AddToCart';
-import { getFeaturedProducts, getCourseProducts } from '@/app/actions/product-actions';
 
 // Datos simulados para el blog
 const blogPosts = [
@@ -45,22 +44,59 @@ export default function Home() {
   )
 
   useEffect(() => {
+    // This function will fetch featured products (not courses)
     const fetchProducts = async () => {
       try {
-        const featuredProducts = await getFeaturedProducts();
+        // STEP 1: Find the 'cursos' category ID
+        // Your PHP script should handle this logic.
+        // This example assumes you have a PHP endpoint that can find a category by slug and another to get products excluding that category.
+        // Example PHP endpoint: /api/get-category.php?slug=cursos
+        const catResponse = await fetch('/api/get-category-by-slug.php?slug=cursos');
+        const categories = await catResponse.json();
+        const courseCategory = categories[0];
+
+        let productParams = 'per_page=9&orderby=date&order=desc';
+
+        if (courseCategory) {
+            // STEP 2: Get course product IDs to exclude them
+            // Example PHP endpoint: /api/get-products.php?category=<id>&fields=id&per_page=100
+            const courseIdsResponse = await fetch(`/api/get-products.php?category=${courseCategory.id}&fields=id&per_page=100`);
+            const courseProducts = await courseIdsResponse.json();
+            const courseProductIds = courseProducts.map((p: any) => p.id);
+            if (courseProductIds.length > 0) {
+                 productParams += `&exclude=${courseProductIds.join(',')}`;
+            }
+        }
+        
+        // STEP 3: Get the final list of products
+        // Example PHP endpoint: /api/get-products.php?per_page=9&...
+        const response = await fetch(`/api/get-products.php?${productParams}`);
+        const featuredProducts = await response.json();
         setProducts(featuredProducts);
+
       } catch (error) {
-        console.error('Error fetching products from WooCommerce:', error);
+        console.error('Error fetching products:', error);
       } finally {
         setLoadingProducts(false);
       }
     };
-     const fetchCourses = async () => {
+
+    const fetchCourses = async () => {
       try {
-        const courseProducts = await getCourseProducts();
-        setCourses(courseProducts);
+        // This logic assumes you have a PHP endpoint that finds the 'cursos' category and fetches its products.
+        // Example PHP endpoints: /api/get-category-by-slug.php?slug=cursos
+        // and then /api/get-products.php?category=<id>&per_page=9
+        const catResponse = await fetch('/api/get-category-by-slug.php?slug=cursos');
+        const categories = await catResponse.json();
+        const courseCategory = categories[0];
+        
+        if (courseCategory) {
+            const response = await fetch(`/api/get-products.php?category=${courseCategory.id}&per_page=9`);
+            const courseProducts = await response.json();
+            setCourses(courseProducts);
+        }
       } catch (error) {
-        console.error('Error fetching courses from WooCommerce:', error);
+        console.error('Error fetching courses:', error);
       } finally {
         setLoadingCourses(false);
       }
