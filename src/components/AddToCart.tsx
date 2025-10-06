@@ -1,10 +1,11 @@
 
 'use client';
 
-import { useShoppingCart, formatCurrencyString } from 'use-shopping-cart';
+import { useShoppingCart } from 'use-shopping-cart';
 import { Button, ButtonProps } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 import { Product } from 'use-shopping-cart/core';
+import { QuantityManager } from './QuantityManager';
 
 interface AddToCartProps extends ButtonProps {
   name: string;
@@ -25,6 +26,7 @@ export const AddToCart = ({ name, description, id, price, currency, image, class
     price: price,
     currency: currency,
     image: image,
+    quantity: 1,
   };
   
   const isInCart = cartDetails?.[id];
@@ -33,11 +35,15 @@ export const AddToCart = ({ name, description, id, price, currency, image, class
     event.preventDefault();
     addItem(product);
   };
+  
+  if(isInCart) {
+    return <QuantityManager product={product} />
+  }
 
   return (
-    <Button onClick={handleAddItem} disabled={!!isInCart} className={className} size={size}>
+    <Button onClick={handleAddItem} className={className} size={size}>
       <ShoppingCart className="mr-2" />
-      {isInCart ? 'Añadido' : 'Añadir al carrito'}
+      Añadir al carrito
     </Button>
   );
 };
