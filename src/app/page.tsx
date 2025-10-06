@@ -91,7 +91,7 @@ export default function Home() {
       {/* 2. Categories Section (Shop & Courses) */}
       <section id="categories" className="w-full py-16 md:py-24 bg-muted/30">
         <div className="container px-4 md:px-6 mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             <Link href="/#courses" className="group block">
               <Card className="overflow-hidden h-full flex flex-col shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300">
                 <div className="relative aspect-[4/3] w-full">
