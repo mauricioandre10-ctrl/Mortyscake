@@ -360,7 +360,7 @@ export default function Home() {
             className="w-full max-w-4xl mx-auto"
           >
             <CarouselContent>
-              {galleryImages.map((image, index) => (
+              {galleryImages.slice(0, 9).map((image, index) => ( // Show first 9 images
                 <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                   <div className="p-1">
                     <Card className="overflow-hidden">
@@ -383,6 +383,13 @@ export default function Home() {
             <CarouselPrevious />
             <CarouselNext />
           </Carousel>
+           <div className="text-center mt-12">
+              <Button asChild>
+                  <Link href="/gallery">
+                      Ver Galería Completa
+                  </Link>
+              </Button>
+          </div>
         </div>
       </section>
 

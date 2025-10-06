@@ -17,6 +17,7 @@ const Header = () => {
   const navLinks = [
     { href: '/shop', label: 'Tienda' },
     { href: '/courses', label: 'Cursos' },
+    { href: '/gallery', label: 'Galería' },
     { href: '/#about', label: 'Sobre Nosotros' },
     { href: '/#footer', 'label': 'Contacto' },
   ];
