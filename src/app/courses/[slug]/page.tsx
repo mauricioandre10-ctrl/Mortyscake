@@ -10,6 +10,7 @@ import { AddToCart } from '@/components/AddToCart';
 import { wooCommerce } from '@/lib/woocommerce';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ShareButton } from '@/components/ShareButton';
 
 const iconMap: { [key: string]: React.ElementType } = {
   '¿A quién está dirigido?': Target,
@@ -119,7 +120,10 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
           />
         </div>
         <div className="flex flex-col justify-center">
-            <h1 className="font-headline text-3xl md:text-4xl font-bold mb-2">{course.name}</h1>
+            <div className="flex items-start justify-between gap-4 mb-2">
+                 <h1 className="font-headline text-3xl md:text-4xl font-bold">{course.name}</h1>
+                 <ShareButton title={course.name} text={`¡Mira este increíble curso de repostería: ${course.name}!`} />
+            </div>
              <div className="flex items-center gap-2 mb-4">
                 <div className="flex text-yellow-400">
                     {[...Array(5)].map((_, i) => (
