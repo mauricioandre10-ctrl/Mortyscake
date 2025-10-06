@@ -5,7 +5,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription, SheetHeader, SheetFooter } from '@/components/ui/sheet';
-import { Menu, ShoppingBag, X } from 'lucide-react';
+import { Menu, ShoppingCart, X } from 'lucide-react';
 import Image from 'next/image';
 import { useShoppingCart } from 'use-shopping-cart';
 import { Separator } from './ui/separator';
@@ -56,7 +56,7 @@ const Header = () => {
            <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="relative">
-                <ShoppingBag className="h-6 w-6" />
+                <ShoppingCart className="h-6 w-6" />
                 {cartCount !== undefined && cartCount > 0 && (
                   <span className="absolute top-0 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground transform translate-x-1/2 -translate-y-1/2">
                     {cartCount}
@@ -118,7 +118,7 @@ const Header = () => {
                   </>
                 ) : (
                   <div className="flex flex-col items-center justify-center h-full">
-                    <ShoppingBag className="w-20 h-20 text-muted-foreground" />
+                    <ShoppingCart className="w-20 h-20 text-muted-foreground" />
                     <p className="mt-4 text-muted-foreground">¡Empieza a llenarlo!</p>
                      <Button variant="outline" className="mt-6" onClick={() => setIsCartOpen(false)}>
                         Seguir comprando
