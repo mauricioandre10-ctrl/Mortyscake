@@ -1,7 +1,7 @@
 
 export interface Testimonial {
   name: string;
-  course: string;
+  course?: string;
   quote: string;
   avatar: string;
   rating: number;
@@ -29,4 +29,22 @@ export const testimonials: Testimonial[] = [
     avatar: 'https://picsum.photos/seed/avatar3/100/100',
     rating: 5,
   },
+  {
+    name: 'Tamara',
+    quote: 'Una tarta preciosa y súper rica!! Muy profesional y súper atenta. Repetiremos sin duda. Gracias!!',
+    avatar: 'https://picsum.photos/seed/avatar4/100/100',
+    rating: 5,
+  },
+  {
+    name: 'Ana',
+    quote: 'Unas tartas y unos dulces realmente exquisitos, elaborados con mucho mimo y con productos de primera calidad, además de una presentación excelente. Profesionalidad y resultados de 10.',
+    avatar: 'https://picsum.photos/seed/avatar5/100/100',
+    rating: 5,
+  },
+  {
+    name: 'Nerea',
+    quote: 'Le encargué una tarta para el cumple de mi hija y no pudo quedar más bonita. A todo el mundo le encantó. Estaba riquísima y el trato inmejorable. Muchas gracias por todo.',
+    avatar: 'https://picsum.photos/seed/avatar6/100/100',
+    rating: 5,
+  }
 ];

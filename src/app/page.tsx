@@ -308,37 +308,58 @@ export default function Home() {
       {/* Testimonials Section */}
       <section id="testimonials" className="py-16 md:py-24 bg-muted/30">
           <div className="container mx-auto px-4 md:px-6 text-center">
-              <h2 className="font-headline text-3xl md:text-4xl font-bold">Lo que dicen nuestros alumnos</h2>
+              <h2 className="font-headline text-3xl md:text-4xl font-bold">Lo que dicen nuestros clientes</h2>
               <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-                  La mayor satisfaction es ver cómo mis alumnos descubren su propio talento.
+                  La mayor satisfacción es ver la alegría en quienes prueban nuestras creaciones.
               </p>
-              <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <Carousel
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+                className="w-full max-w-xl lg:max-w-3xl mx-auto mt-12"
+              >
+                <CarouselContent>
                   {testimonials.map((testimonial, index) => (
-                      <Card key={index} className="text-left bg-card flex flex-col shadow-md">
-                          <CardContent className="p-6 flex-grow">
-                              <div className="flex mb-4">
-                                  {[...Array(5)].map((_, i) => (
-                                      <Star key={i} className={`w-5 h-5 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
-                                  ))}
-                              </div>
-                              <p className="text-muted-foreground italic">"{testimonial.quote}"</p>
-                          </CardContent>
-                          <CardFooter className="flex items-center gap-4 p-6 bg-muted/30">
-                              <Image
-                                  src={testimonial.avatar}
-                                  alt={`Avatar de ${testimonial.name}`}
-                                  width={48}
-                                  height={48}
-                                  className="rounded-full object-cover h-12 w-12"
-                                  data-ai-hint="person avatar"
-                              />
-                              <div>
-                                  <p className="font-semibold">{testimonial.name}</p>
-                                  <p className="text-sm text-muted-foreground">{testimonial.course}</p>
-                              </div>
-                          </CardFooter>
-                      </Card>
+                     <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                        <div className="p-4 h-full">
+                          <Card className="text-left bg-card flex flex-col shadow-md h-full">
+                              <CardContent className="p-6 flex-grow">
+                                  <div className="flex mb-4">
+                                      {[...Array(5)].map((_, i) => (
+                                          <Star key={i} className={`w-5 h-5 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} />
+                                      ))}
+                                  </div>
+                                  <p className="text-muted-foreground italic text-sm">"{testimonial.quote}"</p>
+                              </CardContent>
+                              <CardFooter className="flex items-center gap-4 p-6 bg-muted/30">
+                                  <Image
+                                      src={testimonial.avatar}
+                                      alt={`Avatar de ${testimonial.name}`}
+                                      width={48}
+                                      height={48}
+                                      className="rounded-full object-cover h-12 w-12"
+                                      data-ai-hint="person avatar"
+                                  />
+                                  <div>
+                                      <p className="font-semibold">{testimonial.name}</p>
+                                      {testimonial.course && <p className="text-sm text-muted-foreground">{testimonial.course}</p>}
+                                  </div>
+                              </CardFooter>
+                          </Card>
+                        </div>
+                     </CarouselItem>
                   ))}
+                </CarouselContent>
+                <CarouselPrevious className="-left-4 md:-left-12" />
+                <CarouselNext className="-right-4 md:-right-12" />
+              </Carousel>
+              <div className="text-center mt-12">
+                <Button asChild size="lg" variant="outline">
+                  <Link href="https://www.google.com/search?q=Mortys+Cake+Opiniones&stick=H4sIAAAAAAAAAONgkxIxNDMxNja2MDI0Njc1sDQzNDcxN97AyPiKUdQ3v6iksljBOTE7VcG_IDMvMz8vtXgRK3ZxAFW3ikVLAAAA&rldimm=16433382137509617473#lkt=LocalPoiReviews" target="_blank" rel="noopener noreferrer">
+                    Ver todas las reseñas en Google
+                  </Link>
+                </Button>
               </div>
           </div>
       </section>
