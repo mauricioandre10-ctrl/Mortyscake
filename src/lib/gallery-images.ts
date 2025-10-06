@@ -13,11 +13,17 @@ const hints = [
   'baking process', 'birthday cake'
 ];
 
+// Simple pseudo-random number generator to avoid hydration mismatch
+const pseudoRandom = (seed: number) => {
+  let x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+};
+
 // Generate 100 images for the gallery
 export const galleryImages: GalleryImage[] = Array.from({ length: 100 }, (_, i) => {
   const seed = `gallery${i + 1}`;
-  // Generate pseudo-random dimensions for a masonry layout effect
-  const ratio = 0.6 + Math.random() * 0.4; // between 0.6 and 1.0
+  // Use a deterministic pseudo-random number instead of Math.random()
+  const ratio = 0.6 + pseudoRandom(i + 1) * 0.4; // between 0.6 and 1.0
   const width = 800;
   const height = Math.floor(width * ratio);
   
