@@ -364,7 +364,7 @@ export default function Home() {
               </Carousel>
               <div className="text-center mt-12">
                 <Button asChild size="lg" variant="outline">
-                  <Link href="https://www.google.com/search?q=Mortys+Cake+Opiniones&stick=H4sIAAAAAAAAAONgkxIxNDMxNja2MDI0Njc1sDQzNDcxN97AyPiKUdQ3v6iksljBOTE7VcG_IDMvMz8vtXgRK3ZxAFW3ikVLAAAA&rldimm=16433382137509617473#lkt=LocalPoiReviews" target="_blank" rel="noopener noreferrer">
+                  <Link href="https://share.google/5iGt1ltt2KUW5eejD" target="_blank" rel="noopener noreferrer">
                     Ver todas las reseñas en Google
                   </Link>
                 </Button>
