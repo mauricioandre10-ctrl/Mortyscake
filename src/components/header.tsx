@@ -5,7 +5,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription, SheetHeader, SheetFooter } from '@/components/ui/sheet';
-import { Menu, ShoppingCart, X } from 'lucide-react';
+import { Menu, ShoppingCart, X, User } from 'lucide-react';
 import Image from 'next/image';
 import { useShoppingCart } from 'use-shopping-cart';
 import { Separator } from './ui/separator';
@@ -53,6 +53,14 @@ const Header = () => {
         </nav>
         
         <div className="flex items-center gap-2">
+          {/* TODO: Reemplazar '#' con la URL de inicio de sesión de WordPress (ej. /mi-cuenta) */}
+           <Button asChild variant="ghost" className="hidden md:flex">
+                <Link href="#">
+                    <User className="mr-2 h-5 w-5"/>
+                    Iniciar Sesión
+                </Link>
+           </Button>
+
            <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="relative">
@@ -156,6 +164,9 @@ const Header = () => {
                       {link.label}
                     </Link>
                   ))}
+                  <Separator className="my-2"/>
+                   {/* TODO: Reemplazar '#' con la URL de inicio de sesión de WordPress (ej. /mi-cuenta) */}
+                  <Link href="#" className="text-lg font-medium">Iniciar Sesión</Link>
                 </div>
               </SheetContent>
             </Sheet>
