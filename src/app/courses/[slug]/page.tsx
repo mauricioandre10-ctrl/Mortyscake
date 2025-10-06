@@ -25,13 +25,13 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
   const router = useRouter();
   const [course, setCourse] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const slug = params.slug;
 
   useEffect(() => {
     const fetchCourse = async () => {
+      if (!params.slug) return;
       try {
         const response = await wooCommerce.get('products', {
-          slug: slug,
+          slug: params.slug,
         });
         if (response.data && response.data.length > 0) {
           setCourse(response.data[0]);
@@ -46,7 +46,7 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
       }
     };
     fetchCourse();
-  }, [slug]);
+  }, [params.slug]);
 
 
   if (loading) {

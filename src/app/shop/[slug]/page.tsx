@@ -15,13 +15,13 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
   const router = useRouter();
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const slug = params.slug;
 
   useEffect(() => {
     const fetchProduct = async () => {
+      if (!params.slug) return;
       try {
         const response = await wooCommerce.get('products', {
-          slug: slug,
+          slug: params.slug,
         });
         if (response.data && response.data.length > 0) {
           setProduct(response.data[0]);
@@ -36,7 +36,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
       }
     };
     fetchProduct();
-  }, [slug]);
+  }, [params.slug]);
 
 
   if (loading) {
