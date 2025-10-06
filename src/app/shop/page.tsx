@@ -8,7 +8,6 @@ import { AddToCart } from '@/components/AddToCart';
 import { useEffect, useState, useMemo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { ArrowUpDown, ArrowDown, ArrowUp, CaseSensitive } from 'lucide-react';
 
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'alpha-asc' | 'alpha-desc';
 
@@ -20,6 +19,9 @@ const sortOptions: { value: SortOption; label: string }[] = [
     { value: 'alpha-desc', label: 'Alfabético: Z-A' },
 ];
 
+const CACHE_KEY = 'all_products_cache';
+const CACHE_DURATION = 3600 * 1000; // 1 hora en milisegundos
+
 export default function ShopPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,14 +29,39 @@ export default function ShopPage() {
 
   useEffect(() => {
     const fetchProducts = async () => {
+      setLoading(true);
+
+      // 1. Intentar cargar desde la caché
+      try {
+        const cachedItem = localStorage.getItem(CACHE_KEY);
+        if (cachedItem) {
+          const { timestamp, data } = JSON.parse(cachedItem);
+          const isCacheValid = (new Date().getTime() - timestamp) < CACHE_DURATION;
+          if (isCacheValid) {
+            setProducts(data);
+            setLoading(false); // Cargado desde la caché, quitar esqueleto
+          }
+        }
+      } catch (e) {
+          console.error("Failed to read from localStorage", e);
+      }
+
+      // 2. Fetch de la red en cualquier caso (stale-while-revalidate)
       try {
         const response = await fetch('/wp-json/morty/v1/products');
         const data = await response.json();
+        
+        // Actualizar estado y caché
         setProducts(data);
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: new Date().getTime(), data }));
+
       } catch (error) {
         console.error('Error fetching products from API:', error);
       } finally {
-        setLoading(false);
+        // Si no se cargó nada desde la caché, ahora se quita el loading
+        if (loading) {
+            setLoading(false);
+        }
       }
     };
     fetchProducts();
@@ -53,35 +80,12 @@ export default function ShopPage() {
         return sorted.sort((a, b) => b.name.localeCompare(a.name));
       case 'default':
       default:
-        return products;
+        // WooCommerce default sort is popularity (menu_order)
+        return products.sort((a, b) => a.menu_order - b.menu_order);
     }
   }, [products, sortOrder]);
   
-  if (loading) {
-    return (
-      <div className="container mx-auto py-12 px-4 md:px-6">
-        <header className="text-center mb-12">
-          <Skeleton className="h-12 w-1/2 mx-auto" />
-          <Skeleton className="h-6 w-3/4 mx-auto mt-4" />
-        </header>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[...Array(6)].map((_, i) => (
-            <Card key={i}>
-              <Skeleton className="aspect-square w-full" />
-              <CardContent className="p-6 space-y-2">
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-full" />
-              </CardContent>
-              <CardFooter className="flex justify-between items-center bg-muted/30 p-4">
-                 <Skeleton className="h-8 w-1/4" />
-                 <Skeleton className="h-10 w-1/2" />
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-      </div>
-    )
-  }
+  const showLoadingSkeleton = loading && products.length === 0;
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -107,49 +111,68 @@ export default function ShopPage() {
         ))}
       </div>
 
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {sortedProducts.map((product: any) => (
-          <Card key={product.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
-            <CardHeader className="p-0">
-              <Link href={`/shop/${product.slug}`} className="block relative aspect-square">
-                {product.images && product.images[0] ? (
-                  <Image
-                    src={product.images[0].src}
-                    alt={product.name}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground">
-                    Sin imagen
-                  </div>
-                )}
-              </Link>
-            </CardHeader>
-            <CardContent className="flex flex-col flex-grow p-6">
-              <CardTitle as="h3" className="font-headline text-xl mb-2">
-                 <Link href={`/shop/${product.slug}`}>{product.name}</Link>
-              </CardTitle>
-              <CardDescription className="text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
-            </CardContent>
-            <CardFooter className="flex justify-between items-center bg-muted/30 p-4 mt-auto">
-              <span className="text-2xl font-bold text-primary">
-                €{product.price}
-              </span>
-              <AddToCart
-                name={product.name}
-                description={product.short_description || ''}
-                id={String(product.id)}
-                price={parseFloat(product.price)}
-                currency="EUR"
-                image={product.images?.[0]?.src || ''}
-              />
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+      {showLoadingSkeleton ? (
+         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {[...Array(6)].map((_, i) => (
+            <Card key={i}>
+              <Skeleton className="aspect-square w-full" />
+              <CardContent className="p-6 space-y-2">
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-4 w-full" />
+              </CardContent>
+              <CardFooter className="flex justify-between items-center bg-muted/30 p-4">
+                 <Skeleton className="h-8 w-1/4" />
+                 <Skeleton className="h-10 w-1/2" />
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {sortedProducts.map((product: any) => (
+            <Card key={product.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
+              <CardHeader className="p-0">
+                <Link href={`/shop/${product.slug}`} className="block relative aspect-square">
+                  {product.images && product.images[0] ? (
+                    <Image
+                      src={product.images[0].src}
+                      alt={product.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground">
+                      Sin imagen
+                    </div>
+                  )}
+                </Link>
+              </CardHeader>
+              <CardContent className="flex flex-col flex-grow p-6">
+                <CardTitle as="h3" className="font-headline text-xl mb-2">
+                   <Link href={`/shop/${product.slug}`}>{product.name}</Link>
+                </CardTitle>
+                <CardDescription className="text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
+              </CardContent>
+              <CardFooter className="flex justify-between items-center bg-muted/30 p-4 mt-auto">
+                <span className="text-2xl font-bold text-primary">
+                  €{product.price}
+                </span>
+                <AddToCart
+                  name={product.name}
+                  description={product.short_description || ''}
+                  id={String(product.id)}
+                  price={parseFloat(product.price)}
+                  currency="EUR"
+                  image={product.images?.[0]?.src || ''}
+                />
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
+
+    

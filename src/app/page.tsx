@@ -32,6 +32,9 @@ const blogPosts = [
   }
 ];
 
+const CACHE_KEY_PRODUCTS = 'home_products_cache';
+const CACHE_KEY_COURSES = 'home_courses_cache';
+const CACHE_DURATION = 3600 * 1000; // 1 hora en milisegundos
 
 export default function Home() {
   const [products, setProducts] = useState<any[]>([]);
@@ -44,44 +47,77 @@ export default function Home() {
   )
 
   useEffect(() => {
-    const fetchProductsAndCourses = async () => {
-      setLoadingProducts(true);
-      setLoadingCourses(true);
+    const fetchWithCache = async (cacheKey: string, url: string, setter: (data: any[]) => void, loader: (loading: boolean) => void) => {
+      loader(true);
+
+      // 1. Intentar cargar desde la caché
       try {
-        // Fetch category for 'cursos'
-        const catResponse = await fetch('/wp-json/morty/v1/category-by-slug?slug=cursos');
-        const courseCategory = await catResponse.json();
-
-        let courseProductIds: number[] = [];
-        if (courseCategory && !courseCategory.error) {
-            // Fetch courses
-            const coursesResponse = await fetch(`/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=9`);
-            const courseProducts = await coursesResponse.json();
-            setCourses(courseProducts);
-            courseProductIds = courseProducts.map((p: any) => p.id);
+        const cachedItem = localStorage.getItem(cacheKey);
+        if (cachedItem) {
+          const { timestamp, data } = JSON.parse(cachedItem);
+          const isCacheValid = (new Date().getTime() - timestamp) < CACHE_DURATION;
+          if (isCacheValid) {
+            setter(data);
+            loader(false);
+          }
         }
-        setLoadingCourses(false);
+      } catch (e) {
+          console.error("Failed to read from localStorage", e);
+      }
 
-        // Fetch featured products (excluding courses)
-        let productParams = 'per_page=9&orderby=date&order=desc';
-        if (courseProductIds.length > 0) {
-            productParams += `&exclude=${courseProductIds.join(',')}`;
-        }
-        const productsResponse = await fetch(`/wp-json/morty/v1/products?${productParams}`);
-        const featuredProducts = await productsResponse.json();
-        setProducts(featuredProducts);
+      // 2. Fetch de la red en cualquier caso (stale-while-revalidate)
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
         
+        // Actualizar estado y caché
+        setter(data);
+        localStorage.setItem(cacheKey, JSON.stringify({ timestamp: new Date().getTime(), data }));
+
       } catch (error) {
-        console.error('Error fetching data:', error);
-        // Set loading to false even on error to not hang the UI
-        setLoadingCourses(false);
-        setLoadingProducts(false);
+        console.error('Error fetching data from API:', error);
       } finally {
-        setLoadingProducts(false);
-        setLoadingCourses(false);
+        // Si no se cargó nada desde la caché, ahora se quita el loading
+        if (loadingProducts || loadingCourses) {
+          loader(false);
+        }
       }
     };
     
+    const fetchProductsAndCourses = async () => {
+        try {
+            const catResponse = await fetch('/wp-json/morty/v1/category-by-slug?slug=cursos');
+            const courseCategory = await catResponse.json();
+
+            let courseProductIds: number[] = [];
+            if (courseCategory && !courseCategory.error) {
+                 const coursesUrl = `/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=9`;
+                 fetchWithCache(CACHE_KEY_COURSES, coursesUrl, (data) => {
+                    setCourses(data);
+                    courseProductIds = data.map((p:any) => p.id);
+                 }, setLoadingCourses);
+            } else {
+                setLoadingCourses(false);
+            }
+            
+            // Para asegurar que los productos se fetchean después de tener los IDs de los cursos
+            // esperamos un poco. Idealmente esto se encadenaría mejor.
+            setTimeout(() => {
+                let productParams = 'per_page=9&orderby=date&order=desc';
+                if (courseProductIds.length > 0) {
+                    productParams += `&exclude=${courseProductIds.join(',')}`;
+                }
+                const productsUrl = `/wp-json/morty/v1/products?${productParams}`;
+                fetchWithCache(CACHE_KEY_PRODUCTS, productsUrl, setProducts, setLoadingProducts);
+            }, 100);
+
+        } catch(e) {
+            console.error('Error fetching initial category data', e);
+            setLoadingCourses(false);
+            setLoadingProducts(false);
+        }
+    }
+
     fetchProductsAndCourses();
   }, []);
 
@@ -160,7 +196,7 @@ export default function Home() {
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
-             {loadingCourses ? (
+             {loadingCourses && courses.length === 0 ? (
               [...Array(2)].map((_, i) => (
                 <Card key={i} className="shadow-md">
                   <Skeleton className="aspect-[4/3] w-full" />
@@ -227,7 +263,7 @@ export default function Home() {
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {loadingProducts ? (
+            {loadingProducts && products.length === 0 ? (
               [...Array(3)].map((_, i) => (
                 <Card key={i} className="shadow-md">
                   <Skeleton className="aspect-square w-full" />
@@ -480,3 +516,5 @@ export default function Home() {
     </div>
   );
 }
+
+    

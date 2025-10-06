@@ -19,6 +19,7 @@ const iconMap: { [key: string]: React.ElementType } = {
   'default': Info,
 };
 
+const CACHE_DURATION = 3600 * 1000; // 1 hora en milisegundos
 
 export default function CourseDetailPage({ params: serverParams }: { params: { slug: string } }) {
   const router = useRouter();
@@ -27,30 +28,52 @@ export default function CourseDetailPage({ params: serverParams }: { params: { s
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
+    if (!slug) return;
+
+    const CACHE_KEY = `course_${slug}`;
+
     const fetchCourse = async () => {
-      const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
-      if (!slug) return;
+      setLoading(true);
+
+      // 1. Intentar cargar desde la caché
+      try {
+          const cachedItem = localStorage.getItem(CACHE_KEY);
+          if (cachedItem) {
+              const { timestamp, data } = JSON.parse(cachedItem);
+              if ((new Date().getTime() - timestamp) < CACHE_DURATION) {
+                  setCourse(data);
+                  setLoading(false);
+              }
+          }
+      } catch(e) {
+          console.error("Failed to read from localStorage", e);
+      }
+
+      // 2. Fetch de la red
       try {
         const response = await fetch(`/wp-json/morty/v1/products?slug=${slug}`);
         const data = await response.json();
         
         if (data && data.length > 0) {
-          setCourse(data[0]);
+          const fetchedCourse = data[0];
+          setCourse(fetchedCourse);
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: new Date().getTime(), data: fetchedCourse }));
         } else {
-          notFound();
+          if(!course) notFound();
         }
       } catch (error) {
         console.error("Failed to fetch course product from API", error);
-        notFound();
+        if(!course) notFound();
       } finally {
-        setLoading(false);
+        if(loading) setLoading(false);
       }
     };
     fetchCourse();
-  }, [params.slug]);
+  }, [params.slug, course, loading]);
 
 
-  if (loading) {
+  if (loading && !course) {
     return (
       <div className="container mx-auto py-12 px-4 md:px-6">
         <div className="mb-8">
@@ -203,3 +226,5 @@ export default function CourseDetailPage({ params: serverParams }: { params: { s
     </div>
   );
 }
+
+    

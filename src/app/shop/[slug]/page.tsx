@@ -10,6 +10,8 @@ import { AddToCart } from '@/components/AddToCart';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
+const CACHE_DURATION = 3600 * 1000; // 1 hora en milisegundos
+
 export default function ProductDetailPage({ params: serverParams }: { params: { slug: string } }) {
   const router = useRouter();
   const params = useParams();
@@ -17,30 +19,53 @@ export default function ProductDetailPage({ params: serverParams }: { params: { 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
+    if (!slug) return;
+    
+    const CACHE_KEY = `product_${slug}`;
+
     const fetchProduct = async () => {
-      const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
-      if (!slug) return;
+      setLoading(true);
+
+      // 1. Intentar cargar desde la caché
+      try {
+        const cachedItem = localStorage.getItem(CACHE_KEY);
+        if (cachedItem) {
+          const { timestamp, data } = JSON.parse(cachedItem);
+          if ((new Date().getTime() - timestamp) < CACHE_DURATION) {
+            setProduct(data);
+            setLoading(false);
+          }
+        }
+      } catch(e) {
+          console.error("Failed to read from localStorage", e);
+      }
+
+      // 2. Fetch de la red
       try {
         const response = await fetch(`/wp-json/morty/v1/products?slug=${slug}`);
         const data = await response.json();
         
         if (data && data.length > 0) {
-          setProduct(data[0]);
+          const fetchedProduct = data[0];
+          setProduct(fetchedProduct);
+          localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: new Date().getTime(), data: fetchedProduct }));
         } else {
-          notFound();
+          if(!product) notFound(); // notFound solo si no hay nada en caché
         }
       } catch (error) {
         console.error("Failed to fetch product from API", error);
-        notFound();
+        if(!product) notFound();
       } finally {
-        setLoading(false);
+        if(loading) setLoading(false);
       }
     };
+
     fetchProduct();
-  }, [params.slug]);
+  }, [params.slug, product, loading]);
 
 
-  if (loading) {
+  if (loading && !product) {
     return (
        <div className="container mx-auto py-12 px-4 md:px-6">
         <div className="mb-8">
@@ -165,3 +190,5 @@ export default function ProductDetailPage({ params: serverParams }: { params: { 
     </div>
   );
 }
+
+    
