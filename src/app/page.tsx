@@ -9,7 +9,8 @@ import { ArrowRight, Star } from 'lucide-react';
 import Link from 'next/link';
 import { testimonials } from '@/lib/testimonials';
 import { galleryImages } from '@/lib/gallery-images';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import Autoplay from "embla-carousel-autoplay"
 import { Skeleton } from '@/components/ui/skeleton';
 import { AddToCart } from '@/components/AddToCart';
 import { getFeaturedProducts, getCourseProducts } from '@/app/actions/product-actions';
@@ -38,6 +39,10 @@ export default function Home() {
   const [courses, setCourses] = useState<any[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [loadingCourses, setLoadingCourses] = useState(true);
+
+  const plugin = useRef(
+    Autoplay({ delay: 10000, stopOnInteraction: true })
+  )
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -313,11 +318,14 @@ export default function Home() {
                   La mayor satisfacción es ver la alegría en quienes prueban nuestras creaciones.
               </p>
               <Carousel
+                plugins={[plugin.current]}
                 opts={{
                   align: "start",
                   loop: true,
                 }}
                 className="w-full max-w-xl lg:max-w-3xl mx-auto mt-12"
+                onMouseEnter={plugin.current.stop}
+                onMouseLeave={plugin.current.reset}
               >
                 <CarouselContent>
                   {testimonials.map((testimonial, index) => (
