@@ -4,9 +4,11 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { ArrowRight, Star } from 'lucide-react';
 import Link from 'next/link';
 import { testimonials } from '@/lib/testimonials';
+import { galleryImages } from '@/lib/gallery-images';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AddToCart } from '@/components/AddToCart';
@@ -341,8 +343,52 @@ export default function Home() {
           </div>
       </section>
 
+      {/* Gallery Section */}
+      <section id="gallery" className="py-16 md:py-24 bg-background">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="text-center mb-12">
+            <h2 className="font-headline text-3xl md:text-4xl font-bold">Nuestra Galería</h2>
+            <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
+              Un vistazo a las dulces creaciones de nuestros cursos y encargos.
+            </p>
+          </div>
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full max-w-4xl mx-auto"
+          >
+            <CarouselContent>
+              {galleryImages.map((image, index) => (
+                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                  <div className="p-1">
+                    <Card className="overflow-hidden">
+                      <CardContent className="flex aspect-square items-center justify-center p-0">
+                         <div className="relative w-full h-full">
+                           <Image
+                              src={image.src}
+                              alt={image.alt}
+                              fill
+                              className="object-cover"
+                              data-ai-hint={image.hint}
+                            />
+                         </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
+        </div>
+      </section>
+
+
       {/* Blog Section */}
-      <section id="blog" className="py-16 md:py-24 bg-background">
+      <section id="blog" className="py-16 md:py-24 bg-muted/30">
           <div className="container mx-auto px-4 md:px-6">
               <div className="text-center mb-12">
                   <h2 className="font-headline text-3xl md:text-4xl font-bold">Desde nuestra cocina</h2>
