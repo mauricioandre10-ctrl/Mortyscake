@@ -1,7 +1,7 @@
 
 'use client';
 
-import { notFound, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Video, Target, Package, Laptop, Lightbulb, ArrowLeft, Star, Info } from 'lucide-react';
@@ -41,7 +41,7 @@ export default function CourseClientPage({ initialCourse, slug }: { initialCours
             if (data && data.length > 0) {
                 setCourse(data[0]);
             } else {
-                setCourse(null); // Explicitly set to null if not found
+                setCourse(null);
             }
         } catch (error) {
             console.error("Failed to fetch course on client", error);
@@ -60,8 +60,9 @@ export default function CourseClientPage({ initialCourse, slug }: { initialCours
   }
   
   if (!course) {
-    notFound();
-    return null; // Return null after calling notFound
+    // Cannot use notFound() in a client component. Redirect instead.
+    router.push('/not-found');
+    return null; // Return null to stop rendering
   }
 
   // This logic is now safely placed after the loading/null checks

@@ -3,7 +3,6 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { notFound } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star, Truck, ShieldCheck, ArrowLeft, Info } from 'lucide-react';
 import { AddToCart } from '@/components/AddToCart';
@@ -48,8 +47,9 @@ export default function ProductClientPage({ initialProduct, slug }: { initialPro
   }
 
   if (!product) {
-    notFound();
-    return null; // Return null after calling notFound
+    // Cannot use notFound() in a client component. Redirect instead.
+    router.push('/not-found');
+    return null; // Return null to stop rendering
   }
 
   return (
