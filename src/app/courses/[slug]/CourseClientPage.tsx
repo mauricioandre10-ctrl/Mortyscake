@@ -105,7 +105,7 @@ export default function CourseClientPage({ initialCourse, slug }: { initialCours
             </div>
             <div className="text-muted-foreground text-lg prose" dangerouslySetInnerHTML={{ __html: course.description }} />
             
-            <Card className="border">
+            <Card className="border mt-4">
                 <CardContent className="p-6 space-y-4">
                     <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">Precio del curso</span>

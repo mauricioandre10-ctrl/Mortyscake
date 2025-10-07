@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useShoppingCart } from 'use-shopping-cart';
+import { useShoppingCart, formatCurrencyString } from 'use-shopping-cart';
 import { Button, ButtonProps } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 import { Product } from 'use-shopping-cart/core';
@@ -14,16 +14,18 @@ interface AddToCartProps extends ButtonProps {
   price: number;
   currency: string;
   image: string;
+  children?: React.ReactNode;
 }
 
-export const AddToCart = ({ name, description, id, price, currency, image, className, size = 'default' }: AddToCartProps) => {
+export const AddToCart = ({ name, description, id, price, currency, image, className, size = 'default', children }: AddToCartProps) => {
   const { addItem, cartDetails } = useShoppingCart();
 
   const product: Product = {
     name: name,
     description: description,
     id: id,
-    price: price,
+    price: price * 100, // Price in cents
+    sku: id,
     currency: currency,
     image: image,
     quantity: 1,
@@ -43,7 +45,7 @@ export const AddToCart = ({ name, description, id, price, currency, image, class
   return (
     <Button onClick={handleAddItem} className={className} size={size}>
       <ShoppingCart className="mr-2" />
-      Añadir al carrito
+      {children || 'Añadir al carrito'}
     </Button>
   );
 };

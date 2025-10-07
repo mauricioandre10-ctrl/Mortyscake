@@ -3,7 +3,7 @@
 
 import { CartProvider } from 'use-shopping-cart';
 
-const WOOCOMMERCE_CHECKOUT_URL = 'https://cms.mortyscake.com/checkout/';
+const WOOCOMMERCE_URL = 'https://cms.mortyscake.com';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -11,9 +11,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       cartMode="client-only"
       mode="payment"
       shouldPersist={true}
-      stripe="" // This is not needed for WooCommerce
-      successUrl={`${WOOCOMMERCE_CHECKOUT_URL}?session_id={CHECKOUT_SESSION_ID}`}
-      cancelUrl={WOOCOMMERCE_CHECKOUT_URL || ''}
+      stripe={''} // Dummy value, not used for WooCommerce
+      successUrl={`${WOOCOMMERCE_URL}/checkout/order-received`}
+      cancelUrl={`${WOOCOMMERCE_URL}/cart`}
       currency="EUR"
       allowedCountries={['ES', 'FR', 'DE', 'IT', 'PT']}
       billingAddressCollection={true}

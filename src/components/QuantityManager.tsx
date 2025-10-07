@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useShoppingCart } from 'use-shopping-cart';
@@ -20,11 +21,7 @@ export const QuantityManager = ({ product }: QuantityManagerProps) => {
   
   const handleDecrement = (e: React.MouseEvent) => {
     e.preventDefault();
-    if(itemInCart.quantity === 1) {
-        removeItem(itemInCart.id);
-    } else {
-        decrementItem(itemInCart.id);
-    }
+    decrementItem(itemInCart.id);
   }
 
   const handleIncrement = (e: React.MouseEvent) => {

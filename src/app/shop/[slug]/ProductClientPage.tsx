@@ -46,11 +46,6 @@ export default function ProductClientPage({ initialProduct, slug }: { initialPro
       return <ProductDetailPageSkeleton />;
   }
 
-  if (!product) {
-    router.push('/not-found');
-    return null; 
-  }
-
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
        <div className="mb-8">

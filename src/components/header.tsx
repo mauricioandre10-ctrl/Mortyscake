@@ -11,7 +11,7 @@ import { useShoppingCart } from 'use-shopping-cart';
 import { Separator } from './ui/separator';
 
 const Header = () => {
-  const { cartCount, cartDetails, removeItem, totalPrice, redirectToCheckout } = useShoppingCart();
+  const { cartCount, cartDetails, removeItem, totalPrice, clearCart, redirectToCheckout } = useShoppingCart();
   const [isCartOpen, setIsCartOpen] = React.useState(false);
 
   const navLinks = [
@@ -23,16 +23,30 @@ const Header = () => {
   ];
 
   async function handleCheckoutClick(event: React.MouseEvent<HTMLButtonElement>) {
-    event.preventDefault();
-    try {
-      const result = await redirectToCheckout();
-      if (result?.error) {
-        console.error(result.error.message);
+      event.preventDefault();
+      try {
+        const response = await fetch('/api/checkout_sessions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(cartDetails),
+        });
+        
+        if (response.ok) {
+            const { redirectUrl } = await response.json();
+            // We are not using redirectToCheckout because we need a custom flow
+            // that doesn't rely on Stripe.
+            // clearCart();
+            window.location.href = redirectUrl;
+        } else {
+             console.error("Failed to create checkout session");
+        }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
     }
-  }
+
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -116,7 +130,7 @@ const Header = () => {
                     <SheetFooter className="mt-auto p-4 space-y-4">
                       <div className="flex justify-between items-center font-semibold">
                         <span>Total:</span>
-                        <span>€{totalPrice?.toFixed(2) ?? '0.00'}</span>
+                        <span>€{(totalPrice ?? 0) / 100}</span>
                       </div>
                       <Button className="w-full" onClick={handleCheckoutClick}>
                         Finalizar Compra
