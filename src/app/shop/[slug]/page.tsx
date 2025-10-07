@@ -28,7 +28,19 @@ interface Product {
 // This function tells Next.js which slugs to pre-render at build time
 export async function generateStaticParams() {
   try {
-    const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?per_page=100`);
+    const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
+    const courseCategory = await catResponse.json();
+    const courseCategoryId = courseCategory?.id;
+
+    if (!catResponse.ok || !courseCategoryId) {
+      // Fetch all products if course category fails
+      const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?per_page=100`);
+      if (!response.ok) return [];
+      const products: Product[] = await response.json();
+      return products.map((product) => ({ slug: product.slug }));
+    }
+
+    const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category_exclude=${courseCategoryId}&per_page=100`);
     if (!response.ok) return [];
 
     const products: Product[] = await response.json();

@@ -68,7 +68,7 @@ export default function CoursesPage() {
         }
         const courseCategory = await catResponse.json();
 
-        if (!courseCategory || courseCategory.error) {
+        if (!courseCategory || !courseCategory.id) {
             console.error('Course category not found or API error:', courseCategory?.error);
             setLoading(false);
             return;

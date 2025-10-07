@@ -5,74 +5,68 @@
  * INSTRUCCIONES:
  * 1. Accede a tu panel de WordPress.
  * 2. Ve a Apariencia > Editor de archivos de temas.
- * 3. Asegúrate de tener seleccionado tu tema hijo (child theme). Si no tienes un tema hijo, es MUY recomendable crear uno para no perder estos cambios al actualizar el tema principal.
+ * 3. Asegúrate de tener seleccionado tu tema hijo (child theme).
  * 4. Busca y haz clic en el archivo `functions.php` (Funciones del Tema).
- * 5. Copia TODO el código que hay debajo de esta línea y pégalo al final del archivo `functions.php`.
+ * 5. Copia TODO este código y pégalo al final del archivo.
  * 6. Guarda los cambios.
- *
- * ¿QUÉ HACE ESTE CÓDIGO?
- * Este código crea unas "rutas" o "endpoints" personalizados en la API REST de WordPress.
- * La aplicación de Next.js que hemos construido consultará estas rutas para obtener la información de los productos y categorías de WooCommerce de forma segura, sin exponer tus claves de API.
- *
- * Las rutas que se crearán son:
- * - /wp-json/morty/v1/products: Para obtener una lista de productos. Acepta parámetros como `slug`, `category`, `per_page`, `exclude`, etc.
- * - /wp-json/morty/v1/category-by-slug: Para obtener los detalles de una categoría a partir de su slug (ej: "cursos").
  */
+
+// **AÑADIDO IMPORTANTE PARA CORS**
+// Esta acción añade la cabecera 'Access-Control-Allow-Origin' a todas las respuestas de la API REST.
+// Es la solución más robusta para permitir que tu app Next.js (desde cualquier dominio) pueda obtener datos.
+add_action( 'rest_api_init', function() {
+    remove_filter( 'rest_pre_serve_request', 'rest_send_cors_headers' );
+    add_filter( 'rest_pre_serve_request', function( $value ) {
+        header( 'Access-Control-Allow-Origin: *' );
+        return $value;
+    });
+}, 15 );
+
 
 add_action('rest_api_init', function () {
     // Endpoint para obtener productos con varios filtros
     register_rest_route('morty/v1', '/products', array(
         'methods' => 'GET',
         'callback' => 'morty_get_products',
-        'permission_callback' => '__return_true' // Abierto para lectura
+        'permission_callback' => '__return_true'
     ));
 
     // Endpoint para obtener una categoría por su slug
     register_rest_route('morty/v1', '/category-by-slug', array(
         'methods' => 'GET',
         'callback' => 'morty_get_category_by_slug',
-        'permission_callback' => '__return_true' // Abierto para lectura
+        'permission_callback' => '__return_true'
     ));
 });
 
 /**
  * Función que maneja la petición para obtener productos de WooCommerce.
- *
- * @param WP_REST_Request $request Objeto de la petición.
- * @return WP_REST_Response|WP_Error
  */
 function morty_get_products(WP_REST_Request $request) {
-    // Permitir peticiones desde cualquier origen (solución CORS)
-    header("Access-Control-Allow-Origin: *");
-    
     if (!class_exists('WooCommerce')) {
         return new WP_Error('woocommerce_not_active', 'WooCommerce no está activado.', array('status' => 500));
     }
 
     $params = $request->get_params();
     $args = array(
-        'status' => 'publish', // Solo productos publicados
+        'status' => 'publish',
         'limit' => isset($params['per_page']) ? intval($params['per_page']) : 10,
         'paginate' => false,
     );
 
-    // Filtrar por slug
     if (!empty($params['slug'])) {
         $args['slug'] = sanitize_text_field($params['slug']);
     }
 
-    // Filtrar por categoría (ID)
     if (!empty($params['category'])) {
         $args['category'] = array(sanitize_text_field($params['category']));
     }
 
-    // Excluir productos por ID
     if (!empty($params['exclude'])) {
        $exclude_ids = explode(',', sanitize_text_field($params['exclude']));
        $args['exclude'] = array_map('intval', $exclude_ids);
     }
     
-    // Excluir productos por ID de categoría
     if (!empty($params['category_exclude'])) {
         $category_ids_to_exclude = array_map('intval', explode(',', sanitize_text_field($params['category_exclude'])));
         
@@ -87,19 +81,48 @@ function morty_get_products(WP_REST_Request $request) {
         }
     }
     
-    // Orden
     if (!empty($params['orderby'])) {
-        $args['orderby'] = sanitize_text_field($params['orderby']); // ej: 'date', 'price', 'popularity'
+        $args['orderby'] = sanitize_text_field($params['orderby']);
     }
     if (!empty($params['order'])) {
-        $args['order'] = sanitize_text_field($params['order']); // 'ASC' o 'DESC'
+        $args['order'] = sanitize_text_field($params['order']);
     }
 
     $products = wc_get_products($args);
 
     $data = array();
     foreach ($products as $product_obj) {
-        $data[] = $product_obj->get_data();
+        $product_data = $product_obj->get_data();
+        
+        // Adjuntar datos de imágenes de forma explícita
+        $image_gallery_ids = $product_obj->get_gallery_image_ids();
+        $images = [];
+        // Añadir imagen principal
+        if (has_post_thumbnail($product_obj->get_id())) {
+             $main_image_id = get_post_thumbnail_id($product_obj->get_id());
+             $main_image_url = wp_get_attachment_url($main_image_id);
+             $images[] = array(
+                 'id' => $main_image_id,
+                 'src' => $main_image_url,
+                 'alt' => get_post_meta($main_image_id, '_wp_attachment_image_alt', true),
+             );
+        }
+        // Añadir imágenes de la galería
+        foreach ($image_gallery_ids as $image_id) {
+            $image_url = wp_get_attachment_url($image_id);
+            if ($image_url) {
+                $images[] = array(
+                    'id' => $image_id,
+                    'src' => $image_url,
+                    'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true),
+                );
+            }
+        }
+        // Si no hay ninguna imagen, usamos un array vacío. WC a veces devuelve un placeholder.
+        $product_data['images'] = !empty($images) ? $images : [];
+
+        // Devolver datos completos del producto, incluidas las imágenes procesadas.
+        $data[] = $product_data;
     }
 
     return new WP_REST_Response($data, 200);
@@ -107,14 +130,8 @@ function morty_get_products(WP_REST_Request $request) {
 
 /**
  * Función que maneja la petición para obtener una categoría por su slug.
- *
- * @param WP_REST_Request $request Objeto de la petición.
- * @return WP_REST_Response|WP_Error
  */
 function morty_get_category_by_slug(WP_REST_Request $request) {
-    // Permitir peticiones desde cualquier origen (solución CORS)
-    header("Access-Control-Allow-Origin: *");
-
     $slug = $request->get_param('slug');
 
     if (empty($slug)) {
@@ -126,9 +143,11 @@ function morty_get_category_by_slug(WP_REST_Request $request) {
     if (!$term) {
         return new WP_Error('category_not_found', 'La categoría no se ha encontrado.', array('status' => 404));
     }
+    // Convertir el objeto WP_Term a un array para consistencia de JSON
+    $term_data = get_object_vars($term);
+    $term_data['id'] = $term->term_id;
 
-    return new WP_REST_Response($term, 200);
+    return new WP_REST_Response($term_data, 200);
 }
 
 ?>
-    

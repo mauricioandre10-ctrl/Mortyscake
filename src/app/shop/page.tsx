@@ -57,7 +57,19 @@ export default function ShopPage() {
       }
 
       try {
-        const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products`);
+        const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
+        if (!catResponse.ok) {
+           throw new Error(`Failed to fetch course category: ${catResponse.statusText}`);
+        }
+        const courseCategory = await catResponse.json();
+
+        if (!courseCategory || !courseCategory.id) {
+            console.error('Course category not found or API error:', courseCategory?.error);
+            setLoading(false);
+            return;
+        }
+
+        const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category_exclude=${courseCategory.id}&per_page=100`);
         if (!response.ok) {
             throw new Error(`Failed to fetch products: ${response.statusText}`);
         }
