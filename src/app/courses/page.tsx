@@ -20,8 +20,6 @@ const sortOptions: { value: SortOption; label: string }[] = [
     { value: 'alpha-desc', label: 'Alfabético: Z-A' },
 ];
 
-const CACHE_KEY = 'all_courses_cache';
-const CACHE_DURATION = 3600 * 1000; // 1 hora en milisegundos
 const WP_API_URL = 'https://cms.mortyscake.es';
 
 interface Course {
@@ -47,20 +45,6 @@ export default function CoursesPage() {
   useEffect(() => {
     const fetchCourses = async () => {
       setLoading(true);
-      
-      try {
-          const cachedItem = localStorage.getItem(CACHE_KEY);
-          if (cachedItem) {
-              const { timestamp, data } = JSON.parse(cachedItem);
-              if ((new Date().getTime() - timestamp) < CACHE_DURATION) {
-                  setCourses(data);
-                  setLoading(false);
-              }
-          }
-      } catch(e) {
-          console.error("Failed to read from localStorage", e);
-      }
-
       try {
         const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
         if (!catResponse.ok) {
@@ -81,8 +65,6 @@ export default function CoursesPage() {
         const data = await response.json();
         
         setCourses(data);
-        localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: new Date().getTime(), data }));
-
       } catch (error) {
         console.error('Error fetching course products from API:', error);
       } finally {
