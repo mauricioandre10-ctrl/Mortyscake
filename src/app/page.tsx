@@ -209,8 +209,7 @@ export default function Home() {
                           <Image
                             src={course.images[0].src}
                             alt={course.name}
-                            width={800}
-                            height={600}
+                            fill
                             className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                             unoptimized
                           />
@@ -318,8 +317,7 @@ export default function Home() {
                           <Image
                             src={product.images[0].src}
                             alt={product.name}
-                            width={600}
-                            height={600}
+                            fill
                             className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                             unoptimized
                           />
