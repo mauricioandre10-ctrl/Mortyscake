@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import CourseClientPage from './CourseClientPage';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent } from '@/components/ui/card';
+
 
 const WP_API_URL = 'https://mortyscake.com';
 
@@ -88,12 +90,4 @@ function CourseDetailPageSkeleton() {
         </div>
       </div>
     );
-}
-
-// We need this dummy card component here to avoid a circular dependency with the skeleton
-function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={`border rounded-lg ${className}`} {...props} />;
-}
-function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={`p-0 ${className}`} {...props} />;
 }
