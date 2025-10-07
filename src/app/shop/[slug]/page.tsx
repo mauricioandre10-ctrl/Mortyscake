@@ -1,15 +1,33 @@
 
-import { Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Star, Truck, ShieldCheck, ArrowLeft, Info } from 'lucide-react';
 import { AddToCart } from '@/components/AddToCart';
-import ProductDetailPageSkeleton from './ProductDetailPageSkeleton';
 import { notFound } from 'next/navigation';
 
 const WP_API_URL = 'https://cms.mortyscake.com';
+
+// Generate static paths for all products at build time
+export async function generateStaticParams() {
+    try {
+        const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?per_page=100`);
+        if (!response.ok) {
+            console.error('Failed to fetch products for static params, skipping.');
+            return [];
+        }
+        
+        const products = await response.json();
+        
+        return products.map((product: any) => ({
+            slug: product.slug,
+        }));
+    } catch (error) {
+        console.error("Error in generateStaticParams for products:", error);
+        return [];
+    }
+}
 
 // Fetch a single product by its slug
 async function getProduct(slug: string) {
@@ -29,23 +47,6 @@ async function getProduct(slug: string) {
     }
 }
 
-// Generate static paths for all products at build time
-export async function generateStaticParams() {
-    try {
-        const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?per_page=100`);
-        if (!response.ok) throw new Error('Failed to fetch products for static params');
-        
-        const products = await response.json();
-        
-        return products.map((product: any) => ({
-            slug: product.slug,
-        }));
-    } catch (error) {
-        console.error("Error in generateStaticParams for products:", error);
-        return [];
-    }
-}
-
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
   const product = await getProduct(params.slug);
 
@@ -54,7 +55,6 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
   }
 
   return (
-    <Suspense fallback={<ProductDetailPageSkeleton />}>
         <div className="container mx-auto py-12 px-4 md:px-6">
            <div className="mb-8">
             <Button asChild variant="outline" size="sm">
@@ -128,20 +128,6 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
                 </Card>
             </div>
           </div>
-           {product.attributes.length > 0 && (
-             <div className="max-w-6xl mx-auto mt-16 pt-8 border-t">
-              <h2 className="font-headline text-3xl font-bold text-center mb-8">Detalles del Producto</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    {product.attributes.map((attr: any) => (
-                        <div key={attr.id} className="flex flex-col items-center text-center p-4 rounded-lg bg-muted/50">
-                            <h3 className="font-bold text-lg mb-1">{attr.name}</h3>
-                            <p className="text-muted-foreground text-sm">{attr.options.join(', ')}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
-          )}
         </div>
-    </Suspense>
   );
 }
