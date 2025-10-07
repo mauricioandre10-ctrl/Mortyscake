@@ -13,6 +13,23 @@ import { Skeleton } from '@/components/ui/skeleton';
 const CACHE_DURATION = 3600 * 1000; // 1 hora en milisegundos
 const WP_API_URL = 'https://tecnovacenter.shop';
 
+
+// This function is called at build time to generate static pages for each product
+export async function generateStaticParams() {
+  try {
+    const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?per_page=100`);
+    const products = await response.json();
+    
+    return products.map((product: any) => ({
+      slug: product.slug,
+    }));
+  } catch (error) {
+    console.error('Build-time: Failed to fetch products for generateStaticParams', error);
+    return [];
+  }
+}
+
+
 export default function ProductDetailPage({ params: serverParams }: { params: { slug: string } }) {
   const router = useRouter();
   const params = useParams();
@@ -65,7 +82,7 @@ export default function ProductDetailPage({ params: serverParams }: { params: { 
     };
 
     fetchProduct();
-  }, [params.slug]);
+  }, [params.slug, product]);
 
 
   if (loading && !product) {
@@ -193,5 +210,7 @@ export default function ProductDetailPage({ params: serverParams }: { params: { 
     </div>
   );
 }
+
+    
 
     

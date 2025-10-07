@@ -22,6 +22,31 @@ const iconMap: { [key: string]: React.ElementType } = {
 const CACHE_DURATION = 3600 * 1000; // 1 hora en milisegundos
 const WP_API_URL = 'https://tecnovacenter.shop';
 
+
+// This function is called at build time to generate static pages for each course
+export async function generateStaticParams() {
+  try {
+    const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
+    const courseCategory = await catResponse.json();
+
+    if (!courseCategory || courseCategory.error) {
+      console.error('Build-time: Course category not found, cannot generate static params.');
+      return [];
+    }
+  
+    const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=100`);
+    const courses = await response.json();
+    
+    return courses.map((course: any) => ({
+      slug: course.slug,
+    }));
+  } catch (error) {
+    console.error('Build-time: Failed to fetch courses for generateStaticParams', error);
+    return [];
+  }
+}
+
+
 export default function CourseDetailPage({ params: serverParams }: { params: { slug: string } }) {
   const router = useRouter();
   const params = useParams();
@@ -73,7 +98,7 @@ export default function CourseDetailPage({ params: serverParams }: { params: { s
       }
     };
     fetchCourse();
-  }, [params.slug]);
+  }, [params.slug, course]);
 
 
   if (loading && !course) {
@@ -229,5 +254,7 @@ export default function CourseDetailPage({ params: serverParams }: { params: { s
     </div>
   );
 }
+
+    
 
     
