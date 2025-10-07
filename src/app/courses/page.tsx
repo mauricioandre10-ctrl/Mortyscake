@@ -20,7 +20,7 @@ const sortOptions: { value: SortOption; label: string }[] = [
     { value: 'alpha-desc', label: 'Alfabético: Z-A' },
 ];
 
-const WP_API_URL = 'https://cms.mortyscake.es';
+const WP_API_URL = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
 
 interface Course {
   id: number;
@@ -44,6 +44,7 @@ export default function CoursesPage() {
 
   useEffect(() => {
     const fetchCourses = async () => {
+      if (!WP_API_URL) return;
       setLoading(true);
       try {
         const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);

@@ -13,7 +13,7 @@ import { useEffect, useState, useRef } from 'react';
 import Autoplay from "embla-carousel-autoplay"
 import { Skeleton } from '@/components/ui/skeleton';
 
-const WP_API_URL = 'https://cms.mortyscake.es';
+const WP_API_URL = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
 
 interface Product {
   id: number;
@@ -57,6 +57,8 @@ export default function Home() {
 
   useEffect(() => {
     const fetchProductsAndCourses = async () => {
+      if (!WP_API_URL) return;
+
       setLoadingCourses(true);
       setLoadingProducts(true);
       try {

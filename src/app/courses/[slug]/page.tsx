@@ -9,7 +9,7 @@ import { AddToCart } from '@/components/AddToCart';
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel';
 import { ShareButton } from '@/components/ShareButton';
 
-const WP_API_URL = 'https://cms.mortyscake.es';
+const WP_API_URL = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
 
 // This enables ISR (Incremental Static Regeneration)
 // The page will be re-generated at most once per hour
@@ -29,6 +29,7 @@ interface Course {
 
 // This function tells Next.js which slugs to pre-render at build time
 export async function generateStaticParams() {
+  if (!WP_API_URL) return [];
   try {
     const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
     if (!catResponse.ok) return [];
@@ -50,6 +51,7 @@ export async function generateStaticParams() {
 }
 
 async function getCourse(slug: string): Promise<Course | null> {
+  if (!WP_API_URL) return null;
   try {
     const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`);
     if (!response.ok) return null;

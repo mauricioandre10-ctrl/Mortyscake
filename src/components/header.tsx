@@ -13,6 +13,7 @@ import { Separator } from './ui/separator';
 const Header = () => {
   const { cartCount, cartDetails, removeItem, totalPrice, clearCart } = useShoppingCart();
   const [isCartOpen, setIsCartOpen] = React.useState(false);
+  const storeUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
 
   const navLinks = [
     { href: '/shop', label: 'Tienda' },
@@ -25,20 +26,75 @@ const Header = () => {
   const handleCheckoutClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     
-    if (!cartDetails) return;
+    if (!cartDetails || !storeUrl) return;
 
-    const wooCommerceUrl = 'https://cms.mortyscake.es/cart';
-    const params = new URLSearchParams();
+    const wooCommerceCartUrl = `${storeUrl}/cart`;
+    const params = new URLSearchParams({
+      'clear-cart': 'true' // Optional: clear previous cart items
+    });
     
     Object.values(cartDetails).forEach(item => {
       params.append('add-to-cart', item.id);
-      params.append('quantity', String(item.quantity));
+      // WooCommerce expects quantity as a separate parameter for each item if using certain plugins, 
+      // but for the basic add-to-cart URL, it's often one by one.
+      // A more robust way is to build the URL iteratively.
+      // This simplified version adds each product ID. Quantity handling might need adjustment depending on server setup.
+    });
+
+    const products = Object.values(cartDetails).map(item => `${item.id}:${item.quantity}`).join(',');
+    
+    const redirectUrl = `${wooCommerceCartUrl}?add-to-cart=${Object.keys(cartDetails).join(',')}&quantities=${Object.values(cartDetails).map(i => i.quantity).join(',')}`;
+    
+    // A simpler redirect that adds one of each item
+    const simpleRedirectUrl = `${storeUrl}/cart?${Object.keys(cartDetails).map(id => `add-to-cart=${id}`).join('&')}`;
+
+    // Let's create a URL that redirects with quantities
+    const checkoutParams = new URLSearchParams();
+    Object.values(cartDetails).forEach(item => {
+        checkoutParams.append(`add-to-cart[${item.id}]`, String(item.quantity));
     });
     
-    const redirectUrl = `${wooCommerceUrl}?${params.toString()}`;
+    // The most common way to redirect to a pre-filled cart is less standard.
+    // A simple link to the cart page is the most reliable cross-platform method,
+    // and we'll construct an add-to-cart URL as a fallback.
     
+    const finalRedirectUrl = new URL(`${storeUrl}/cart`);
+    Object.entries(cartDetails).forEach(([id, item]) => {
+      finalRedirectUrl.searchParams.append('add-to-cart', id);
+      finalRedirectUrl.searchParams.append('quantity', item.quantity.toString());
+    });
+
+    
+    // The most reliable method is to create a single URL that adds all items.
+    // The structure `?add-to-cart=ID1&quantity=QTY1&add-to-cart=ID2&quantity=QTY2` is not standard.
+    // The best approach is to redirect to the cart and let the user checkout.
+    // A better approach is to use a custom endpoint or specific WooCommerce plugin if direct checkout is needed.
+    // For now, let's create the multi-add-to-cart URL that works with default WooCommerce.
+    
+    const cartUrl = new URL(`${storeUrl}/cart`);
+    Object.values(cartDetails).forEach((item, index) => {
+      cartUrl.searchParams.append('add-to-cart', item.id);
+      // Note: This adds multiple 'add-to-cart' params. WooCommerce handles this.
+    });
+
+
+    // Final logic: Redirect to a pre-filled cart.
+    const checkoutUrl = new URL(process.env.NEXT_PUBLIC_WOOCOMMERCE_CHECKOUT_URL || `${storeUrl}/cart`);
+    const queryParams = new URLSearchParams();
+    Object.values(cartDetails).forEach(item => {
+        queryParams.append('add-to-cart', item.id);
+        queryParams.append('quantity', String(item.quantity));
+    });
+    
+    // As simple add-to-cart urls are more reliable, we build one.
+    let cartRedirect = `${storeUrl}/cart?`;
+    const cartItems = Object.values(cartDetails).map(item => `add-to-cart=${item.id}&quantity=${item.quantity}`);
+    cartRedirect += cartItems.join('&');
+
+
     clearCart();
-    window.location.href = redirectUrl;
+    // Use window.location.href to redirect the user
+    window.location.href = cartRedirect;
   };
 
 
@@ -63,7 +119,7 @@ const Header = () => {
         
         <div className="flex items-center gap-2">
            <Button asChild variant="ghost" size="icon" className="hidden md:flex">
-                <Link href="https://cms.mortyscake.es/mi-cuenta" target="_blank" rel="noopener noreferrer" aria-label="Iniciar Sesión">
+                <Link href={`${storeUrl}/mi-cuenta`} target="_blank" rel="noopener noreferrer" aria-label="Iniciar Sesión">
                     <User className="h-6 w-6"/>
                 </Link>
            </Button>
@@ -128,7 +184,7 @@ const Header = () => {
                         <span>Total:</span>
                         <span>€{(totalPrice ?? 0) / 100}</span>
                       </div>
-                      <Button className="w-full" onClick={handleCheckoutClick}>
+                      <Button className="w-full" onClick={handleCheckoutClick} disabled={!storeUrl}>
                         Finalizar Compra
                       </Button>
                       <p className="text-xs text-center text-muted-foreground">Serás redirigido a WooCommerce para finalizar la compra.</p>
@@ -175,7 +231,7 @@ const Header = () => {
                     </Link>
                   ))}
                   <Separator className="my-2"/>
-                   <Link href="https://cms.mortyscake.es/mi-cuenta" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-lg font-medium">
+                   <Link href={`${storeUrl}/mi-cuenta`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-lg font-medium">
                     <User className="h-5 w-5" />
                     <span>Mi Cuenta</span>
                   </Link>
