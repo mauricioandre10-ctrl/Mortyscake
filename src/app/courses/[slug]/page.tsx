@@ -10,41 +10,11 @@ import { notFound } from 'next/navigation';
 
 const WP_API_URL = 'https://cms.mortyscake.com';
 
-// Generate static paths for all courses at build time
+// This function is required for static export with dynamic routes.
+// It tells Next.js not to pre-render any pages at build time.
+// Data fetching will happen on the client side.
 export async function generateStaticParams() {
-  try {
-    const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
-    if (!catResponse.ok) {
-        console.error('Failed to fetch course category for static params, skipping.');
-        return [];
-    }
-    const courseCategory = await catResponse.json();
-    
-    if (!courseCategory || courseCategory.error || !courseCategory.id) {
-      console.error('Course category not found for static params:', courseCategory?.error);
-      return [];
-    }
-
-    const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=100`);
-    if (!response.ok) {
-        console.error('Failed to fetch courses for static params, skipping.');
-        return [];
-    }
-
-    const courses = await response.json();
-    if (!Array.isArray(courses)) {
-      return [];
-    }
-    
-    return courses
-        .filter(course => course && course.slug) // Ensure course and slug exist
-        .map((course: any) => ({
-            slug: course.slug,
-        }));
-  } catch (error) {
-    console.error("Error in generateStaticParams for courses:", error);
-    return [];
-  }
+  return [];
 }
 
 // Fetch a single course by its slug
