@@ -3,7 +3,7 @@
 
 import { CartProvider } from 'use-shopping-cart';
 
-const WOOCOMMERCE_URL = 'https://cms.mortyscake.com';
+const WOOCOMMERCE_URL = 'https://cms.mortyscake.es';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (

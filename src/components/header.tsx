@@ -11,7 +11,7 @@ import { useShoppingCart } from 'use-shopping-cart';
 import { Separator } from './ui/separator';
 
 const Header = () => {
-  const { cartCount, cartDetails, removeItem, totalPrice, clearCart, redirectToCheckout } = useShoppingCart();
+  const { cartCount, cartDetails, removeItem, totalPrice, clearCart } = useShoppingCart();
   const [isCartOpen, setIsCartOpen] = React.useState(false);
 
   const navLinks = [
@@ -22,30 +22,24 @@ const Header = () => {
     { href: '/#footer', 'label': 'Contacto' },
   ];
 
-  async function handleCheckoutClick(event: React.MouseEvent<HTMLButtonElement>) {
-      event.preventDefault();
-      try {
-        const response = await fetch('/api/checkout_sessions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(cartDetails),
-        });
-        
-        if (response.ok) {
-            const { redirectUrl } = await response.json();
-            // We are not using redirectToCheckout because we need a custom flow
-            // that doesn't rely on Stripe.
-            // clearCart();
-            window.location.href = redirectUrl;
-        } else {
-             console.error("Failed to create checkout session");
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
+  const handleCheckoutClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    
+    if (!cartDetails) return;
+
+    const wooCommerceUrl = 'https://cms.mortyscake.es/cart';
+    const params = new URLSearchParams();
+    
+    Object.values(cartDetails).forEach(item => {
+      params.append('add-to-cart', item.id);
+      params.append('quantity', String(item.quantity));
+    });
+    
+    const redirectUrl = `${wooCommerceUrl}?${params.toString()}`;
+    
+    clearCart();
+    window.location.href = redirectUrl;
+  };
 
 
   return (
@@ -69,7 +63,7 @@ const Header = () => {
         
         <div className="flex items-center gap-2">
            <Button asChild variant="ghost" size="icon" className="hidden md:flex">
-                <Link href="https://cms.mortyscake.com/mi-cuenta" aria-label="Iniciar Sesión">
+                <Link href="https://cms.mortyscake.es/mi-cuenta" target="_blank" rel="noopener noreferrer" aria-label="Iniciar Sesión">
                     <User className="h-6 w-6"/>
                 </Link>
            </Button>
@@ -137,7 +131,7 @@ const Header = () => {
                       <Button className="w-full" onClick={handleCheckoutClick}>
                         Finalizar Compra
                       </Button>
-                      <p className="text-xs text-center text-muted-foreground">El checkout se redirigirá a WooCommerce.</p>
+                      <p className="text-xs text-center text-muted-foreground">Serás redirigido a WooCommerce para finalizar la compra.</p>
                     </SheetFooter>
                   </>
                 ) : (
@@ -181,7 +175,7 @@ const Header = () => {
                     </Link>
                   ))}
                   <Separator className="my-2"/>
-                   <Link href="https://cms.mortyscake.com/mi-cuenta" className="flex items-center gap-2 text-lg font-medium">
+                   <Link href="https://cms.mortyscake.es/mi-cuenta" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-lg font-medium">
                     <User className="h-5 w-5" />
                     <span>Mi Cuenta</span>
                   </Link>
