@@ -6,14 +6,11 @@ import CourseDetailPageSkeleton from './CourseDetailPageSkeleton';
 
 const WP_API_URL = 'https://cms.mortyscake.com';
 
-// This tells Next.js to generate pages on-demand if they weren't generated at build time.
-export const dynamicParams = true;
-
 // This function can return an empty array if we want to build all pages on-demand.
 // This makes the build process independent of the API's availability.
 export async function generateStaticParams() {
   // We return an empty array to prevent build-time fetching errors
-  // Pages will be generated on-demand.
+  // Pages will be generated on-demand on the client side.
   return [];
 }
 
