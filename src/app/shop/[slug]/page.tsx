@@ -52,6 +52,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
 
   if (!product) {
     notFound();
+    return null; // Ensure no further execution
   }
 
   return (

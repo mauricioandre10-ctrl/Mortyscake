@@ -66,6 +66,7 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
 
   if (!course) {
     notFound();
+    return null; // Ensure no further execution
   }
 
   return (
