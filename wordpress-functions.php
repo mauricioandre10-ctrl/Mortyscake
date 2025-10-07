@@ -42,6 +42,9 @@ add_action('rest_api_init', function () {
  * @return WP_REST_Response|WP_Error
  */
 function morty_get_products(WP_REST_Request $request) {
+    // Permitir peticiones desde cualquier origen (solución CORS)
+    header("Access-Control-Allow-Origin: *");
+    
     if (!class_exists('WooCommerce')) {
         return new WP_Error('woocommerce_not_active', 'WooCommerce no está activado.', array('status' => 500));
     }
@@ -109,6 +112,9 @@ function morty_get_products(WP_REST_Request $request) {
  * @return WP_REST_Response|WP_Error
  */
 function morty_get_category_by_slug(WP_REST_Request $request) {
+    // Permitir peticiones desde cualquier origen (solución CORS)
+    header("Access-Control-Allow-Origin: *");
+
     $slug = $request->get_param('slug');
 
     if (empty($slug)) {
