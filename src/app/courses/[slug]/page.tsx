@@ -10,12 +10,43 @@ import { notFound } from 'next/navigation';
 
 const WP_API_URL = 'https://cms.mortyscake.com';
 
-// This function is required for static export with dynamic routes.
-// It tells Next.js not to pre-render any pages at build time.
-// Data fetching will happen on the client side.
+// This function tells Next.js which slugs to pre-render at build time.
+// It's required for static export with dynamic routes.
 export async function generateStaticParams() {
-  return [];
+    try {
+        // First, get the ID for the 'cursos' category
+        const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
+        if (!catResponse.ok) {
+            console.error('Failed to fetch course category for static params, skipping.');
+            return [];
+        }
+        const courseCategory = await catResponse.json();
+
+        // If the category doesn't exist, we can't generate params.
+        if (!courseCategory || !courseCategory.id) {
+            console.error('Course category not found, skipping param generation.');
+            return [];
+        }
+
+        // Then, fetch all products (courses) in that category
+        const coursesResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=100`);
+        if (!coursesResponse.ok) {
+            console.error('Failed to fetch courses for static params, skipping.');
+            return [];
+        }
+        const courses = await coursesResponse.json();
+        
+        // Return an array of objects, where each object has a `slug` property
+        return courses.map((course: any) => ({
+            slug: course.slug,
+        }));
+    } catch (error) {
+        console.error("Error in generateStaticParams for courses:", error);
+        // In case of any error, return an empty array to prevent build failure.
+        return [];
+    }
 }
+
 
 // Fetch a single course by its slug
 async function getCourse(slug: string) {
@@ -40,10 +71,11 @@ async function getCourse(slug: string) {
 export default async function CourseDetailPage({ params }: { params: { slug: string } }) {
   const course = await getCourse(params.slug);
 
-  // Critical check: If no course is found, stop execution immediately.
+  // If no course is found, render the 404 page.
+  // This must be the very first check.
   if (!course) {
     notFound();
-    return null; // Ensure no further rendering happens if course is not found.
+    return null; // <-- CRITICAL: Return null to stop execution.
   }
 
   return (

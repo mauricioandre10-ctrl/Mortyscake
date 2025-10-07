@@ -9,12 +9,45 @@ import { notFound } from 'next/navigation';
 
 const WP_API_URL = 'https://cms.mortyscake.com';
 
-// This function is required for static export with dynamic routes.
-// It tells Next.js not to pre-render any pages at build time.
-// Data fetching will happen on the client side.
+// This function tells Next.js which slugs to pre-render at build time.
+// It's required for static export with dynamic routes.
 export async function generateStaticParams() {
-    return [];
+   try {
+        // Fetch all products that are NOT in the 'cursos' category.
+        // First, get the ID for the 'cursos' category.
+        const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
+        let courseCatId = null;
+        if (catResponse.ok) {
+            const courseCategory = await catResponse.json();
+            if (courseCategory && courseCategory.id) {
+                courseCatId = courseCategory.id;
+            }
+        } else {
+             console.warn('Could not fetch course category to exclude from products. Fetching all products.');
+        }
+
+        // Build the URL to fetch products, excluding the course category if found.
+        let productsUrl = `${WP_API_URL}/wp-json/morty/v1/products?per_page=100`;
+        if (courseCatId) {
+            productsUrl += `&category_exclude=${courseCatId}`;
+        }
+        
+        const productsResponse = await fetch(productsUrl);
+        if (!productsResponse.ok) {
+            console.error('Failed to fetch products for static params, skipping.');
+            return [];
+        }
+        const products = await productsResponse.json();
+
+        return products.map((product: any) => ({
+            slug: product.slug,
+        }));
+    } catch (error) {
+        console.error("Error in generateStaticParams for products:", error);
+        return [];
+    }
 }
+
 
 // Fetch a single product by its slug
 async function getProduct(slug: string) {
@@ -38,10 +71,11 @@ async function getProduct(slug: string) {
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
   const product = await getProduct(params.slug);
 
-  // Critical check: If no product is found, stop execution immediately.
+  // If no product is found, render the 404 page.
+  // This must be the very first check.
   if (!product) {
     notFound();
-    return null; // Ensure no further rendering happens if product is not found.
+    return null; // <-- CRITICAL: Return null to stop execution.
   }
 
   return (
