@@ -74,9 +74,12 @@ export default function CourseClientPage({ slug }: { slug: string }) {
   }
 
   if (!course) {
+    // This state prevents rendering the main content if course is null,
+    // which is the root cause of the build error.
     return <CourseDetailPageSkeleton />;
   }
 
+  // This logic is now safe because we've confirmed `course` is not null.
   const courseInfo = course.attributes.map((attr: any) => ({
       icon: iconMap[attr.name] || iconMap.default,
       title: attr.name,
