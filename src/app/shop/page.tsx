@@ -21,7 +21,7 @@ const sortOptions: { value: SortOption; label: string }[] = [
 
 const CACHE_KEY = 'all_products_cache';
 const CACHE_DURATION = 3600 * 1000; // 1 hora en milisegundos
-const WP_API_URL = 'https://tecnovacenter.shop';
+const WP_API_URL = 'https://mortyscake.com';
 
 export default function ShopPage() {
   const [products, setProducts] = useState<any[]>([]);
@@ -68,7 +68,7 @@ export default function ShopPage() {
     const sorted = [...products];
     switch (sortOrder) {
       case 'price-desc':
-        return sorted.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+        return sorted.sort((a, b) => parseFloat(b.price) - parseFloat(b.price));
       case 'price-asc':
         return sorted.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
       case 'alpha-asc':

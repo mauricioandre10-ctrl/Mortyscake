@@ -19,7 +19,7 @@ const fontSans = FontSans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://reposteria-cursos.com'),
+  metadataBase: new URL('https://mortyscake.com'),
   title: {
     default: 'Cursos de Repostería Online y en Vivo | Transforma tu Pasión en Arte',
     template: '%s | Cursos de Repostería',
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Cursos de Repostería Online y en Vivo | Pastelería de Morty',
     description: 'Transforma tu pasión por la repostería en un arte. Cursos para todos los niveles, impartidos por expertos y con acceso a una comunidad vibrante.',
-    url: 'https://reposteria-cursos.com',
+    url: 'https://mortyscake.com',
     siteName: 'Cursos de Repostería de Morty',
     images: [
       {

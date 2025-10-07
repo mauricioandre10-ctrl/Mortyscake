@@ -7,11 +7,46 @@ import { notFound } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star, Truck, ShieldCheck, ArrowLeft, Info } from 'lucide-react';
 import { AddToCart } from '@/components/AddToCart';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default function ProductClientPage({ initialProduct }: { initialProduct: any }) {
+const WP_API_URL = 'https://mortyscake.com';
+
+export default function ProductClientPage({ initialProduct, slug }: { initialProduct: any, slug: string }) {
   const router = useRouter();
-  const [product] = useState<any>(initialProduct);
+  const [product, setProduct] = useState<any>(initialProduct);
+  const [loading, setLoading] = useState(!initialProduct);
+
+  useEffect(() => {
+    if (!initialProduct) {
+      const fetchProduct = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch');
+            }
+            const data = await response.json();
+            if (data && data.length > 0) {
+                setProduct(data[0]);
+            } else {
+                setProduct(null);
+            }
+        } catch (error) {
+            console.error("Failed to fetch product on client", error);
+            setProduct(null);
+        } finally {
+            setLoading(false);
+        }
+      };
+      fetchProduct();
+    }
+  }, [initialProduct, slug]);
+
+  if (loading) {
+      // A simple loading state. You can use your skeleton component here if you prefer
+      return <div>Cargando...</div>;
+  }
 
   if (!product) {
     return notFound();

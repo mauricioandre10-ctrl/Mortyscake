@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Video, Target, Package, Laptop, Lightbulb, ArrowLeft, Star, Info } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { AddToCart } from '@/components/AddToCart';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ShareButton } from '@/components/ShareButton';
 
 const iconMap: { [key: string]: React.ElementType } = {
@@ -18,12 +18,47 @@ const iconMap: { [key: string]: React.ElementType } = {
   'default': Info,
 };
 
-export default function CourseClientPage({ initialCourse }: { initialCourse: any }) {
+const WP_API_URL = 'https://mortyscake.com';
+
+
+export default function CourseClientPage({ initialCourse, slug }: { initialCourse: any, slug: string }) {
   const router = useRouter();
-  const [course] = useState<any>(initialCourse);
+  const [course, setCourse] = useState<any>(initialCourse);
+  const [loading, setLoading] = useState(!initialCourse);
+
+   useEffect(() => {
+    if (!initialCourse) {
+      const fetchCourse = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch');
+            }
+            const data = await response.json();
+            if (data && data.length > 0) {
+                setCourse(data[0]);
+            } else {
+                setCourse(null);
+            }
+        } catch (error) {
+            console.error("Failed to fetch course on client", error);
+            setCourse(null);
+        } finally {
+            setLoading(false);
+        }
+      };
+      fetchCourse();
+    }
+  }, [initialCourse, slug]);
+
+
+  if (loading) {
+      // You can replace this with a proper skeleton loader component
+      return <div>Cargando...</div>;
+  }
   
   if (!course) {
-    // This should ideally not happen if the server page component handles it
     return notFound();
   }
 

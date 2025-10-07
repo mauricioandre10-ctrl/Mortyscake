@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import CourseClientPage from './CourseClientPage';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const WP_API_URL = 'https://tecnovacenter.shop';
+const WP_API_URL = 'https://mortyscake.com';
 
 // This tells Next.js to generate pages on-demand if they weren't generated at build time.
 export const dynamicParams = true;
@@ -16,6 +16,10 @@ export async function generateStaticParams() {
 }
 
 async function getCourse(slug: string) {
+  // During build, don't fetch data. Data will be fetched on the client.
+  if (process.env.npm_lifecycle_event === 'build') {
+    return null;
+  }
   try {
     const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`, { next: { revalidate: 3600 } }); // Revalidate every hour
      if (!response.ok) {
@@ -35,13 +39,14 @@ async function getCourse(slug: string) {
 export default async function CourseDetailPage({ params }: { params: { slug: string } }) {
   const course = await getCourse(params.slug);
 
-  if (!course) {
-    notFound();
-  }
+  // The notFound() call is now handled inside the Client Component after client-side fetching.
+  // if (!course) {
+  //   notFound();
+  // }
 
   return (
     <Suspense fallback={<CourseDetailPageSkeleton />}>
-        <CourseClientPage initialCourse={course} />
+        <CourseClientPage initialCourse={course} slug={params.slug} />
     </Suspense>
   );
 }

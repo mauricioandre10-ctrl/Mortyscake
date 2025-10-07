@@ -3,7 +3,7 @@
 
 import { CartProvider } from 'use-shopping-cart';
 
-const WOOCOMMERCE_CHECKOUT_URL = 'https://tecnovacenter.shop/checkout/';
+const WOOCOMMERCE_CHECKOUT_URL = 'https://mortyscake.com/checkout/';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (

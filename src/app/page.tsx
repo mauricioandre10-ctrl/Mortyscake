@@ -36,7 +36,7 @@ const CACHE_KEY_PRODUCTS = 'home_products_cache';
 const CACHE_KEY_COURSES = 'home_courses_cache';
 const CACHE_DURATION = 3600 * 1000; // 1 hora en milisegundos
 
-const WP_API_URL = 'https://tecnovacenter.shop';
+const WP_API_URL = 'https://mortyscake.com';
 
 export default function Home() {
   const [products, setProducts] = useState<any[]>([]);
