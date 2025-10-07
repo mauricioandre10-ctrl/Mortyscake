@@ -29,7 +29,7 @@ export async function generateStaticParams() {
         // Build the URL to fetch products, excluding the course category if found.
         let productsUrl = `${WP_API_URL}/wp-json/morty/v1/products?per_page=100`;
         if (courseCatId) {
-            productsUrl += `&category_exclude=${courseCatId}`;
+            productsUrl += `&exclude_category=${courseCatId}`; // Note: This custom param depends on the PHP function
         }
         
         const productsResponse = await fetch(productsUrl);
@@ -78,6 +78,8 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
     return null; // <-- CRITICAL: Return null to stop execution.
   }
 
+  const imageUrl = product.images?.[0]?.src || 'https://picsum.photos/seed/placeholder/800/800';
+
   return (
         <div className="container mx-auto py-12 px-4 md:px-6">
            <div className="mb-8">
@@ -91,7 +93,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
           <div className="grid md:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto">
             <div className="relative aspect-square w-full overflow-hidden rounded-lg">
               <Image
-                src={product.images[0].src}
+                src={imageUrl}
                 alt={product.name}
                 fill
                 className="object-cover"
@@ -126,7 +128,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
                             id={String(product.id)}
                             price={parseFloat(product.price)}
                             currency="EUR"
-                            image={product.images?.[0]?.src || ''}
+                            image={imageUrl}
                             className="w-full"
                             size="lg"
                          />
@@ -139,7 +141,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
                                  <ShieldCheck className="w-5 h-5 text-muted-foreground" />
                                 <span>Pago 100% seguro</span>
                             </div>
-                             {product.attributes && product.attributes.map((attr: any) => (
+                             {Array.isArray(product.attributes) && product.attributes.map((attr: any) => (
                              <div key={attr.id} className="flex items-start gap-2 text-sm">
                                 <Info className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
                                 <div>

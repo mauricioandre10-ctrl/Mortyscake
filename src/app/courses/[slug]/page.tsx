@@ -78,6 +78,8 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
     return null; // <-- CRITICAL: Return null to stop execution.
   }
 
+  const imageUrl = course.images?.[0]?.src || 'https://picsum.photos/seed/placeholder/800/600';
+
   return (
         <div className="container mx-auto py-12 px-4 md:px-6">
            <div className="mb-8">
@@ -91,7 +93,7 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
           <div className="grid md:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto">
             <div className="relative aspect-square w-full overflow-hidden rounded-lg">
               <Image
-                src={course.images[0].src}
+                src={imageUrl}
                 alt={course.name}
                 fill
                 className="object-cover"
@@ -129,7 +131,7 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
                             id={String(course.id)}
                             price={parseFloat(course.price)}
                             currency="EUR"
-                            image={course.images?.[0]?.src || ''}
+                            image={imageUrl}
                             className="w-full"
                             size="lg"
                          >
@@ -143,7 +145,7 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
                               <p className="text-muted-foreground text-xs">Aprende a tu ritmo, cuando y donde quieras.</p>
                             </div>
                           </div>
-                          {course.attributes && course.attributes.map((attr: any) => (
+                          {Array.isArray(course.attributes) && course.attributes.map((attr: any) => (
                              <div key={attr.id} className="flex items-start">
                                 <Info className="h-4 w-4 mr-3 mt-1 shrink-0" />
                                 <div>
