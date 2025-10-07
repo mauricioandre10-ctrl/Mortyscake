@@ -30,7 +30,7 @@ export default function ProductClientPage({ initialProduct, slug }: { initialPro
             if (data && data.length > 0) {
                 setProduct(data[0]);
             } else {
-                setProduct(null);
+                setProduct(null); // Explicitly set to null if not found
             }
         } catch (error) {
             console.error("Failed to fetch product on client", error);
@@ -43,12 +43,13 @@ export default function ProductClientPage({ initialProduct, slug }: { initialPro
     }
   }, [initialProduct, slug]);
 
-  if (loading || !product) {
+  if (loading) {
       return <ProductDetailPageSkeleton />;
   }
 
   if (!product) {
-    return notFound();
+    notFound();
+    return null; // Return null after calling notFound
   }
 
   return (

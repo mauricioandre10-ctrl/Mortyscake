@@ -41,7 +41,7 @@ export default function CourseClientPage({ initialCourse, slug }: { initialCours
             if (data && data.length > 0) {
                 setCourse(data[0]);
             } else {
-                setCourse(null);
+                setCourse(null); // Explicitly set to null if not found
             }
         } catch (error) {
             console.error("Failed to fetch course on client", error);
@@ -55,12 +55,13 @@ export default function CourseClientPage({ initialCourse, slug }: { initialCours
   }, [initialCourse, slug]);
 
 
-  if (loading || !course) {
+  if (loading) {
       return <CourseDetailPageSkeleton />;
   }
   
   if (!course) {
-    return notFound();
+    notFound();
+    return null; // Return null after calling notFound
   }
 
   // This logic is now safely placed after the loading/null checks

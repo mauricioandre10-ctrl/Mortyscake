@@ -8,7 +8,8 @@ const WOOCOMMERCE_CHECKOUT_URL = 'https://mortyscake.com/checkout/';
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <CartProvider
-      cartMode="client-only"
+      mode="client-only"
+      shouldPersist={true}
       stripe="" // This is not needed for WooCommerce
       successUrl={`${WOOCOMMERCE_CHECKOUT_URL}?session_id={CHECKOUT_SESSION_ID}`}
       cancelUrl={WOOCOMMERCE_CHECKOUT_URL || ''}
