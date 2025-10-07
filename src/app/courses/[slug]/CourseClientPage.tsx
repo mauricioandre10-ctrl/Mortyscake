@@ -56,16 +56,14 @@ export default function CourseClientPage({ initialCourse, slug }: { initialCours
 
 
   if (loading || !course) {
-      // If we are loading or there is no course data yet, show skeleton.
-      // This also handles the initial server render during build when initialCourse is null.
       return <CourseDetailPageSkeleton />;
   }
   
-  // This can only be reached if course is not null, but we check again for safety.
   if (!course) {
     return notFound();
   }
 
+  // This logic is now safely placed after the loading/null checks
   const courseInfo = course.attributes.map((attr: any) => ({
       icon: iconMap[attr.name] || iconMap.default,
       title: attr.name,

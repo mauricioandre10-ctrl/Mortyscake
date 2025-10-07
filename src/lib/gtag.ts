@@ -1,4 +1,14 @@
 
+declare global {
+  interface Window {
+    gtag: (
+      type: 'config' | 'event',
+      id: string,
+      options?: Record<string, unknown>
+    ) => void;
+  }
+}
+
 export const pageview = (GA_MEASUREMENT_ID: string, url: string) => {
   if (typeof window.gtag !== 'function') {
     return;

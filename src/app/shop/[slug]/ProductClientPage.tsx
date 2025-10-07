@@ -44,8 +44,6 @@ export default function ProductClientPage({ initialProduct, slug }: { initialPro
   }, [initialProduct, slug]);
 
   if (loading || !product) {
-      // If we are loading or there is no product data yet, show skeleton.
-      // This also handles the initial server render during build when initialProduct is null.
       return <ProductDetailPageSkeleton />;
   }
 
