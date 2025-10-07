@@ -164,16 +164,14 @@ export default function ShopPage() {
           {sortedProducts.map((product) => (
             <Card key={product.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
               <CardHeader className="p-0">
-                <div className="block relative aspect-square">
-                  <Image
-                    src={product.images?.[0]?.src || 'https://picsum.photos/seed/placeholder/600/600'}
-                    alt={product.name}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover"
-                    unoptimized
-                  />
-                </div>
+                <Image
+                  src={product.images?.[0]?.src || 'https://picsum.photos/seed/placeholder/600/600'}
+                  alt={product.name}
+                  width={600}
+                  height={600}
+                  className="object-cover w-full h-auto aspect-square"
+                  unoptimized
+                />
               </CardHeader>
               <CardContent className="flex flex-col flex-grow p-6">
                 <CardTitle className="font-headline text-xl mb-2">
@@ -249,3 +247,5 @@ export default function ShopPage() {
     </div>
   );
 }
+
+    

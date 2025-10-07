@@ -182,16 +182,14 @@ export default function CoursesPage() {
           {sortedCourses.map((course: Course) => (
             <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
               <CardHeader className="p-0">
-                <div className="block relative aspect-[4/3]">
-                  <Image
-                    src={course.images?.[0]?.src || 'https://picsum.photos/seed/placeholder/800/600'}
-                    alt={course.name}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover"
-                    unoptimized
-                  />
-                </div>
+                <Image
+                  src={course.images?.[0]?.src || 'https://picsum.photos/seed/placeholder/800/600'}
+                  alt={course.name}
+                  width={800}
+                  height={600}
+                  className="object-cover w-full h-auto aspect-[4/3]"
+                  unoptimized
+                />
               </CardHeader>
               <CardContent className="flex flex-col flex-grow p-6">
                  <CardTitle className="font-headline text-xl mb-2">{course.name}</CardTitle>
@@ -273,3 +271,5 @@ export default function CoursesPage() {
     </div>
   );
 }
+
+    
