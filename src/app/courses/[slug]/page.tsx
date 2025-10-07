@@ -10,7 +10,37 @@ import { notFound } from 'next/navigation';
 
 const WP_API_URL = 'https://cms.mortyscake.com';
 
-// Fetch a single course by its slug
+
+export async function generateStaticParams() {
+    try {
+        const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
+        if (!catResponse.ok) {
+            console.error("Failed to fetch course category for static params. Skipping.");
+            return [];
+        }
+        const courseCategory = await catResponse.json();
+
+        if (!courseCategory || !courseCategory.id) {
+            console.error("Course category not found. Skipping param generation.");
+            return [];
+        }
+
+        const coursesResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=100`);
+        if (!coursesResponse.ok) {
+            console.error("Failed to fetch courses for static params. Skipping.");
+            return [];
+        }
+        const courses = await coursesResponse.json();
+        
+        return courses.map((course: any) => ({
+            slug: course.slug,
+        }));
+    } catch (error) {
+        console.error("Error in generateStaticParams for courses:", error);
+        return [];
+    }
+}
+
 async function getCourse(slug: string) {
     try {
         const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`);
@@ -18,7 +48,6 @@ async function getCourse(slug: string) {
             return null;
         }
         const data = await response.json();
-        // The API returns an array, so we get the first element
         if (data && Array.isArray(data) && data.length > 0) {
             return data[0];
         }
@@ -33,11 +62,9 @@ async function getCourse(slug: string) {
 export default async function CourseDetailPage({ params }: { params: { slug: string } }) {
   const course = await getCourse(params.slug);
 
-  // If no course is found, render the 404 page.
-  // This must be the very first check.
   if (!course) {
     notFound();
-    return null; // <-- CRITICAL: Return null to stop execution.
+    return null; 
   }
 
   const imageUrl = course.images?.[0]?.src || 'https://picsum.photos/seed/placeholder/800/600';

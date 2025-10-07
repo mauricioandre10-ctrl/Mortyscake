@@ -9,7 +9,52 @@ import { notFound } from 'next/navigation';
 
 const WP_API_URL = 'https://cms.mortyscake.com';
 
-// Fetch a single product by its slug
+export async function generateStaticParams() {
+    try {
+        let courseCatId: number | null = null;
+        try {
+            const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
+            if (catResponse.ok) {
+                const courseCategory = await catResponse.json();
+                if (courseCategory && courseCategory.id) {
+                    courseCatId = courseCategory.id;
+                }
+            }
+        } catch (e) {
+            console.warn("Could not fetch course category to exclude from shop params, proceeding without exclusion.");
+        }
+        
+        let fetchUrl = `${WP_API_URL}/wp-json/morty/v1/products?per_page=100`;
+        if (courseCatId) {
+             // It's better to fetch all and filter client-side if WC REST API `exclude_category` is not available or reliable
+             // For now, we will fetch all and then filter.
+        }
+
+        const productsResponse = await fetch(fetchUrl);
+        if (!productsResponse.ok) {
+            console.error("Failed to fetch products for static params. Skipping.");
+            return [];
+        }
+
+        let products = await productsResponse.json();
+
+        // If we have a course category ID, filter out those products
+        if (courseCatId) {
+            products = products.filter((product: any) => 
+                !product.categories.some((cat: any) => cat.id === courseCatId)
+            );
+        }
+
+        return products.map((product: any) => ({
+            slug: product.slug,
+        }));
+
+    } catch (error) {
+        console.error("Error in generateStaticParams for shop:", error);
+        return [];
+    }
+}
+
 async function getProduct(slug: string) {
     try {
         const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`);
@@ -17,7 +62,6 @@ async function getProduct(slug: string) {
             return null;
         }
         const data = await response.json();
-        // The API returns an array, so we get the first element
         if (data && Array.isArray(data) && data.length > 0) {
             return data[0];
         }
@@ -31,11 +75,9 @@ async function getProduct(slug: string) {
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
   const product = await getProduct(params.slug);
 
-  // If no product is found, render the 404 page.
-  // This must be the very first check.
   if (!product) {
     notFound();
-    return null; // <-- CRITICAL: Return null to stop execution.
+    return null;
   }
 
   const imageUrl = product.images?.[0]?.src || 'https://picsum.photos/seed/placeholder/800/800';
