@@ -13,33 +13,19 @@ const WP_API_URL = 'https://cms.mortyscake.com';
 // It's required for static export with dynamic routes.
 export async function generateStaticParams() {
    try {
-        // Fetch all products that are NOT in the 'cursos' category.
-        // First, get the ID for the 'cursos' category.
-        const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
-        let courseCatId = null;
-        if (catResponse.ok) {
-            const courseCategory = await catResponse.json();
-            if (courseCategory && courseCategory.id) {
-                courseCatId = courseCategory.id;
-            }
-        } else {
-             console.warn('Could not fetch course category to exclude from products. Fetching all products.');
-        }
-
-        // Build the URL to fetch products, excluding the course category if found.
-        let productsUrl = `${WP_API_URL}/wp-json/morty/v1/products?per_page=100`;
-        if (courseCatId) {
-            productsUrl += `&exclude_category=${courseCatId}`; // Note: This custom param depends on the PHP function
-        }
-        
-        const productsResponse = await fetch(productsUrl);
+        // Fetch all products to generate static pages for them.
+        // Simplified to fetch all products for maximum robustness during build.
+        const productsResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?per_page=100`);
         if (!productsResponse.ok) {
             console.error('Failed to fetch products for static params, skipping.');
             return [];
         }
         const products = await productsResponse.json();
 
-        return products.map((product: any) => ({
+        // The API might return non-product items or errors, so filter them out.
+        const validProducts = Array.isArray(products) ? products.filter(p => p && p.slug) : [];
+
+        return validProducts.map((product: any) => ({
             slug: product.slug,
         }));
     } catch (error) {

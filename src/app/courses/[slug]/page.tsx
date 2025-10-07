@@ -22,14 +22,17 @@ export async function generateStaticParams() {
         }
         const courseCategory = await catResponse.json();
 
+        // Use term_id as per API response, with a fallback to id for robustness
+        const categoryId = courseCategory.term_id || courseCategory.id;
+
         // If the category doesn't exist, we can't generate params.
-        if (!courseCategory || !courseCategory.id) {
-            console.error('Course category not found, skipping param generation.');
+        if (!categoryId) {
+            console.error('Course category ID not found, skipping param generation.');
             return [];
         }
 
         // Then, fetch all products (courses) in that category
-        const coursesResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=100`);
+        const coursesResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${categoryId}&per_page=100`);
         if (!coursesResponse.ok) {
             console.error('Failed to fetch courses for static params, skipping.');
             return [];
