@@ -10,38 +10,6 @@ import { notFound } from 'next/navigation';
 
 const WP_API_URL = 'https://cms.mortyscake.com';
 
-
-export async function generateStaticParams() {
-    try {
-        const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
-        if (!catResponse.ok) {
-            console.error("Failed to fetch course category for static params. Skipping.");
-            return [];
-        }
-        const courseCategory = await catResponse.json();
-
-        if (!courseCategory || (!courseCategory.id && !courseCategory.term_id)) {
-            console.error("Course category not found. Skipping param generation.");
-            return [];
-        }
-        const categoryId = courseCategory.term_id || courseCategory.id;
-
-        const coursesResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${categoryId}&per_page=100`);
-        if (!coursesResponse.ok) {
-            console.error("Failed to fetch courses for static params. Skipping.");
-            return [];
-        }
-        const courses = await coursesResponse.json();
-        
-        return courses.map((course: any) => ({
-            slug: course.slug,
-        }));
-    } catch (error) {
-        console.error("Error in generateStaticParams for courses:", error);
-        return [];
-    }
-}
-
 async function getCourse(slug: string) {
     try {
         const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`);

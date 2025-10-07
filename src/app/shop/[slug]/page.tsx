@@ -9,49 +9,6 @@ import { notFound } from 'next/navigation';
 
 const WP_API_URL = 'https://cms.mortyscake.com';
 
-export async function generateStaticParams() {
-    try {
-        const fetchUrl = `${WP_API_URL}/wp-json/morty/v1/products?per_page=100`;
-        const productsResponse = await fetch(fetchUrl);
-        if (!productsResponse.ok) {
-            console.error("Failed to fetch products for static params. Skipping.");
-            return [];
-        }
-
-        const products = await productsResponse.json();
-
-        // Get the course category ID to exclude course products
-        let courseCatId: number | null = null;
-        try {
-            const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
-            if (catResponse.ok) {
-                const courseCategory = await catResponse.json();
-                if (courseCategory && (courseCategory.id || courseCategory.term_id)) {
-                    courseCatId = courseCategory.term_id || courseCategory.id;
-                }
-            }
-        } catch (e) {
-            console.warn("Could not fetch course category, shop paths might include courses.");
-        }
-        
-        // Filter out products that are in the "cursos" category
-        const shopProducts = courseCatId
-            ? products.filter((product: any) => 
-                !product.categories.some((cat: any) => cat.id === courseCatId)
-              )
-            : products;
-
-        return shopProducts.map((product: any) => ({
-            slug: product.slug,
-        }));
-
-    } catch (error) {
-        console.error("Error in generateStaticParams for shop:", error);
-        return [];
-    }
-}
-
-
 async function getProduct(slug: string) {
     try {
         const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`);
