@@ -7,29 +7,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const WP_API_URL = 'https://tecnovacenter.shop';
 
+// This tells Next.js to generate pages on-demand if they weren't generated at build time.
+export const dynamicParams = true;
 
-// This function is called at build time to generate static pages for each product
+// This function can return an empty array if we want to build all pages on-demand.
+// This makes the build process independent of the API's availability.
 export async function generateStaticParams() {
-  try {
-    const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?per_page=100`);
-    if (!response.ok) {
-       console.error(`Build-time: Failed to fetch products. Status: ${response.statusText}`);
-       return [];
-    }
-    const products = await response.json();
-
-    if (!Array.isArray(products)) {
-        console.error('Build-time: API did not return an array of products.');
-        return [];
-    }
-    
-    return products.map((product: any) => ({
-      slug: product.slug,
-    }));
-  } catch (error) {
-    console.error('Build-time error in generateStaticParams for products:', error);
-    return [];
-  }
+  return [];
 }
 
 async function getProduct(slug: string) {

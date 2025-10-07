@@ -6,40 +6,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const WP_API_URL = 'https://tecnovacenter.shop';
 
-// This function is called at build time to generate static pages for each course
-export async function generateStaticParams() {
-  try {
-    const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
-    if (!catResponse.ok) {
-       console.error(`Build-time: Failed to fetch course category. Status: ${catResponse.statusText}`);
-       return [];
-    }
-    const courseCategory = await catResponse.json();
+// This tells Next.js to generate pages on-demand if they weren't generated at build time.
+export const dynamicParams = true;
 
-    if (!courseCategory || courseCategory.error) {
-      console.error('Build-time: Course category not found, cannot generate static params.');
-      return [];
-    }
-  
-    const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=100`);
-     if (!response.ok) {
-       console.error(`Build-time: Failed to fetch courses. Status: ${response.statusText}`);
-       return [];
-    }
-    const courses = await response.json();
-    
-    if (!Array.isArray(courses)) {
-      console.error('Build-time: API did not return an array of courses.');
-      return [];
-    }
-    
-    return courses.map((course: any) => ({
-      slug: course.slug,
-    }));
-  } catch (error) {
-    console.error('Build-time error in generateStaticParams for courses:', error);
-    return [];
-  }
+// This function can return an empty array if we want to build all pages on-demand.
+// This makes the build process independent of the API's availability.
+export async function generateStaticParams() {
+  return [];
 }
 
 async function getCourse(slug: string) {
@@ -119,5 +92,3 @@ function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
 function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return <div className={`p-0 ${className}`} {...props} />;
 }
-
-    

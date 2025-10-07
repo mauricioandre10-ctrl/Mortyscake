@@ -33,6 +33,7 @@ export default function CoursesPage() {
     const fetchCourses = async () => {
       setLoading(true);
       
+      // Try loading from cache first
       try {
           const cachedItem = localStorage.getItem(CACHE_KEY);
           if (cachedItem) {
@@ -40,12 +41,14 @@ export default function CoursesPage() {
               if ((new Date().getTime() - timestamp) < CACHE_DURATION) {
                   setCourses(data);
                   setLoading(false);
+                  // Still fetch in background, but UI is already populated
               }
           }
       } catch(e) {
           console.error("Failed to read from localStorage", e);
       }
 
+      // Fetch from network
       try {
         const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
         if (!catResponse.ok) {
@@ -190,5 +193,3 @@ export default function CoursesPage() {
     </div>
   );
 }
-
-    
