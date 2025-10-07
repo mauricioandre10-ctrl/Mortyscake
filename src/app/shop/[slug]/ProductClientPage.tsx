@@ -2,24 +2,27 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
-import { Star, Truck, ShieldCheck, ArrowLeft, Info } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Star, Truck, ShieldCheck, ArrowLeft, Info, AlertTriangle } from 'lucide-react';
 import { AddToCart } from '@/components/AddToCart';
 import { useEffect, useState } from 'react';
 import ProductDetailPageSkeleton from './ProductDetailPageSkeleton';
 
 const WP_API_URL = 'https://cms.mortyscake.com';
 
-export default function ProductClientPage({ initialProduct, slug }: { initialProduct: any, slug: string }) {
+export default function ProductClientPage({ slug }: { slug: string }) {
   const router = useRouter();
-  const [product, setProduct] = useState<any>(initialProduct);
-  const [loading, setLoading] = useState(!initialProduct);
+  const [product, setProduct] = useState<any | null>(undefined);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    if (!initialProduct) {
       const fetchProduct = async () => {
         setLoading(true);
+        setNotFound(false);
         try {
             const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`);
             if (!response.ok) {
@@ -29,21 +32,35 @@ export default function ProductClientPage({ initialProduct, slug }: { initialPro
             if (data && data.length > 0) {
                 setProduct(data[0]);
             } else {
-                setProduct(null); // Explicitly set to null if not found
+                setNotFound(true); 
             }
         } catch (error) {
             console.error("Failed to fetch product on client", error);
-            setProduct(null);
+            setNotFound(true);
         } finally {
             setLoading(false);
         }
       };
       fetchProduct();
-    }
-  }, [initialProduct, slug]);
+  }, [slug]);
 
-  if (loading || !product) {
+  if (loading || product === undefined) {
       return <ProductDetailPageSkeleton />;
+  }
+
+  if (notFound) {
+      return (
+       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] text-center px-4 py-16">
+        <AlertTriangle className="w-16 h-16 text-primary/70 mb-4" />
+        <h1 className="text-4xl md:text-5xl font-bold font-headline">Producto no Encontrado</h1>
+        <p className="mt-4 max-w-md text-muted-foreground">
+            Ups. Parece que el producto que buscas no existe o no está disponible.
+        </p>
+        <Button asChild className="mt-8">
+            <Link href="/shop">Volver a la tienda</Link>
+        </Button>
+    </div>
+    )
   }
 
   return (

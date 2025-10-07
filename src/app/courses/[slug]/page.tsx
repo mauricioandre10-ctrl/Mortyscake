@@ -15,12 +15,10 @@ export async function generateStaticParams() {
 // La obtención de datos del lado del servidor ha sido eliminada.
 // El componente cliente se encargará de toda la lógica de carga.
 export default function CourseDetailPage({ params }: { params: { slug: string } }) {
-  // Siempre pasamos `null` para `initialCourse`.
-  // El componente cliente (`CourseClientPage`) está diseñado para
-  // obtener los datos en el navegador si `initialCourse` es `null`.
+  // Ya no pasamos initialCourse, el cliente lo gestiona todo.
   return (
     <Suspense fallback={<CourseDetailPageSkeleton />}>
-        <CourseClientPage initialCourse={null} slug={params.slug} />
+        <CourseClientPage slug={params.slug} />
     </Suspense>
   );
 }

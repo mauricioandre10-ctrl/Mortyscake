@@ -4,13 +4,12 @@
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Video, Target, Package, Laptop, Lightbulb, ArrowLeft, Star, Info } from 'lucide-react';
+import { Video, Target, Package, Laptop, Lightbulb, ArrowLeft, Star, Info, AlertTriangle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { AddToCart } from '@/components/AddToCart';
 import { useEffect, useState } from 'react';
 import { ShareButton } from '@/components/ShareButton';
 import CourseDetailPageSkeleton from './CourseDetailPageSkeleton';
-
 
 const iconMap: { [key: string]: React.ElementType } = {
   '¿A quién está dirigido?': Target,
@@ -22,16 +21,16 @@ const iconMap: { [key: string]: React.ElementType } = {
 
 const WP_API_URL = 'https://cms.mortyscake.com';
 
-
-export default function CourseClientPage({ initialCourse, slug }: { initialCourse: any, slug: string }) {
+export default function CourseClientPage({ slug }: { slug: string }) {
   const router = useRouter();
-  const [course, setCourse] = useState<any>(initialCourse);
-  const [loading, setLoading] = useState(!initialCourse);
+  const [course, setCourse] = useState<any | null>(undefined);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
    useEffect(() => {
-    if (!initialCourse) {
       const fetchCourse = async () => {
         setLoading(true);
+        setNotFound(false);
         try {
             const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`);
             if (!response.ok) {
@@ -41,25 +40,38 @@ export default function CourseClientPage({ initialCourse, slug }: { initialCours
             if (data && data.length > 0) {
                 setCourse(data[0]);
             } else {
-                setCourse(null);
+                setNotFound(true);
             }
         } catch (error) {
             console.error("Failed to fetch course on client", error);
-            setCourse(null);
+            setNotFound(true);
         } finally {
             setLoading(false);
         }
       };
       fetchCourse();
-    }
-  }, [initialCourse, slug]);
+  }, [slug]);
 
 
-  if (loading || !course) {
+  if (loading || course === undefined) {
       return <CourseDetailPageSkeleton />;
   }
 
-  // This logic is now safely placed after the loading/null checks
+  if (notFound) {
+    return (
+       <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] text-center px-4 py-16">
+        <AlertTriangle className="w-16 h-16 text-primary/70 mb-4" />
+        <h1 className="text-4xl md:text-5xl font-bold font-headline">Curso no Encontrado</h1>
+        <p className="mt-4 max-w-md text-muted-foreground">
+            Ups. Parece que el curso que buscas no existe o ha sido movido.
+        </p>
+        <Button asChild className="mt-8">
+            <Link href="/courses">Ver todos los cursos</Link>
+        </Button>
+    </div>
+    )
+  }
+
   const courseInfo = course.attributes.map((attr: any) => ({
       icon: iconMap[attr.name] || iconMap.default,
       title: attr.name,
