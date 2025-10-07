@@ -4,7 +4,7 @@ import ProductClientPage from './ProductClientPage';
 import ProductDetailPageSkeleton from './ProductDetailPageSkeleton';
 
 
-const WP_API_URL = 'https://mortyscake.com';
+const WP_API_URL = 'https://cms.mortyscake.com';
 
 type ProductDetailPageProps = {
   params: { slug: string };

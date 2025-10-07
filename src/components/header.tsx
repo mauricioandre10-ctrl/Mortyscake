@@ -54,9 +54,8 @@ const Header = () => {
         </nav>
         
         <div className="flex items-center gap-2">
-          {/* TODO: Reemplazar '#' con la URL de inicio de sesión de WordPress (ej. /mi-cuenta) */}
            <Button asChild variant="ghost" size="icon" className="hidden md:flex">
-                <Link href="https://mortyscake.com/mi-cuenta" aria-label="Iniciar Sesión">
+                <Link href="https://cms.mortyscake.com/mi-cuenta" aria-label="Iniciar Sesión">
                     <User className="h-6 w-6"/>
                 </Link>
            </Button>
@@ -166,8 +165,7 @@ const Header = () => {
                     </Link>
                   ))}
                   <Separator className="my-2"/>
-                   {/* TODO: Reemplazar '#' con la URL de inicio de sesión de WordPress (ej. /mi-cuenta) */}
-                  <Link href="https://mortyscake.com/mi-cuenta" className="flex items-center gap-2 text-lg font-medium">
+                   <Link href="https://cms.mortyscake.com/mi-cuenta" className="flex items-center gap-2 text-lg font-medium">
                     <User className="h-5 w-5" />
                     <span>Mi Cuenta</span>
                   </Link>

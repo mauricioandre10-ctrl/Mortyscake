@@ -10,7 +10,7 @@ import { AddToCart } from '@/components/AddToCart';
 import { useEffect, useState } from 'react';
 import ProductDetailPageSkeleton from './ProductDetailPageSkeleton';
 
-const WP_API_URL = 'https://mortyscake.com';
+const WP_API_URL = 'https://cms.mortyscake.com';
 
 export default function ProductClientPage({ initialProduct, slug }: { initialProduct: any, slug: string }) {
   const router = useRouter();
@@ -43,7 +43,7 @@ export default function ProductClientPage({ initialProduct, slug }: { initialPro
     }
   }, [initialProduct, slug]);
 
-  if (loading) {
+  if (loading || !product) {
       return <ProductDetailPageSkeleton />;
   }
 

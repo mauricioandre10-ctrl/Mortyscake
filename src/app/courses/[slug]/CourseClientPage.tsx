@@ -20,7 +20,7 @@ const iconMap: { [key: string]: React.ElementType } = {
   'default': Info,
 };
 
-const WP_API_URL = 'https://mortyscake.com';
+const WP_API_URL = 'https://cms.mortyscake.com';
 
 
 export default function CourseClientPage({ initialCourse, slug }: { initialCourse: any, slug: string }) {
@@ -55,7 +55,7 @@ export default function CourseClientPage({ initialCourse, slug }: { initialCours
   }, [initialCourse, slug]);
 
 
-  if (loading) {
+  if (loading || !course) {
       return <CourseDetailPageSkeleton />;
   }
   

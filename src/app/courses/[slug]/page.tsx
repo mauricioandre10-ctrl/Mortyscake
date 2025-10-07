@@ -4,7 +4,7 @@ import CourseClientPage from './CourseClientPage';
 import CourseDetailPageSkeleton from './CourseDetailPageSkeleton';
 
 
-const WP_API_URL = 'https://mortyscake.com';
+const WP_API_URL = 'https://cms.mortyscake.com';
 
 // This tells Next.js to generate pages on-demand if they weren't generated at build time.
 export const dynamicParams = true;

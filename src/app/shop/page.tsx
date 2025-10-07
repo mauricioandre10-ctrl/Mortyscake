@@ -21,7 +21,7 @@ const sortOptions: { value: SortOption; label: string }[] = [
 
 const CACHE_KEY = 'all_products_cache';
 const CACHE_DURATION = 3600 * 1000; // 1 hora en milisegundos
-const WP_API_URL = 'https://mortyscake.com';
+const WP_API_URL = 'https://cms.mortyscake.com';
 
 export default function ShopPage() {
   const [products, setProducts] = useState<any[]>([]);
