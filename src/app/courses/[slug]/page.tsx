@@ -11,7 +11,7 @@ export async function generateStaticParams() {
   try {
     const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
     if (!catResponse.ok) {
-       console.error(`Build-time: Failed to fetch course category. Status: ${catResponse.status}`);
+       console.error(`Build-time: Failed to fetch course category. Status: ${catResponse.statusText}`);
        return [];
     }
     const courseCategory = await catResponse.json();
@@ -23,16 +23,21 @@ export async function generateStaticParams() {
   
     const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=100`);
      if (!response.ok) {
-       console.error(`Build-time: Failed to fetch courses. Status: ${response.status}`);
+       console.error(`Build-time: Failed to fetch courses. Status: ${response.statusText}`);
        return [];
     }
     const courses = await response.json();
+    
+    if (!Array.isArray(courses)) {
+      console.error('Build-time: API did not return an array of courses.');
+      return [];
+    }
     
     return courses.map((course: any) => ({
       slug: course.slug,
     }));
   } catch (error) {
-    console.error('Build-time: Failed to fetch courses for generateStaticParams', error);
+    console.error('Build-time error in generateStaticParams for courses:', error);
     return [];
   }
 }
@@ -63,7 +68,7 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
 
   return (
     <Suspense fallback={<CourseDetailPageSkeleton />}>
-        <CourseClientPage initialCourse={course} slug={params.slug} />
+        <CourseClientPage initialCourse={course} />
     </Suspense>
   );
 }
