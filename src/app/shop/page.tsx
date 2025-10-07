@@ -140,7 +140,7 @@ export default function ShopPage() {
                 </div>
               </CardHeader>
               <CardContent className="flex flex-col flex-grow p-6">
-                <CardTitle as="h3" className="font-headline text-xl mb-2">
+                <CardTitle className="font-headline text-xl mb-2">
                    {product.name}
                 </CardTitle>
                 <CardDescription className="text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
@@ -155,7 +155,7 @@ export default function ShopPage() {
                   id={String(product.id)}
                   price={parseFloat(product.price)}
                   currency="EUR"
-                  image={product.images?.[0]?.src || ''}
+                  image={product.images?.[0]?.src || 'https://picsum.photos/seed/placeholder/600/600'}
                 />
               </CardFooter>
             </Card>
@@ -165,5 +165,3 @@ export default function ShopPage() {
     </div>
   );
 }
-
-    

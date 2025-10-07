@@ -160,7 +160,7 @@ export default function CoursesPage() {
                 </div>
               </CardHeader>
               <CardContent className="flex flex-col flex-grow p-6">
-                 <CardTitle as="h3" className="font-headline text-xl mb-2">{course.name}</CardTitle>
+                 <CardTitle className="font-headline text-xl mb-2">{course.name}</CardTitle>
                     <div className="flex items-center gap-2 mb-2">
                       <div className="flex text-yellow-400">
                         {[...Array(5)].map((_, i) => (
@@ -181,7 +181,7 @@ export default function CoursesPage() {
                   id={String(course.id)}
                   price={parseFloat(course.price)}
                   currency="EUR"
-                  image={course.images?.[0]?.src || ''}
+                  image={course.images?.[0]?.src || 'https://picsum.photos/seed/placeholder/800/600'}
                 >
                   {course.price === "0.00" ? "Inscribirse Gratis" : "Añadir al carrito"}
                 </AddToCart>
@@ -193,5 +193,3 @@ export default function CoursesPage() {
     </div>
   );
 }
-
-    
