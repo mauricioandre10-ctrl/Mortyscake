@@ -11,41 +11,37 @@ const WP_API_URL = 'https://cms.mortyscake.com';
 
 export async function generateStaticParams() {
     try {
-        let courseCatId: number | null = null;
-        try {
-            const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
-            if (catResponse.ok) {
-                const courseCategory = await catResponse.json();
-                if (courseCategory && courseCategory.id) {
-                    courseCatId = courseCategory.id;
-                }
-            }
-        } catch (e) {
-            console.warn("Could not fetch course category to exclude from shop params, proceeding without exclusion.");
-        }
-        
-        let fetchUrl = `${WP_API_URL}/wp-json/morty/v1/products?per_page=100`;
-        if (courseCatId) {
-             // It's better to fetch all and filter client-side if WC REST API `exclude_category` is not available or reliable
-             // For now, we will fetch all and then filter.
-        }
-
+        const fetchUrl = `${WP_API_URL}/wp-json/morty/v1/products?per_page=100`;
         const productsResponse = await fetch(fetchUrl);
         if (!productsResponse.ok) {
             console.error("Failed to fetch products for static params. Skipping.");
             return [];
         }
 
-        let products = await productsResponse.json();
+        const products = await productsResponse.json();
 
-        // If we have a course category ID, filter out those products
-        if (courseCatId) {
-            products = products.filter((product: any) => 
-                !product.categories.some((cat: any) => cat.id === courseCatId)
-            );
+        // Get the course category ID to exclude course products
+        let courseCatId: number | null = null;
+        try {
+            const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
+            if (catResponse.ok) {
+                const courseCategory = await catResponse.json();
+                if (courseCategory && (courseCategory.id || courseCategory.term_id)) {
+                    courseCatId = courseCategory.term_id || courseCategory.id;
+                }
+            }
+        } catch (e) {
+            console.warn("Could not fetch course category, shop paths might include courses.");
         }
+        
+        // Filter out products that are in the "cursos" category
+        const shopProducts = courseCatId
+            ? products.filter((product: any) => 
+                !product.categories.some((cat: any) => cat.id === courseCatId)
+              )
+            : products;
 
-        return products.map((product: any) => ({
+        return shopProducts.map((product: any) => ({
             slug: product.slug,
         }));
 
@@ -55,6 +51,7 @@ export async function generateStaticParams() {
     }
 }
 
+
 async function getProduct(slug: string) {
     try {
         const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`);
@@ -63,7 +60,25 @@ async function getProduct(slug: string) {
         }
         const data = await response.json();
         if (data && Array.isArray(data) && data.length > 0) {
-            return data[0];
+            const product = data[0];
+
+            // Final check: if this product is a course, don't show it on a shop page.
+            let courseCatId: number | null = null;
+            try {
+                const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
+                if (catResponse.ok) {
+                    const courseCategory = await catResponse.json();
+                    if (courseCategory && (courseCategory.id || courseCategory.term_id)) {
+                        courseCatId = courseCategory.term_id || courseCategory.id;
+                    }
+                }
+            } catch (e) { /* ignore */ }
+
+            if (courseCatId && product.categories.some((cat: any) => cat.id === courseCatId)) {
+                return null; // This is a course, so treat as not found on the shop page.
+            }
+            
+            return product;
         }
         return null;
     } catch (error) {

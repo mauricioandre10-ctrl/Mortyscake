@@ -20,12 +20,13 @@ export async function generateStaticParams() {
         }
         const courseCategory = await catResponse.json();
 
-        if (!courseCategory || !courseCategory.id) {
+        if (!courseCategory || (!courseCategory.id && !courseCategory.term_id)) {
             console.error("Course category not found. Skipping param generation.");
             return [];
         }
+        const categoryId = courseCategory.term_id || courseCategory.id;
 
-        const coursesResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=100`);
+        const coursesResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${categoryId}&per_page=100`);
         if (!coursesResponse.ok) {
             console.error("Failed to fetch courses for static params. Skipping.");
             return [];
