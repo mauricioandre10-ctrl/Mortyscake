@@ -55,7 +55,7 @@ export default function CourseClientPage({ initialCourse, slug }: { initialCours
   }, [initialCourse, slug]);
 
 
-  if (loading || !course) {
+  if (loading) {
       return <CourseDetailPageSkeleton />;
   }
   

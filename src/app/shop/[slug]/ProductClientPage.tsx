@@ -43,7 +43,7 @@ export default function ProductClientPage({ initialProduct, slug }: { initialPro
     }
   }, [initialProduct, slug]);
 
-  if (loading || !product) {
+  if (loading) {
       return <ProductDetailPageSkeleton />;
   }
 
