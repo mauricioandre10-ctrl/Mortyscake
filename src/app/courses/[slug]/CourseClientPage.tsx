@@ -55,14 +55,13 @@ export default function CourseClientPage({ initialCourse, slug }: { initialCours
   }, [initialCourse, slug]);
 
 
-  if (loading) {
+  if (loading || !course) {
       return <CourseDetailPageSkeleton />;
   }
   
   if (!course) {
-    // Cannot use notFound() in a client component. Redirect instead.
     router.push('/not-found');
-    return null; // Return null to stop rendering
+    return null;
   }
 
   // This logic is now safely placed after the loading/null checks

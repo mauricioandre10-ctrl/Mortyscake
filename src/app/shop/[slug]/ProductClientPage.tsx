@@ -42,14 +42,13 @@ export default function ProductClientPage({ initialProduct, slug }: { initialPro
     }
   }, [initialProduct, slug]);
 
-  if (loading) {
+  if (loading || !product) {
       return <ProductDetailPageSkeleton />;
   }
 
   if (!product) {
-    // Cannot use notFound() in a client component. Redirect instead.
     router.push('/not-found');
-    return null; // Return null to stop rendering
+    return null; 
   }
 
   return (
