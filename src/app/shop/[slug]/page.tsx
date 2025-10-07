@@ -19,7 +19,6 @@ async function getProduct(slug: string) {
         if (data && Array.isArray(data) && data.length > 0) {
             const product = data[0];
 
-            // Final check: if this product is a course, don't show it on a shop page.
             let courseCatId: number | null = null;
             try {
                 const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
@@ -32,7 +31,7 @@ async function getProduct(slug: string) {
             } catch (e) { /* ignore */ }
 
             if (courseCatId && product.categories.some((cat: any) => cat.id === courseCatId)) {
-                return null; // This is a course, so treat as not found on the shop page.
+                return null; 
             }
             
             return product;
@@ -43,6 +42,46 @@ async function getProduct(slug: string) {
         return null;
     }
 }
+
+export async function generateStaticParams() {
+    try {
+        let courseCatId: number | null = null;
+        try {
+            const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
+            if (catResponse.ok) {
+                const courseCategory = await catResponse.json();
+                if (courseCategory && (courseCategory.id || courseCategory.term_id)) {
+                    courseCatId = courseCategory.term_id || courseCategory.id;
+                }
+            }
+        } catch (e) {
+            console.warn('Could not fetch course category to exclude from shop params.');
+        }
+
+        const params: any = { per_page: 100 };
+        if (courseCatId) {
+            params.exclude_category = [courseCatId];
+        }
+
+        const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?per_page=100`);
+        if (!response.ok) return [];
+        
+        let products = await response.json();
+        if (!Array.isArray(products)) return [];
+
+        if(courseCatId) {
+          products = products.filter((p: any) => !p.categories.some((cat: any) => cat.id === courseCatId));
+        }
+
+        return products.map((product: any) => ({
+            slug: product.slug,
+        }));
+    } catch (error) {
+        console.error('Failed to generate static params for shop:', error);
+        return []; // Return empty array on error to prevent build failure
+    }
+}
+
 
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
   const product = await getProduct(params.slug);

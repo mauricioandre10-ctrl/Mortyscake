@@ -27,6 +27,29 @@ async function getCourse(slug: string) {
     }
 }
 
+export async function generateStaticParams() {
+  try {
+    const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
+    if (!catResponse.ok) return [];
+
+    const courseCategory = await catResponse.json();
+    if (!courseCategory || !courseCategory.id) return [];
+    
+    const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=100`);
+    if (!response.ok) return [];
+
+    const courses = await response.json();
+    if (!Array.isArray(courses)) return [];
+
+    return courses.map((course: any) => ({
+      slug: course.slug,
+    }));
+  } catch (error) {
+    console.error('Failed to generate static params for courses:', error);
+    return []; // Return empty array on error to prevent build failure
+  }
+}
+
 
 export default async function CourseDetailPage({ params }: { params: { slug: string } }) {
   const course = await getCourse(params.slug);
