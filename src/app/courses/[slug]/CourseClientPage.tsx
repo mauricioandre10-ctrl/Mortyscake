@@ -3,6 +3,7 @@
 
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Video, Target, Package, Laptop, Lightbulb, ArrowLeft, Star, Info, AlertTriangle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -23,7 +24,7 @@ const WP_API_URL = 'https://cms.mortyscake.com';
 
 export default function CourseClientPage({ slug }: { slug: string }) {
   const router = useRouter();
-  const [course, setCourse] = useState<any | null>(undefined);
+  const [course, setCourse] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
@@ -53,7 +54,7 @@ export default function CourseClientPage({ slug }: { slug: string }) {
   }, [slug]);
 
 
-  if (loading || course === undefined) {
+  if (loading) {
       return <CourseDetailPageSkeleton />;
   }
 
@@ -70,6 +71,10 @@ export default function CourseClientPage({ slug }: { slug: string }) {
         </Button>
     </div>
     )
+  }
+
+  if (!course) {
+    return <CourseDetailPageSkeleton />;
   }
 
   const courseInfo = course.attributes.map((attr: any) => ({

@@ -15,7 +15,7 @@ const WP_API_URL = 'https://cms.mortyscake.com';
 
 export default function ProductClientPage({ slug }: { slug: string }) {
   const router = useRouter();
-  const [product, setProduct] = useState<any | null>(undefined);
+  const [product, setProduct] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
@@ -44,7 +44,7 @@ export default function ProductClientPage({ slug }: { slug: string }) {
       fetchProduct();
   }, [slug]);
 
-  if (loading || product === undefined) {
+  if (loading) {
       return <ProductDetailPageSkeleton />;
   }
 
@@ -61,6 +61,10 @@ export default function ProductClientPage({ slug }: { slug: string }) {
         </Button>
     </div>
     )
+  }
+
+  if (!product) {
+      return <ProductDetailPageSkeleton />;
   }
 
   return (
