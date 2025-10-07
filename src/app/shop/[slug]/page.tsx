@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const CACHE_DURATION = 3600 * 1000; // 1 hora en milisegundos
+const WP_API_URL = 'https://tecnovacenter.shop';
 
 export default function ProductDetailPage({ params: serverParams }: { params: { slug: string } }) {
   const router = useRouter();
@@ -26,6 +27,7 @@ export default function ProductDetailPage({ params: serverParams }: { params: { 
 
     const fetchProduct = async () => {
       setLoading(true);
+      let dataLoaded = false;
 
       // 1. Intentar cargar desde la caché
       try {
@@ -35,6 +37,7 @@ export default function ProductDetailPage({ params: serverParams }: { params: { 
           if ((new Date().getTime() - timestamp) < CACHE_DURATION) {
             setProduct(data);
             setLoading(false);
+            dataLoaded = true;
           }
         }
       } catch(e) {
@@ -43,7 +46,7 @@ export default function ProductDetailPage({ params: serverParams }: { params: { 
 
       // 2. Fetch de la red
       try {
-        const response = await fetch(`/wp-json/morty/v1/products?slug=${slug}`);
+        const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`);
         const data = await response.json();
         
         if (data && data.length > 0) {
@@ -51,18 +54,18 @@ export default function ProductDetailPage({ params: serverParams }: { params: { 
           setProduct(fetchedProduct);
           localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: new Date().getTime(), data: fetchedProduct }));
         } else {
-          if(!product) notFound(); // notFound solo si no hay nada en caché
+          if(!product && !dataLoaded) notFound();
         }
       } catch (error) {
         console.error("Failed to fetch product from API", error);
-        if(!product) notFound();
+        if(!product && !dataLoaded) notFound();
       } finally {
-        if(loading) setLoading(false);
+        if(!dataLoaded) setLoading(false);
       }
     };
 
     fetchProduct();
-  }, [params.slug, product, loading]);
+  }, [params.slug]);
 
 
   if (loading && !product) {

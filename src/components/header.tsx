@@ -38,7 +38,7 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2">
-           <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width={180} height={64} className="object-contain h-auto max-w-[100px]" />
+           <Image src="https://picsum.photos/seed/logo/180/64" alt="Pastelería de Morty" width={180} height={64} className="object-contain h-auto max-w-[100px]" data-ai-hint="logo" />
         </Link>
         
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
@@ -56,7 +56,7 @@ const Header = () => {
         <div className="flex items-center gap-2">
           {/* TODO: Reemplazar '#' con la URL de inicio de sesión de WordPress (ej. /mi-cuenta) */}
            <Button asChild variant="ghost" size="icon" className="hidden md:flex">
-                <Link href="#" aria-label="Iniciar Sesión">
+                <Link href="https://tecnovacenter.shop/mi-cuenta" aria-label="Iniciar Sesión">
                     <User className="h-6 w-6"/>
                 </Link>
            </Button>
@@ -153,7 +153,7 @@ const Header = () => {
                 </SheetHeader>
                 <div className="flex flex-col gap-4 p-4">
                   <Link href="/" className="flex items-center gap-2 mb-4">
-                     <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width={180} height={64} className="object-contain h-auto max-w-[100px]" />
+                     <Image src="https://picsum.photos/seed/logo/180/64" alt="Pastelería de Morty" width={180} height={64} className="object-contain h-auto max-w-[100px]" data-ai-hint="logo" />
                   </Link>
                   {navLinks.map((link) => (
                     <Link
@@ -166,7 +166,7 @@ const Header = () => {
                   ))}
                   <Separator className="my-2"/>
                    {/* TODO: Reemplazar '#' con la URL de inicio de sesión de WordPress (ej. /mi-cuenta) */}
-                  <Link href="#" className="flex items-center gap-2 text-lg font-medium">
+                  <Link href="https://tecnovacenter.shop/mi-cuenta" className="flex items-center gap-2 text-lg font-medium">
                     <User className="h-5 w-5" />
                     <span>Mi Cuenta</span>
                   </Link>
@@ -181,3 +181,5 @@ const Header = () => {
 };
 
 export default Header;
+
+    

@@ -20,6 +20,7 @@ const iconMap: { [key: string]: React.ElementType } = {
 };
 
 const CACHE_DURATION = 3600 * 1000; // 1 hora en milisegundos
+const WP_API_URL = 'https://tecnovacenter.shop';
 
 export default function CourseDetailPage({ params: serverParams }: { params: { slug: string } }) {
   const router = useRouter();
@@ -35,6 +36,7 @@ export default function CourseDetailPage({ params: serverParams }: { params: { s
 
     const fetchCourse = async () => {
       setLoading(true);
+      let dataLoaded = false;
 
       // 1. Intentar cargar desde la caché
       try {
@@ -44,6 +46,7 @@ export default function CourseDetailPage({ params: serverParams }: { params: { s
               if ((new Date().getTime() - timestamp) < CACHE_DURATION) {
                   setCourse(data);
                   setLoading(false);
+                  dataLoaded = true;
               }
           }
       } catch(e) {
@@ -52,7 +55,7 @@ export default function CourseDetailPage({ params: serverParams }: { params: { s
 
       // 2. Fetch de la red
       try {
-        const response = await fetch(`/wp-json/morty/v1/products?slug=${slug}`);
+        const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`);
         const data = await response.json();
         
         if (data && data.length > 0) {
@@ -60,17 +63,17 @@ export default function CourseDetailPage({ params: serverParams }: { params: { s
           setCourse(fetchedCourse);
           localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: new Date().getTime(), data: fetchedCourse }));
         } else {
-          if(!course) notFound();
+          if(!course && !dataLoaded) notFound();
         }
       } catch (error) {
         console.error("Failed to fetch course product from API", error);
-        if(!course) notFound();
+        if(!course && !dataLoaded) notFound();
       } finally {
-        if(loading) setLoading(false);
+        if(!dataLoaded) setLoading(false);
       }
     };
     fetchCourse();
-  }, [params.slug, course, loading]);
+  }, [params.slug]);
 
 
   if (loading && !course) {

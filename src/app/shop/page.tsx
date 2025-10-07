@@ -21,6 +21,7 @@ const sortOptions: { value: SortOption; label: string }[] = [
 
 const CACHE_KEY = 'all_products_cache';
 const CACHE_DURATION = 3600 * 1000; // 1 hora en milisegundos
+const WP_API_URL = 'https://tecnovacenter.shop';
 
 export default function ShopPage() {
   const [products, setProducts] = useState<any[]>([]);
@@ -30,6 +31,7 @@ export default function ShopPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
+      let dataLoaded = false;
 
       // 1. Intentar cargar desde la caché
       try {
@@ -39,16 +41,17 @@ export default function ShopPage() {
           const isCacheValid = (new Date().getTime() - timestamp) < CACHE_DURATION;
           if (isCacheValid) {
             setProducts(data);
-            setLoading(false); // Cargado desde la caché, quitar esqueleto
+            setLoading(false);
+            dataLoaded = true;
           }
         }
       } catch (e) {
           console.error("Failed to read from localStorage", e);
       }
 
-      // 2. Fetch de la red en cualquier caso (stale-while-revalidate)
+      // 2. Fetch de la red
       try {
-        const response = await fetch('/wp-json/morty/v1/products');
+        const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products`);
         const data = await response.json();
         
         // Actualizar estado y caché
@@ -58,8 +61,7 @@ export default function ShopPage() {
       } catch (error) {
         console.error('Error fetching products from API:', error);
       } finally {
-        // Si no se cargó nada desde la caché, ahora se quita el loading
-        if (loading) {
+        if (!dataLoaded) {
             setLoading(false);
         }
       }

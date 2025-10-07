@@ -1,3 +1,4 @@
+
 export interface Product {
     slug: string;
     name: string;
@@ -18,7 +19,7 @@ export const products: Product[] = [
     description: 'Colorante ultra concentrado para masas, cremas y glaseados. Aporta un color rojo intenso y duradero sin alterar la consistencia.',
     price: 4.95,
     image: {
-      src: '/image/product-1.webp',
+      src: 'https://picsum.photos/seed/product1/500/500',
       width: 500,
       height: 500,
       hint: 'food coloring'
@@ -30,7 +31,7 @@ export const products: Product[] = [
     description: 'Perfecta para alisar coberturas y glaseados con precisión profesional. Mango ergonómico para un agarre cómodo.',
     price: 12.50,
     image: {
-      src: '/image/product-2.webp',
+      src: 'https://picsum.photos/seed/product2/500/500',
       width: 500,
       height: 500,
       hint: 'palette knife'
@@ -42,7 +43,7 @@ export const products: Product[] = [
     description: 'Crea flores de buttercream espectaculares con un solo gesto. Incluye 7 diseños de boquillas de gran tamaño.',
     price: 18.90,
     image: {
-      src: '/image/product-3.webp',
+      src: 'https://picsum.photos/seed/product3/500/500',
       width: 500,
       height: 500,
       hint: 'piping tips'
@@ -54,7 +55,7 @@ export const products: Product[] = [
     description: 'Intenso sabor a vainilla con semillas naturales. Ideal para aromatizar bizcochos, cremas y helados.',
     price: 9.75,
     image: {
-      src: '/image/product-4.webp',
+      src: 'https://picsum.photos/seed/product4/500/500',
       width: 500,
       height: 500,
       hint: 'vanilla paste'
@@ -66,7 +67,7 @@ export const products: Product[] = [
     description: 'Molde de 20cm con base extraíble y cierre rápido. Hornea bizcochos y tartas de queso perfectas.',
     price: 15.20,
     image: {
-      src: '/image/product-5.webp',
+      src: 'https://picsum.photos/seed/product5/500/500',
       width: 500,
       height: 500,
       hint: 'cake pan'
@@ -78,7 +79,7 @@ export const products: Product[] = [
     description: 'Perlas de chocolate negro de alta calidad, perfectas para fundir, ganaches y mousses. Sabor intenso y equilibrado.',
     price: 8.50,
     image: {
-      src: '/image/product-6.webp',
+      src: 'https://picsum.photos/seed/product6/500/500',
       width: 500,
       height: 500,
       hint: 'chocolate chips'
@@ -90,7 +91,7 @@ export const products: Product[] = [
     description: 'Plataforma estable y con giro suave para decorar tartas y pasteles con comodidad y precisión. Indispensable.',
     price: 22.00,
     image: {
-      src: '/image/product-7.webp',
+      src: 'https://picsum.photos/seed/product7/500/500',
       width: 500,
       height: 500,
       hint: 'cake stand'
@@ -102,7 +103,7 @@ export const products: Product[] = [
     description: 'Una mezcla elegante de perlas, fideos y formas en tonos dorados y blancos para un acabado de lujo.',
     price: 6.25,
     image: {
-      src: '/image/product-8.webp',
+      src: 'https://picsum.photos/seed/product8/500/500',
       width: 500,
       height: 500,
       hint: 'gold sprinkles'
@@ -114,10 +115,12 @@ export const products: Product[] = [
     description: 'Superficie antiadherente reutilizable para hornear galletas, macarons y mucho más. Medidas y guías circulares impresas.',
     price: 11.90,
     image: {
-      src: '/image/product-9.webp',
+      src: 'https://picsum.photos/seed/product9/500/500',
       width: 500,
       height: 500,
       hint: 'silicone mat'
     },
   }
 ];
+
+    

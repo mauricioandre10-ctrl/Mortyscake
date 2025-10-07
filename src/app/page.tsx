@@ -20,14 +20,14 @@ const blogPosts = [
     slug: 'secretos-merengue-perfecto',
     title: '5 Secretos para un Merengue Suizo Perfecto',
     description: 'Descubre los trucos de profesional para lograr un merengue brillante, sedoso y estable que llevará tus postres al siguiente nivel.',
-    image: { src: '/image/blog-1.webp', hint: 'meringue' },
+    image: { src: 'https://picsum.photos/seed/blog1/800/450', hint: 'meringue' },
     category: 'Técnicas',
   },
   {
     slug: 'tendencias-decoracion-tartas-2025',
     title: 'Tendencias en Decoración de Tartas para 2025',
     description: 'Desde diseños minimalistas hasta texturas inspiradas en la naturaleza, te mostramos lo que viene para que tus creaciones sorprendan.',
-    image: { src: '/image/blog-2.webp', hint: 'cake trends' },
+    image: { src: 'https://picsum.photos/seed/blog2/800/450', hint: 'cake trends' },
     category: 'Inspiración',
   }
 ];
@@ -35,6 +35,8 @@ const blogPosts = [
 const CACHE_KEY_PRODUCTS = 'home_products_cache';
 const CACHE_KEY_COURSES = 'home_courses_cache';
 const CACHE_DURATION = 3600 * 1000; // 1 hora en milisegundos
+
+const WP_API_URL = 'https://tecnovacenter.shop';
 
 export default function Home() {
   const [products, setProducts] = useState<any[]>([]);
@@ -49,6 +51,7 @@ export default function Home() {
   useEffect(() => {
     const fetchWithCache = async (cacheKey: string, url: string, setter: (data: any[]) => void, loader: (loading: boolean) => void) => {
       loader(true);
+      let dataLoaded = false;
 
       // 1. Intentar cargar desde la caché
       try {
@@ -59,15 +62,19 @@ export default function Home() {
           if (isCacheValid) {
             setter(data);
             loader(false);
+            dataLoaded = true;
           }
         }
       } catch (e) {
           console.error("Failed to read from localStorage", e);
       }
 
-      // 2. Fetch de la red en cualquier caso (stale-while-revalidate)
+      // 2. Fetch de la red
       try {
         const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Network response was not ok: ${response.statusText}`);
+        }
         const data = await response.json();
         
         // Actualizar estado y caché
@@ -77,8 +84,7 @@ export default function Home() {
       } catch (error) {
         console.error('Error fetching data from API:', error);
       } finally {
-        // Si no se cargó nada desde la caché, ahora se quita el loading
-        if (loadingProducts || loadingCourses) {
+        if (!dataLoaded) {
           loader(false);
         }
       }
@@ -86,13 +92,13 @@ export default function Home() {
     
     const fetchProductsAndCourses = async () => {
         try {
-            const catResponse = await fetch('/wp-json/morty/v1/category-by-slug?slug=cursos');
+            const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
             const courseCategory = await catResponse.json();
 
             let courseProductIds: number[] = [];
             if (courseCategory && !courseCategory.error) {
-                 const coursesUrl = `/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=9`;
-                 fetchWithCache(CACHE_KEY_COURSES, coursesUrl, (data) => {
+                 const coursesUrl = `${WP_API_URL}/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=9`;
+                 await fetchWithCache(CACHE_KEY_COURSES, coursesUrl, (data) => {
                     setCourses(data);
                     courseProductIds = data.map((p:any) => p.id);
                  }, setLoadingCourses);
@@ -100,16 +106,12 @@ export default function Home() {
                 setLoadingCourses(false);
             }
             
-            // Para asegurar que los productos se fetchean después de tener los IDs de los cursos
-            // esperamos un poco. Idealmente esto se encadenaría mejor.
-            setTimeout(() => {
-                let productParams = 'per_page=9&orderby=date&order=desc';
-                if (courseProductIds.length > 0) {
-                    productParams += `&exclude=${courseProductIds.join(',')}`;
-                }
-                const productsUrl = `/wp-json/morty/v1/products?${productParams}`;
-                fetchWithCache(CACHE_KEY_PRODUCTS, productsUrl, setProducts, setLoadingProducts);
-            }, 100);
+            let productParams = 'per_page=9&orderby=date&order=desc';
+            if (courseProductIds.length > 0) {
+                productParams += `&exclude=${courseProductIds.join(',')}`;
+            }
+            const productsUrl = `${WP_API_URL}/wp-json/morty/v1/products?${productParams}`;
+            await fetchWithCache(CACHE_KEY_PRODUCTS, productsUrl, setProducts, setLoadingProducts);
 
         } catch(e) {
             console.error('Error fetching initial category data', e);
@@ -126,7 +128,7 @@ export default function Home() {
       {/* 1. Hero Section */}
       <section className="relative w-full h-[60vh] min-h-[400px] bg-black text-white flex items-center justify-center">
          <Image 
-            src="/image/hero-background.webp" 
+            src="https://picsum.photos/seed/hero/1920/1080" 
             alt="Mujer decorando una tarta con flores frescas"
             fill
             className="object-cover opacity-40"
@@ -153,7 +155,7 @@ export default function Home() {
             <Link href="/courses" className="group block">
               <Card className="overflow-hidden h-full flex flex-col shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300">
                 <div className="relative aspect-[4/3] w-full">
-                  <Image src="/image/category-courses.webp" alt="Alumna decorando un pastel en un curso" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="pastry class" />
+                  <Image src="https://picsum.photos/seed/cat-courses/800/600" alt="Alumna decorando un pastel en un curso" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="pastry class" />
                 </div>
                 <CardHeader>
                   <CardTitle className="font-headline text-2xl">Cursos de Repostería</CardTitle>
@@ -169,7 +171,7 @@ export default function Home() {
             <Link href="/shop" className="group block">
               <Card className="overflow-hidden h-full flex flex-col shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300">
                 <div className="relative aspect-[4/3] w-full">
-                  <Image src="/image/category-shop.webp" alt="Productos de repostería de alta calidad" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="baking products" />
+                  <Image src="https://picsum.photos/seed/cat-shop/800/600" alt="Productos de repostería de alta calidad" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="baking products" />
                 </div>
                 <CardHeader>
                   <CardTitle className="font-headline text-2xl">Nuestros Productos</CardTitle>
@@ -336,7 +338,7 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
             <div className="relative w-full aspect-square md:aspect-[4/5] rounded-lg overflow-hidden shadow-lg">
                 <Image 
-                    src="/image/chef.webp"
+                    src="https://picsum.photos/seed/chef/800/1000"
                     alt="Retrato de Morty, la chef de repostería"
                     fill
                     className="object-cover"

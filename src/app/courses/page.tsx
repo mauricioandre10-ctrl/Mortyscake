@@ -22,6 +22,7 @@ const sortOptions: { value: SortOption; label: string }[] = [
 
 const CACHE_KEY = 'all_courses_cache';
 const CACHE_DURATION = 3600 * 1000; // 1 hora en milisegundos
+const WP_API_URL = 'https://tecnovacenter.shop';
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState<any[]>([]);
@@ -31,6 +32,7 @@ export default function CoursesPage() {
   useEffect(() => {
     const fetchCourses = async () => {
       setLoading(true);
+      let dataLoaded = false;
 
       // 1. Intentar cargar desde la caché
       try {
@@ -40,6 +42,7 @@ export default function CoursesPage() {
               if ((new Date().getTime() - timestamp) < CACHE_DURATION) {
                   setCourses(data);
                   setLoading(false);
+                  dataLoaded = true;
               }
           }
       } catch(e) {
@@ -48,16 +51,16 @@ export default function CoursesPage() {
 
       // 2. Fetch de la red
       try {
-        const catResponse = await fetch('/wp-json/morty/v1/category-by-slug?slug=cursos');
+        const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
         const courseCategory = await catResponse.json();
 
         if (!courseCategory || courseCategory.error) {
             console.error('Course category not found or API error:', courseCategory?.error);
-            setLoading(false);
+            if (!dataLoaded) setLoading(false);
             return;
         }
         
-        const response = await fetch(`/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=100`);
+        const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=100`);
         const data = await response.json();
         
         // Actualizar estado y caché
@@ -67,7 +70,7 @@ export default function CoursesPage() {
       } catch (error) {
         console.error('Error fetching course products from API:', error);
       } finally {
-        if(loading) setLoading(false);
+        if(!dataLoaded) setLoading(false);
       }
     };
     fetchCourses();
