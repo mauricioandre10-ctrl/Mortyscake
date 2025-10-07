@@ -23,6 +23,12 @@ const nextConfig: NextConfig = {
         hostname: 'picsum.photos',
         port: '',
         pathname: '/**',
+      },
+       {
+        protocol: 'https',
+        hostname: 'cms.mortyscake.com',
+        port: '',
+        pathname: '/wp-content/uploads/**',
       }
     ],
   },

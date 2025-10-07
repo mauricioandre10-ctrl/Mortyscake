@@ -10,6 +10,10 @@ import { ShareButton } from '@/components/ShareButton';
 
 const WP_API_URL = 'https://cms.mortyscake.com';
 
+// This enables ISR (Incremental Static Regeneration)
+// The page will be re-generated at most once per hour
+export const revalidate = 3600;
+
 interface Product {
   id: number;
   name: string;
@@ -20,9 +24,25 @@ interface Product {
   images: { id: number; src: string; alt: string }[];
 }
 
+// This function tells Next.js which slugs to pre-render at build time
+export async function generateStaticParams() {
+  try {
+    const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?per_page=100`);
+    if (!response.ok) return [];
+
+    const products: Product[] = await response.json();
+    return products.map((product) => ({
+      slug: product.slug,
+    }));
+  } catch (error) {
+    console.error('Failed to generate static params for products:', error);
+    return [];
+  }
+}
+
 async function getProduct(slug: string): Promise<Product | null> {
   try {
-    const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`, { next: { revalidate: 3600 } });
+    const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`);
     if (!response.ok) {
       return null;
     }
@@ -75,13 +95,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
               ) : (
                 <CarouselItem>
                   <div className="aspect-square relative rounded-lg overflow-hidden border bg-muted flex items-center justify-center">
-                     <Image
-                        src={`https://picsum.photos/seed/${product.id}/600/600`}
-                        alt={product.name}
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
+                    <div className="w-full h-full bg-muted"></div>
                   </div>
                 </CarouselItem>
               )}

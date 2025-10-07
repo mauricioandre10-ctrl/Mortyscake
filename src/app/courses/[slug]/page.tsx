@@ -10,6 +10,10 @@ import { ShareButton } from '@/components/ShareButton';
 
 const WP_API_URL = 'https://cms.mortyscake.com';
 
+// This enables ISR (Incremental Static Regeneration)
+// The page will be re-generated at most once per hour
+export const revalidate = 3600;
+
 interface Course {
   id: number;
   name: string;
@@ -22,12 +26,32 @@ interface Course {
   rating_count: number;
 }
 
+// This function tells Next.js which slugs to pre-render at build time
+export async function generateStaticParams() {
+  try {
+    const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
+    if (!catResponse.ok) return [];
+
+    const courseCategory = await catResponse.json();
+    if (!courseCategory?.id) return [];
+
+    const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=100`);
+    if (!response.ok) return [];
+
+    const courses: Course[] = await response.json();
+    return courses.map((course) => ({
+      slug: course.slug,
+    }));
+  } catch (error) {
+    console.error('Failed to generate static params for courses:', error);
+    return [];
+  }
+}
+
 async function getCourse(slug: string): Promise<Course | null> {
   try {
-    const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`, { next: { revalidate: 3600 } });
-    if (!response.ok) {
-      return null;
-    }
+    const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`);
+    if (!response.ok) return null;
     const data = await response.json();
     return data[0] || null;
   } catch (error) {
@@ -77,13 +101,7 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
               ) : (
                 <CarouselItem>
                   <div className="aspect-square relative rounded-lg overflow-hidden border bg-muted flex items-center justify-center">
-                     <Image
-                        src={`https://picsum.photos/seed/${course.id}/800/800`}
-                        alt={course.name}
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
+                    <div className="w-full h-full bg-muted"></div>
                   </div>
                 </CarouselItem>
               )}
