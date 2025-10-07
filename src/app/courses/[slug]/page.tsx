@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { AddToCart } from '@/components/AddToCart';
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel';
 import { ShareButton } from '@/components/ShareButton';
+import type { PageProps } from 'next';
 
 const WP_API_URL = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
 
@@ -63,7 +64,7 @@ async function getCourse(slug: string): Promise<Course | null> {
   }
 }
 
-export default async function CourseDetailPage({ params }: { params: { slug: string } }) {
+export default async function CourseDetailPage({ params }: PageProps<{ slug: string }>) {
   const course = await getCourse(params.slug);
 
   if (!course) {
