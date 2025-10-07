@@ -9,31 +9,6 @@ import { notFound } from 'next/navigation';
 
 const WP_API_URL = 'https://cms.mortyscake.com';
 
-// This function tells Next.js which slugs to pre-render at build time.
-// It's required for static export with dynamic routes.
-export async function generateStaticParams() {
-   try {
-        // Fetch all products to generate static pages for them.
-        const productsResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?per_page=100`);
-        if (!productsResponse.ok) {
-            console.error('Failed to fetch products for static params, skipping.');
-            return [];
-        }
-        const products = await productsResponse.json();
-
-        // The API might return non-product items or errors, so filter them out.
-        const validProducts = Array.isArray(products) ? products.filter(p => p && p.slug) : [];
-
-        return validProducts.map((product: any) => ({
-            slug: product.slug,
-        }));
-    } catch (error) {
-        console.error("Error in generateStaticParams for products:", error);
-        return [];
-    }
-}
-
-
 // Fetch a single product by its slug
 async function getProduct(slug: string) {
     try {
