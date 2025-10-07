@@ -18,7 +18,7 @@ export function ShareButton({ title, text }: ShareButtonProps) {
 
   useEffect(() => {
     // navigator.share is only available in secure contexts (HTTPS) and on client-side
-    if (typeof window !== 'undefined' && navigator && navigator.share) {
+    if (typeof window !== 'undefined' && typeof navigator.share === 'function') {
       setIsSupported(true);
       setUrl(window.location.href);
     }
