@@ -14,7 +14,6 @@ const WP_API_URL = 'https://cms.mortyscake.com';
 export async function generateStaticParams() {
    try {
         // Fetch all products to generate static pages for them.
-        // Simplified to fetch all products for maximum robustness during build.
         const productsResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?per_page=100`);
         if (!productsResponse.ok) {
             console.error('Failed to fetch products for static params, skipping.');
