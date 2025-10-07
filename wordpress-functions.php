@@ -50,6 +50,7 @@ function morty_get_products(WP_REST_Request $request) {
     $args = array(
         'status' => 'publish', // Solo productos publicados
         'limit' => isset($params['per_page']) ? intval($params['per_page']) : 10,
+        'paginate' => false,
     );
 
     // Filtrar por slug
@@ -61,11 +62,26 @@ function morty_get_products(WP_REST_Request $request) {
     if (!empty($params['category'])) {
         $args['category'] = array(sanitize_text_field($params['category']));
     }
-    
-    // Excluir productos (por ID)
+
+    // Excluir productos por ID
     if (!empty($params['exclude'])) {
        $exclude_ids = explode(',', sanitize_text_field($params['exclude']));
        $args['exclude'] = array_map('intval', $exclude_ids);
+    }
+    
+    // Excluir productos por ID de categoría
+    if (!empty($params['category_exclude'])) {
+        $category_ids_to_exclude = array_map('intval', explode(',', sanitize_text_field($params['category_exclude'])));
+        
+        $products_to_exclude = wc_get_products(array(
+            'category' => $category_ids_to_exclude,
+            'limit' => -1,
+            'return' => 'ids',
+        ));
+
+        if (!empty($products_to_exclude)) {
+            $args['exclude'] = array_merge(isset($args['exclude']) ? $args['exclude'] : array(), $products_to_exclude);
+        }
     }
     
     // Orden
@@ -109,3 +125,4 @@ function morty_get_category_by_slug(WP_REST_Request $request) {
 }
 
 ?>
+    

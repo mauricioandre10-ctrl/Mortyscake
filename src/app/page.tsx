@@ -14,6 +14,21 @@ import Autoplay from "embla-carousel-autoplay"
 import { Skeleton } from '@/components/ui/skeleton';
 import { AddToCart } from '@/components/AddToCart';
 
+const WP_API_URL = 'https://cms.mortyscake.com';
+
+interface Product {
+  id: number;
+  name: string;
+  slug: string;
+  price: string;
+  short_description: string;
+  description: string;
+  images: { id: number; src: string; alt: string }[];
+  menu_order: number;
+  average_rating: number;
+  rating_count: number;
+}
+
 // Datos simulados para el blog
 const blogPosts = [
   {
@@ -36,6 +51,62 @@ export default function Home() {
   const plugin = useRef(
     Autoplay({ delay: 10000, stopOnInteraction: true })
   )
+  const [courses, setCourses] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loadingCourses, setLoadingCourses] = useState(true);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+
+  useEffect(() => {
+    const fetchProductsAndCourses = async () => {
+      try {
+        // 1. Get Course Category ID
+        const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
+        if (!catResponse.ok) {
+           console.error("Failed to fetch course category");
+           setLoadingCourses(false);
+           setLoadingProducts(false);
+           return;
+        }
+        const courseCategory = await catResponse.json();
+        const courseCategoryId = courseCategory?.id;
+
+        if (!courseCategoryId) {
+            console.error('Course category not found.');
+            setLoadingCourses(false);
+            setLoadingProducts(false);
+            return;
+        }
+
+        // 2. Fetch Courses (only from course category)
+        const coursesResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${courseCategoryId}&per_page=4`);
+        if (coursesResponse.ok) {
+            const coursesData = await coursesResponse.json();
+            setCourses(coursesData);
+        } else {
+            console.error("Failed to fetch courses");
+        }
+        setLoadingCourses(false);
+
+        // 3. Fetch Products (excluding course category)
+        const productsResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category_exclude=${courseCategoryId}&per_page=4`);
+         if (productsResponse.ok) {
+            const productsData = await productsResponse.json();
+            setProducts(productsData);
+        } else {
+            console.error("Failed to fetch products");
+        }
+        setLoadingProducts(false);
+
+      } catch (error) {
+        console.error('Error fetching data for homepage:', error);
+        setLoadingCourses(false);
+        setLoadingProducts(false);
+      }
+    };
+    
+    fetchProductsAndCourses();
+  }, []);
+
 
   return (
     <div className="w-full">
@@ -73,7 +144,7 @@ export default function Home() {
                   <Image src="https://picsum.photos/seed/cat-courses/800/600" alt="Alumna decorando un pastel en un curso" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="pastry class" unoptimized />
                 </div>
                 <CardHeader>
-                  <CardTitle className="font-headline text-2xl">Cursos de Repostería</CardTitle>
+                  <CardTitle as="h2">Cursos de Repostería</CardTitle>
                   <CardDescription>Aprende técnicas profesionales desde casa.</CardDescription>
                 </CardHeader>
                 <CardFooter>
@@ -84,12 +155,12 @@ export default function Home() {
               </Card>
             </Link>
             <Link href="/shop" className="group block">
-              <Card className="overflow-hidden h-full flex flex-col shadow-md hover_shadow-primary/20 hover:shadow-xl transition-shadow duration-300">
+              <Card className="overflow-hidden h-full flex flex-col shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300">
                 <div className="relative aspect-[4/3] w-full">
                   <Image src="https://picsum.photos/seed/cat-shop/800/600" alt="Productos de repostería de alta calidad" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="baking products" unoptimized />
                 </div>
                 <CardHeader>
-                  <CardTitle className="font-headline text-2xl">Nuestros Productos</CardTitle>
+                  <CardTitle as="h2">Nuestros Productos</CardTitle>
                   <CardDescription>Ingredientes y herramientas de alta calidad para tus creaciones.</CardDescription>
                 </CardHeader>
                 <CardFooter>
@@ -103,8 +174,93 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Featured Courses Section */}
+      <section id="featured-courses" className="py-16 md:py-24 bg-background">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="text-center mb-12">
+            <h2 className="font-headline text-3xl md:text-4xl font-bold">Próximos Cursos</h2>
+            <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
+              Da el siguiente paso en tu aventura repostera con nuestros cursos más populares.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {loadingCourses ? (
+              [...Array(4)].map((_, i) => (
+                <Card key={i}>
+                  <Skeleton className="aspect-[4/3] w-full" />
+                  <CardContent className="p-6 space-y-2">
+                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                  </CardContent>
+                  <CardFooter className="flex justify-between items-center bg-muted/30 p-4">
+                    <Skeleton className="h-8 w-1/4" />
+                    <Skeleton className="h-10 w-1/2" />
+                  </CardFooter>
+                </Card>
+              ))
+            ) : (
+              courses.map((course: Product) => (
+                <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
+                  <Link href="/courses" className="flex flex-col flex-grow">
+                    <CardHeader className="p-0">
+                       {course.images?.[0]?.src ? (
+                          <Image
+                            src={course.images[0].src}
+                            alt={course.name}
+                            width={800}
+                            height={600}
+                            className="object-cover w-full h-auto aspect-[4/3]"
+                            unoptimized
+                          />
+                        ) : (
+                          <div className="aspect-[4/3] w-full bg-muted" />
+                        )}
+                    </CardHeader>
+                    <CardContent className="flex flex-col flex-grow p-6">
+                      <CardTitle className="font-headline text-xl mb-2">{course.name}</CardTitle>
+                      <div className="flex items-center gap-2 mb-2">
+                          <div className="flex text-yellow-400">
+                            {[...Array(5)].map((_, i) => (
+                              <Star key={i} className={`w-4 h-4 ${i < course.average_rating ? 'fill-current' : 'text-muted-foreground fill-muted'}`} />
+                            ))}
+                          </div>
+                          <span className="text-xs text-muted-foreground">({course.rating_count} reseñas)</span>
+                        </div>
+                      <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: course.short_description || '' }} />
+                    </CardContent>
+                    <CardFooter className="flex justify-between items-center bg-muted/30 p-4 mt-auto">
+                      <span className="text-2xl font-bold text-primary">
+                        {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
+                      </span>
+                       <AddToCart
+                          name={course.name}
+                          description={course.short_description || ''}
+                          id={String(course.id)}
+                          price={parseFloat(course.price)}
+                          currency="EUR"
+                          image={course.images?.[0]?.src}
+                          size="sm"
+                      >
+                         {course.price === "0.00" ? "Inscribirse" : "Al carrito"}
+                      </AddToCart>
+                    </CardFooter>
+                  </Link>
+                </Card>
+              ))
+            )}
+          </div>
+           <div className="text-center mt-12">
+              <Button asChild>
+                  <Link href="/courses">
+                      Ver todos los cursos
+                  </Link>
+              </Button>
+          </div>
+        </div>
+      </section>
+
       {/* About Us Section */}
-      <section id="about" className="py-16 md:py-24 bg-background">
+      <section id="about" className="py-16 md:py-24 bg-muted/30">
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
             <div className="relative w-full aspect-square md:aspect-[4/5] rounded-lg overflow-hidden shadow-lg">
@@ -131,6 +287,83 @@ export default function Home() {
                   </Link>
               </Button>
             </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* Featured Products Section */}
+      <section id="featured-products" className="py-16 md:py-24 bg-background">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="text-center mb-12">
+            <h2 className="font-headline text-3xl md:text-4xl font-bold">Productos Destacados</h2>
+            <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
+              Herramientas e ingredientes seleccionados para llevar tus creaciones al siguiente nivel.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {loadingProducts ? (
+              [...Array(4)].map((_, i) => (
+                <Card key={i}>
+                  <Skeleton className="aspect-square w-full" />
+                  <CardContent className="p-6 space-y-2">
+                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </CardContent>
+                  <CardFooter className="flex justify-between items-center bg-muted/30 p-4">
+                    <Skeleton className="h-8 w-1/4" />
+                    <Skeleton className="h-10 w-1/2" />
+                  </CardFooter>
+                </Card>
+              ))
+            ) : (
+              products.map((product: Product) => (
+                <Card key={product.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
+                  <Link href="/shop" className="flex flex-col flex-grow">
+                    <CardHeader className="p-0">
+                       {product.images?.[0]?.src ? (
+                          <Image
+                            src={product.images[0].src}
+                            alt={product.name}
+                            width={600}
+                            height={600}
+                            className="object-cover w-full h-auto aspect-square"
+                            unoptimized
+                          />
+                        ) : (
+                          <div className="aspect-square w-full bg-muted" />
+                        )}
+                    </CardHeader>
+                    <CardContent className="flex flex-col flex-grow p-6">
+                      <CardTitle className="font-headline text-xl mb-2">{product.name}</CardTitle>
+                      <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
+                    </CardContent>
+                    <CardFooter className="flex justify-between items-center bg-muted/30 p-4 mt-auto">
+                      <span className="text-2xl font-bold text-primary">
+                        €{product.price}
+                      </span>
+                      <AddToCart
+                          name={product.name}
+                          description={product.short_description || ''}
+                          id={String(product.id)}
+                          price={parseFloat(product.price)}
+                          currency="EUR"
+                          image={product.images?.[0]?.src}
+                          size="sm"
+                      >
+                         Al carrito
+                      </AddToCart>
+                    </CardFooter>
+                  </Link>
+                </Card>
+              ))
+            )}
+          </div>
+           <div className="text-center mt-12">
+              <Button asChild>
+                  <Link href="/shop">
+                      Ver toda la tienda
+                  </Link>
+              </Button>
           </div>
         </div>
       </section>
@@ -275,7 +508,7 @@ export default function Home() {
                           </div>
                           <CardContent className="p-6">
                               <span className="text-sm text-primary font-semibold">{post.category}</span>
-                              <h3 className="font-headline text-xl font-bold mt-2">{post.title}</h3>
+                              <CardTitle as="h3" className="font-headline text-xl mt-2">{post.title}</CardTitle>
                               <p className="text-muted-foreground mt-2 text-sm">{post.description}</p>
                           </CardContent>
                         </Link>
@@ -293,3 +526,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
