@@ -209,18 +209,13 @@ export default function Home() {
                           <Image
                             src={course.images[0].src}
                             alt={course.name}
-                            fill
+                            width={800}
+                            height={600}
                             className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                             unoptimized
                           />
                         ) : (
-                           <Image
-                            src={`https://picsum.photos/seed/${course.id}/800/600`}
-                            alt={course.name}
-                            fill
-                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                            unoptimized
-                          />
+                           <div className="w-full h-full bg-muted"></div>
                         )}
                         </div>
                     </CardHeader>
@@ -323,18 +318,13 @@ export default function Home() {
                           <Image
                             src={product.images[0].src}
                             alt={product.name}
-                            fill
+                            width={600}
+                            height={600}
                             className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                             unoptimized
                           />
                         ) : (
-                          <Image
-                            src={`https://picsum.photos/seed/${product.id}/600/600`}
-                            alt={product.name}
-                            fill
-                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                            unoptimized
-                          />
+                          <div className="w-full h-full bg-muted"></div>
                         )}
                         </div>
                     </CardHeader>
@@ -521,3 +511,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
