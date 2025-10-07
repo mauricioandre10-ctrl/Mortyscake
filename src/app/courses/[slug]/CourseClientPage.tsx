@@ -58,11 +58,6 @@ export default function CourseClientPage({ initialCourse, slug }: { initialCours
   if (loading || !course) {
       return <CourseDetailPageSkeleton />;
   }
-  
-  if (!course) {
-    router.push('/not-found');
-    return null;
-  }
 
   // This logic is now safely placed after the loading/null checks
   const courseInfo = course.attributes.map((attr: any) => ({
