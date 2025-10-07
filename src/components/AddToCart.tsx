@@ -13,7 +13,7 @@ interface AddToCartProps extends ButtonProps {
   id: string;
   price: number;
   currency: string;
-  image: string;
+  image?: string;
   children?: React.ReactNode;
 }
 

@@ -101,14 +101,16 @@ const Header = () => {
                     <div className="flex-1 overflow-y-auto pr-4 my-4">
                       {Object.values(cartDetails ?? {}).map((item) => (
                         <div key={item.id} className="flex items-center gap-4 py-4">
-                          <Image
-                            src={item.image as string}
-                            alt={item.name}
-                            width={64}
-                            height={64}
-                            className="rounded-md object-cover"
-                            unoptimized
-                          />
+                          {item.image && (
+                            <Image
+                              src={item.image as string}
+                              alt={item.name}
+                              width={64}
+                              height={64}
+                              className="rounded-md object-cover"
+                              unoptimized
+                            />
+                          )}
                           <div className="flex-1">
                             <p className="font-medium">{item.name}</p>
                             <p className="text-sm text-muted-foreground">

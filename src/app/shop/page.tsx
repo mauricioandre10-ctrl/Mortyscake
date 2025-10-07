@@ -164,14 +164,18 @@ export default function ShopPage() {
           {sortedProducts.map((product) => (
             <Card key={product.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
               <CardHeader className="p-0">
-                <Image
-                  src={product.images?.[0]?.src || 'https://picsum.photos/seed/placeholder/600/600'}
-                  alt={product.name}
-                  width={600}
-                  height={600}
-                  className="object-cover w-full h-auto aspect-square"
-                  unoptimized
-                />
+                {product.images?.[0]?.src ? (
+                    <Image
+                      src={product.images[0].src}
+                      alt={product.name}
+                      width={600}
+                      height={600}
+                      className="object-cover w-full h-auto aspect-square"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="aspect-square w-full bg-muted" />
+                  )}
               </CardHeader>
               <CardContent className="flex flex-col flex-grow p-6">
                 <CardTitle className="font-headline text-xl mb-2">
@@ -234,7 +238,7 @@ export default function ShopPage() {
                                   id={String(selectedProduct.id)}
                                   price={parseFloat(selectedProduct.price)}
                                   currency="EUR"
-                                  image={selectedProduct.images?.[0]?.src || 'https://picsum.photos/seed/placeholder/600/600'}
+                                  image={selectedProduct.images?.[0]?.src}
                                 />
                           </div>
                       </DialogFooter>
@@ -247,5 +251,3 @@ export default function ShopPage() {
     </div>
   );
 }
-
-    

@@ -182,14 +182,18 @@ export default function CoursesPage() {
           {sortedCourses.map((course: Course) => (
             <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
               <CardHeader className="p-0">
-                <Image
-                  src={course.images?.[0]?.src || 'https://picsum.photos/seed/placeholder/800/600'}
-                  alt={course.name}
-                  width={800}
-                  height={600}
-                  className="object-cover w-full h-auto aspect-[4/3]"
-                  unoptimized
-                />
+                {course.images?.[0]?.src ? (
+                    <Image
+                      src={course.images[0].src}
+                      alt={course.name}
+                      width={800}
+                      height={600}
+                      className="object-cover w-full h-auto aspect-[4/3]"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="aspect-[4/3] w-full bg-muted" />
+                  )}
               </CardHeader>
               <CardContent className="flex flex-col flex-grow p-6">
                  <CardTitle className="font-headline text-xl mb-2">{course.name}</CardTitle>
@@ -257,7 +261,7 @@ export default function CoursesPage() {
                                     id={String(selectedCourse.id)}
                                     price={parseFloat(selectedCourse.price)}
                                     currency="EUR"
-                                    image={selectedCourse.images?.[0]?.src || 'https://picsum.photos/seed/placeholder/800/600'}
+                                    image={selectedCourse.images?.[0]?.src}
                                 >
                                     {selectedCourse.price === "0.00" ? "Inscribirse Gratis" : "Añadir al carrito"}
                                 </AddToCart>
@@ -271,5 +275,3 @@ export default function CoursesPage() {
     </div>
   );
 }
-
-    
