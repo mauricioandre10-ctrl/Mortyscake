@@ -33,7 +33,6 @@ export default function CoursesPage() {
     const fetchCourses = async () => {
       setLoading(true);
       
-      // 1. Intentar cargar desde la caché
       try {
           const cachedItem = localStorage.getItem(CACHE_KEY);
           if (cachedItem) {
@@ -47,9 +46,11 @@ export default function CoursesPage() {
           console.error("Failed to read from localStorage", e);
       }
 
-      // 2. Fetch de la red (se ejecuta si la caché está vacía o caducada)
       try {
         const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
+        if (!catResponse.ok) {
+           throw new Error(`Failed to fetch course category: ${catResponse.statusText}`);
+        }
         const courseCategory = await catResponse.json();
 
         if (!courseCategory || courseCategory.error) {
@@ -59,6 +60,9 @@ export default function CoursesPage() {
         }
         
         const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=100`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch courses: ${response.statusText}`);
+        }
         const data = await response.json();
         
         setCourses(data);
@@ -186,3 +190,5 @@ export default function CoursesPage() {
     </div>
   );
 }
+
+    
