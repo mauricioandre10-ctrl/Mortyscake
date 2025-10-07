@@ -32,8 +32,7 @@ export default function CoursesPage() {
   useEffect(() => {
     const fetchCourses = async () => {
       setLoading(true);
-      let dataLoaded = false;
-
+      
       // 1. Intentar cargar desde la caché
       try {
           const cachedItem = localStorage.getItem(CACHE_KEY);
@@ -42,35 +41,33 @@ export default function CoursesPage() {
               if ((new Date().getTime() - timestamp) < CACHE_DURATION) {
                   setCourses(data);
                   setLoading(false);
-                  dataLoaded = true;
               }
           }
       } catch(e) {
           console.error("Failed to read from localStorage", e);
       }
 
-      // 2. Fetch de la red
+      // 2. Fetch de la red (se ejecuta si la caché está vacía o caducada)
       try {
         const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
         const courseCategory = await catResponse.json();
 
         if (!courseCategory || courseCategory.error) {
             console.error('Course category not found or API error:', courseCategory?.error);
-            if (!dataLoaded) setLoading(false);
+            setLoading(false);
             return;
         }
         
         const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=100`);
         const data = await response.json();
         
-        // Actualizar estado y caché
         setCourses(data);
         localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: new Date().getTime(), data }));
 
       } catch (error) {
         console.error('Error fetching course products from API:', error);
       } finally {
-        if(!dataLoaded) setLoading(false);
+        setLoading(false);
       }
     };
     fetchCourses();
@@ -151,6 +148,7 @@ export default function CoursesPage() {
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover"
+                      unoptimized
                     />
                   ) : (
                     <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground">
@@ -188,5 +186,3 @@ export default function CoursesPage() {
     </div>
   );
 }
-
-    

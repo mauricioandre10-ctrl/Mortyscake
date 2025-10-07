@@ -21,7 +21,7 @@ const Footer = () => {
               </div>
             </div>
             <div className="flex flex-col items-center">
-               <Image src="https://picsum.photos/seed/logo-footer/180/64" alt="Pastelería de Morty" width={180} height={64} className="object-contain h-auto w-auto" data-ai-hint="logo" />
+               <Image src="https://picsum.photos/seed/logo-footer/180/64" alt="Pastelería de Morty" width={180} height={64} className="object-contain h-auto w-auto" data-ai-hint="logo" unoptimized />
             </div>
             <div className="flex flex-col items-end">
               <h3 className="font-bold text-lg mb-4 font-headline">Síguenos</h3>
@@ -58,5 +58,3 @@ const Footer = () => {
 };
 
 export default Footer;
-
-    

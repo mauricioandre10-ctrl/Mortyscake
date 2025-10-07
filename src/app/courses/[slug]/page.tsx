@@ -1,32 +1,19 @@
 
-'use client';
-
-import { notFound, useRouter, useParams } from 'next/navigation';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { Video, Target, Package, Laptop, Lightbulb, ArrowLeft, Star, Info } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { AddToCart } from '@/components/AddToCart';
-import { useEffect, useState } from 'react';
+import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
+import CourseClientPage from './CourseClientPage';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ShareButton } from '@/components/ShareButton';
 
-const iconMap: { [key: string]: React.ElementType } = {
-  '¿A quién está dirigido?': Target,
-  '¿Qué materiales necesito?': Package,
-  'Modalidad': Laptop,
-  '¿Qué aprenderé exactamente?': Lightbulb,
-  'default': Info,
-};
-
-const CACHE_DURATION = 3600 * 1000; // 1 hora en milisegundos
 const WP_API_URL = 'https://tecnovacenter.shop';
-
 
 // This function is called at build time to generate static pages for each course
 export async function generateStaticParams() {
   try {
     const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
+    if (!catResponse.ok) {
+       console.error(`Build-time: Failed to fetch course category. Status: ${catResponse.status}`);
+       return [];
+    }
     const courseCategory = await catResponse.json();
 
     if (!courseCategory || courseCategory.error) {
@@ -35,6 +22,10 @@ export async function generateStaticParams() {
     }
   
     const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=100`);
+     if (!response.ok) {
+       console.error(`Build-time: Failed to fetch courses. Status: ${response.status}`);
+       return [];
+    }
     const courses = await response.json();
     
     return courses.map((course: any) => ({
@@ -46,62 +37,39 @@ export async function generateStaticParams() {
   }
 }
 
+async function getCourse(slug: string) {
+  try {
+    const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`, { next: { revalidate: 3600 } }); // Revalidate every hour
+     if (!response.ok) {
+      return null;
+    }
+    const data = await response.json();
+    if (data && data.length > 0) {
+      return data[0];
+    }
+    return null;
+  } catch (error) {
+    console.error("Failed to fetch initial course product from API", error);
+    return null;
+  }
+}
 
-export default function CourseDetailPage({ params: serverParams }: { params: { slug: string } }) {
-  const router = useRouter();
-  const params = useParams();
-  const [course, setCourse] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+export default async function CourseDetailPage({ params }: { params: { slug: string } }) {
+  const course = await getCourse(params.slug);
 
-  useEffect(() => {
-    const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
-    if (!slug) return;
+  if (!course) {
+    notFound();
+  }
 
-    const CACHE_KEY = `course_${slug}`;
-
-    const fetchCourse = async () => {
-      setLoading(true);
-      let dataLoaded = false;
-
-      // 1. Intentar cargar desde la caché
-      try {
-          const cachedItem = localStorage.getItem(CACHE_KEY);
-          if (cachedItem) {
-              const { timestamp, data } = JSON.parse(cachedItem);
-              if ((new Date().getTime() - timestamp) < CACHE_DURATION) {
-                  setCourse(data);
-                  setLoading(false);
-                  dataLoaded = true;
-              }
-          }
-      } catch(e) {
-          console.error("Failed to read from localStorage", e);
-      }
-
-      // 2. Fetch de la red
-      try {
-        const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`);
-        const data = await response.json();
-        
-        if (data && data.length > 0) {
-          const fetchedCourse = data[0];
-          setCourse(fetchedCourse);
-          localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: new Date().getTime(), data: fetchedCourse }));
-        } else {
-          if(!course && !dataLoaded) notFound();
-        }
-      } catch (error) {
-        console.error("Failed to fetch course product from API", error);
-        if(!course && !dataLoaded) notFound();
-      } finally {
-        if(!dataLoaded) setLoading(false);
-      }
-    };
-    fetchCourse();
-  }, [params.slug, course]);
+  return (
+    <Suspense fallback={<CourseDetailPageSkeleton />}>
+        <CourseClientPage initialCourse={course} slug={params.slug} />
+    </Suspense>
+  );
+}
 
 
-  if (loading && !course) {
+function CourseDetailPageSkeleton() {
     return (
       <div className="container mx-auto py-12 px-4 md:px-6">
         <div className="mb-8">
@@ -137,124 +105,12 @@ export default function CourseDetailPage({ params: serverParams }: { params: { s
         </div>
       </div>
     );
-  }
-  
-  if (!course) {
-    return notFound();
-  }
-
-  const courseInfo = course.attributes.map((attr: any) => ({
-      icon: iconMap[attr.name] || iconMap.default,
-      title: attr.name,
-      description: attr.options.join(', ')
-  }));
-
-
-  return (
-    <div className="container mx-auto py-12 px-4 md:px-6">
-       <div className="mb-8">
-        <button
-          onClick={() => router.back()}
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Volver</span>
-        </button>
-      </div>
-      <div className="grid md:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto">
-        <div className="relative aspect-square w-full overflow-hidden rounded-lg">
-          <Image
-            src={course.images[0].src}
-            alt={course.name}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 50vw"
-            priority
-          />
-        </div>
-        <div className="flex flex-col justify-center">
-            <div className="flex items-start justify-between gap-4 mb-2">
-                 <h1 className="font-headline text-3xl md:text-4xl font-bold">{course.name}</h1>
-                 <ShareButton title={course.name} text={`¡Mira este increíble curso de repostería: ${course.name}!`} />
-            </div>
-             <div className="flex items-center gap-2 mb-4">
-                <div className="flex text-yellow-400">
-                    {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={`w-5 h-5 ${i < course.average_rating ? 'fill-current' : 'text-muted-foreground fill-muted'}`} />
-                    ))}
-                </div>
-                <span className="text-sm text-muted-foreground">({course.rating_count} reseñas)</span>
-            </div>
-            <div className="text-muted-foreground text-lg prose" dangerouslySetInnerHTML={{ __html: course.description }} />
-            
-            <Card className="border">
-                <CardContent className="p-6 space-y-4">
-                    <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Precio del curso</span>
-                        <span className="font-bold text-3xl text-primary">
-                             {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
-                        </span>
-                    </div>
-                     <AddToCart 
-                        name={course.name}
-                        description={course.short_description || ''}
-                        id={String(course.id)}
-                        price={parseFloat(course.price)}
-                        currency="EUR"
-                        image={course.images?.[0]?.src || ''}
-                        className="w-full"
-                        size="lg"
-                     >
-                       {course.price === "0.00" ? "Inscribirse Gratis" : "Añadir al carrito"}
-                     </AddToCart>
-                     <div className="border-t pt-4 space-y-3 text-sm">
-                      <div className="flex items-start">
-                        <Video className="h-4 w-4 mr-3 mt-1 shrink-0" />
-                        <div>
-                          <span className="font-semibold">Acceso:</span> Inmediato y de por vida.
-                          <p className="text-muted-foreground text-xs">Aprende a tu ritmo, cuando y donde quieras.</p>
-                        </div>
-                      </div>
-                      {course.attributes.map((attr: any) => (
-                         <div key={attr.id} className="flex items-start">
-                            <Info className="h-4 w-4 mr-3 mt-1 shrink-0" />
-                            <div>
-                                <span className="font-semibold">{attr.name}:</span> {attr.options.join(', ')}
-                            </div>
-                         </div>
-                      ))}
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
-      </div>
-      {courseInfo.length > 0 && (
-       <div className="max-w-6xl mx-auto mt-16 pt-8 border-t">
-        <h2 className="font-headline text-3xl font-bold text-center mb-8">Todo lo que necesitas saber</h2>
-        <div className="grid md:grid-cols-2 gap-6">
-            {courseInfo.map((info: any, index: number) => {
-                const Icon = info.icon
-                return (
-                    <Card key={index} className="bg-muted/50">
-                        <CardContent className="p-6">
-                            <div className="flex items-center gap-4">
-                                <Icon className="h-8 w-8 text-primary shrink-0" />
-                                <div>
-                                    <h3 className="font-bold text-lg mb-1">{info.title}</h3>
-                                    <p className="text-muted-foreground text-sm">{info.description}</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                )
-            })}
-        </div>
-      </div>
-      )}
-    </div>
-  );
 }
 
-    
-
-    
+// We need this dummy card component here to avoid a circular dependency with the skeleton
+function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return <div className={`border rounded-lg ${className}`} {...props} />;
+}
+function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return <div className={`p-0 ${className}`} {...props} />;
+}

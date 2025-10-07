@@ -51,7 +51,6 @@ export default function Home() {
   useEffect(() => {
     const fetchWithCache = async (cacheKey: string, url: string, setter: (data: any[]) => void, loader: (loading: boolean) => void) => {
       loader(true);
-      let dataLoaded = false;
 
       // 1. Intentar cargar desde la caché
       try {
@@ -62,7 +61,6 @@ export default function Home() {
           if (isCacheValid) {
             setter(data);
             loader(false);
-            dataLoaded = true;
           }
         }
       } catch (e) {
@@ -77,16 +75,13 @@ export default function Home() {
         }
         const data = await response.json();
         
-        // Actualizar estado y caché
         setter(data);
         localStorage.setItem(cacheKey, JSON.stringify({ timestamp: new Date().getTime(), data }));
 
       } catch (error) {
         console.error('Error fetching data from API:', error);
       } finally {
-        if (!dataLoaded) {
-          loader(false);
-        }
+        loader(false);
       }
     };
     
@@ -134,6 +129,7 @@ export default function Home() {
             className="object-cover opacity-40"
             priority
             data-ai-hint="woman decorating cake"
+            unoptimized
          />
          <div className="relative z-10 text-center container mx-auto px-4">
             <h1 className="font-headline text-4xl md:text-6xl font-bold leading-tight">
@@ -155,7 +151,7 @@ export default function Home() {
             <Link href="/courses" className="group block">
               <Card className="overflow-hidden h-full flex flex-col shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300">
                 <div className="relative aspect-[4/3] w-full">
-                  <Image src="https://picsum.photos/seed/cat-courses/800/600" alt="Alumna decorando un pastel en un curso" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="pastry class" />
+                  <Image src="https://picsum.photos/seed/cat-courses/800/600" alt="Alumna decorando un pastel en un curso" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="pastry class" unoptimized />
                 </div>
                 <CardHeader>
                   <CardTitle className="font-headline text-2xl">Cursos de Repostería</CardTitle>
@@ -171,7 +167,7 @@ export default function Home() {
             <Link href="/shop" className="group block">
               <Card className="overflow-hidden h-full flex flex-col shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300">
                 <div className="relative aspect-[4/3] w-full">
-                  <Image src="https://picsum.photos/seed/cat-shop/800/600" alt="Productos de repostería de alta calidad" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="baking products" />
+                  <Image src="https://picsum.photos/seed/cat-shop/800/600" alt="Productos de repostería de alta calidad" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="baking products" unoptimized />
                 </div>
                 <CardHeader>
                   <CardTitle className="font-headline text-2xl">Nuestros Productos</CardTitle>
@@ -224,6 +220,7 @@ export default function Home() {
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover"
+                      unoptimized
                     />
                    </Link>
                 </CardHeader>
@@ -291,6 +288,7 @@ export default function Home() {
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           className="object-cover"
+                          unoptimized
                         />
                       ) : (
                         <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground">
@@ -343,6 +341,7 @@ export default function Home() {
                     fill
                     className="object-cover"
                     data-ai-hint="chef portrait"
+                    unoptimized
                 />
             </div>
             <div className="text-center md:text-left">
@@ -401,6 +400,7 @@ export default function Home() {
                                       height={48}
                                       className="rounded-full object-cover h-12 w-12"
                                       data-ai-hint="person avatar"
+                                      unoptimized
                                   />
                                   <div>
                                       <p className="font-semibold">{testimonial.name}</p>
@@ -454,6 +454,7 @@ export default function Home() {
                               fill
                               className="object-cover"
                               data-ai-hint={image.hint}
+                              unoptimized
                             />
                          </div>
                       </CardContent>
@@ -496,6 +497,7 @@ export default function Home() {
                                   fill
                                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                                   data-ai-hint={post.image.hint}
+                                  unoptimized
                               />
                           </div>
                           <CardContent className="p-6">
@@ -518,5 +520,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

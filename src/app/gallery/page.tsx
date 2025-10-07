@@ -36,6 +36,7 @@ export default function GalleryPage() {
                         className="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105"
                         sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                         data-ai-hint={image.hint}
+                        unoptimized
                     />
                 </div>
             </DialogTrigger>
@@ -51,6 +52,7 @@ export default function GalleryPage() {
                         fill
                         className="object-contain"
                         sizes="100vw"
+                        unoptimized
                     />
                 </div>
             </DialogContent>
