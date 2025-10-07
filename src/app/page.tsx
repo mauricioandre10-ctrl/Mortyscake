@@ -165,7 +165,7 @@ export default function Home() {
               </Card>
             </Link>
             <Link href="/shop" className="group block">
-              <Card className="overflow-hidden h-full flex flex-col shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300">
+              <Card className="overflow-hidden h-full flex flex-col shadow-md hover_shadow-primary/20 hover:shadow-xl transition-shadow duration-300">
                 <div className="relative aspect-[4/3] w-full">
                   <Image src="https://picsum.photos/seed/cat-shop/800/600" alt="Productos de repostería de alta calidad" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="baking products" unoptimized />
                 </div>
@@ -213,16 +213,16 @@ export default function Home() {
             courses.map((course) => (
               <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
                 <CardHeader className="p-0">
-                  <Link href={`/courses/${course.slug}`} className="block relative aspect-[4/3]">
+                  <div className="block relative aspect-[4/3]">
                     <Image
-                      src={course.images[0].src}
+                      src={course.images?.[0]?.src || 'https://picsum.photos/seed/placeholder/800/600'}
                       alt={course.name}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover"
                       unoptimized
                     />
-                   </Link>
+                   </div>
                 </CardHeader>
                 <CardContent className="flex flex-col flex-grow p-6">
                   <CardTitle as="h3" className="font-headline text-xl mb-2">{course.name}</CardTitle>
@@ -240,11 +240,16 @@ export default function Home() {
                   <span className="text-2xl font-bold text-primary">
                       {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
                   </span>
-                  <Button asChild>
-                    <Link href={`/courses/${course.slug}`}>
-                      Ver Detalles
-                    </Link>
-                  </Button>
+                  <AddToCart
+                    name={course.name}
+                    description={course.short_description || ''}
+                    id={String(course.id)}
+                    price={parseFloat(course.price)}
+                    currency="EUR"
+                    image={course.images?.[0]?.src || ''}
+                  >
+                    {course.price === "0.00" ? "Inscribirse Gratis" : "Añadir al carrito"}
+                  </AddToCart>
                 </CardFooter>
               </Card>
             )))}
@@ -280,26 +285,20 @@ export default function Home() {
               products.map((product) => (
                 <Card key={product.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
                    <CardHeader className="p-0">
-                    <Link href={`/shop/${product.slug}`} className="block relative aspect-square">
-                      {product.images && product.images[0] ? (
+                    <div className="block relative aspect-square">
                         <Image
-                          src={product.images[0].src}
+                          src={product.images?.[0]?.src || 'https://picsum.photos/seed/placeholder/600/600'}
                           alt={product.name}
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           className="object-cover"
                           unoptimized
                         />
-                      ) : (
-                        <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground">
-                          Sin imagen
-                        </div>
-                      )}
-                    </Link>
+                    </div>
                   </CardHeader>
                   <CardContent className="flex flex-col flex-grow p-6">
                     <CardTitle as="h3" className="font-headline text-xl mb-2">
-                      <Link href={`/shop/${product.slug}`}>{product.name}</Link>
+                      {product.name}
                     </CardTitle>
                     <CardDescription className="text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
                   </CardContent>
@@ -520,3 +519,5 @@ export default function Home() {
     </div>
   );
 }
+
+    

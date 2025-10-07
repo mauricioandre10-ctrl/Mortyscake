@@ -2,7 +2,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AddToCart } from '@/components/AddToCart';
 import { useEffect, useState, useMemo } from 'react';
@@ -129,26 +128,20 @@ export default function ShopPage() {
           {sortedProducts.map((product: any) => (
             <Card key={product.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
               <CardHeader className="p-0">
-                <Link href={`/shop/${product.slug}`} className="block relative aspect-square">
-                  {product.images && product.images[0] ? (
-                    <Image
-                      src={product.images[0].src}
-                      alt={product.name}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover"
-                      unoptimized
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground">
-                      Sin imagen
-                    </div>
-                  )}
-                </Link>
+                <div className="block relative aspect-square">
+                  <Image
+                    src={product.images?.[0]?.src || 'https://picsum.photos/seed/placeholder/600/600'}
+                    alt={product.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover"
+                    unoptimized
+                  />
+                </div>
               </CardHeader>
               <CardContent className="flex flex-col flex-grow p-6">
                 <CardTitle as="h3" className="font-headline text-xl mb-2">
-                   <Link href={`/shop/${product.slug}`}>{product.name}</Link>
+                   {product.name}
                 </CardTitle>
                 <CardDescription className="text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
               </CardContent>
@@ -172,3 +165,5 @@ export default function ShopPage() {
     </div>
   );
 }
+
+    

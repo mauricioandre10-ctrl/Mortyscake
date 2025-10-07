@@ -8,6 +8,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Star } from 'lucide-react';
+import { AddToCart } from '@/components/AddToCart';
 
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'alpha-asc' | 'alpha-desc' | 'date-desc';
 
@@ -147,22 +148,16 @@ export default function CoursesPage() {
           {sortedCourses.map((course: any) => (
             <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
               <CardHeader className="p-0">
-                <Link href={`/courses/${course.slug}`} className="block relative aspect-[4/3]">
-                  {course.images && course.images[0] ? (
-                    <Image
-                      src={course.images[0].src}
-                      alt={course.name}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover"
-                      unoptimized
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground">
-                      Sin imagen
-                    </div>
-                  )}
-                </Link>
+                <div className="block relative aspect-[4/3]">
+                  <Image
+                    src={course.images?.[0]?.src || 'https://picsum.photos/seed/placeholder/800/600'}
+                    alt={course.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover"
+                    unoptimized
+                  />
+                </div>
               </CardHeader>
               <CardContent className="flex flex-col flex-grow p-6">
                  <CardTitle as="h3" className="font-headline text-xl mb-2">{course.name}</CardTitle>
@@ -180,11 +175,16 @@ export default function CoursesPage() {
                 <span className="text-2xl font-bold text-primary">
                    {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
                 </span>
-                <Button asChild>
-                  <Link href={`/courses/${course.slug}`}>
-                      Ver Detalles
-                  </Link>
-                </Button>
+                <AddToCart 
+                  name={course.name}
+                  description={course.short_description || ''}
+                  id={String(course.id)}
+                  price={parseFloat(course.price)}
+                  currency="EUR"
+                  image={course.images?.[0]?.src || ''}
+                >
+                  {course.price === "0.00" ? "Inscribirse Gratis" : "Añadir al carrito"}
+                </AddToCart>
               </CardFooter>
             </Card>
           ))}
@@ -193,3 +193,5 @@ export default function CoursesPage() {
     </div>
   );
 }
+
+    
