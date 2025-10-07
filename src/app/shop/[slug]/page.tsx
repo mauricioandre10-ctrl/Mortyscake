@@ -6,6 +6,11 @@ import ProductDetailPageSkeleton from './ProductDetailPageSkeleton';
 
 const WP_API_URL = 'https://mortyscake.com';
 
+type ProductDetailPageProps = {
+  params: { slug: string };
+};
+
+
 // This tells Next.js to generate pages on-demand if they weren't generated at build time.
 export const dynamicParams = true;
 
@@ -38,7 +43,7 @@ async function getProduct(slug: string) {
   }
 }
 
-export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
+export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   const product = await getProduct(params.slug);
 
   // The notFound() call is now handled inside the Client Component after client-side fetching.
