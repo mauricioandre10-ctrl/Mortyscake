@@ -63,9 +63,8 @@ export default function ProductClientPage({ slug }: { slug: string }) {
     )
   }
 
+  // Si llegamos aquí, product no es null
   if (!product) {
-      // This state prevents rendering the main content if product is null,
-      // which is the root cause of the build error.
       return <ProductDetailPageSkeleton />;
   }
 
