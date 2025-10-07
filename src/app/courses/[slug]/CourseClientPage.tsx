@@ -73,9 +73,9 @@ export default function CourseClientPage({ slug }: { slug: string }) {
     )
   }
 
-  // Si llegamos aquí, course no puede ser null.
-  // Movemos la lógica dependiente aquí para asegurar que 'course' existe.
+  // Si llegamos aquí, 'course' no puede ser null.
   if (!course) {
+    // Esto es una salvaguarda, en teoría no debería ocurrir si loading es false y notFound es false.
     return <CourseDetailPageSkeleton />;
   }
 
