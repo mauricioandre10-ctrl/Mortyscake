@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Star, Truck, ShieldCheck, ArrowLeft, Info } from 'lucide-react';
 import { AddToCart } from '@/components/AddToCart';
 import { useEffect, useState } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
+import ProductDetailPageSkeleton from './ProductDetailPageSkeleton';
 
 const WP_API_URL = 'https://mortyscake.com';
 
@@ -43,9 +43,10 @@ export default function ProductClientPage({ initialProduct, slug }: { initialPro
     }
   }, [initialProduct, slug]);
 
-  if (loading) {
-      // A simple loading state. You can use your skeleton component here if you prefer
-      return <div>Cargando...</div>;
+  if (loading || !product) {
+      // If we are loading or there is no product data yet, show skeleton.
+      // This also handles the initial server render during build when initialProduct is null.
+      return <ProductDetailPageSkeleton />;
   }
 
   if (!product) {

@@ -9,6 +9,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { AddToCart } from '@/components/AddToCart';
 import { useEffect, useState } from 'react';
 import { ShareButton } from '@/components/ShareButton';
+import CourseDetailPageSkeleton from './CourseDetailPageSkeleton';
+
 
 const iconMap: { [key: string]: React.ElementType } = {
   '¿A quién está dirigido?': Target,
@@ -53,11 +55,13 @@ export default function CourseClientPage({ initialCourse, slug }: { initialCours
   }, [initialCourse, slug]);
 
 
-  if (loading) {
-      // You can replace this with a proper skeleton loader component
-      return <div>Cargando...</div>;
+  if (loading || !course) {
+      // If we are loading or there is no course data yet, show skeleton.
+      // This also handles the initial server render during build when initialCourse is null.
+      return <CourseDetailPageSkeleton />;
   }
   
+  // This can only be reached if course is not null, but we check again for safety.
   if (!course) {
     return notFound();
   }
