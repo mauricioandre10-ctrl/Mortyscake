@@ -19,10 +19,15 @@ export async function generateStaticParams() {
         }
         
         const products = await response.json();
-        
-        return products.map((product: any) => ({
-            slug: product.slug,
-        }));
+        if (!Array.isArray(products)) {
+          return [];
+        }
+
+        return products
+            .filter(product => product && product.slug) // Ensure product and slug exist
+            .map((product: any) => ({
+                slug: product.slug,
+            }));
     } catch (error) {
         console.error("Error in generateStaticParams for products:", error);
         return [];
@@ -37,7 +42,8 @@ async function getProduct(slug: string) {
             return null;
         }
         const data = await response.json();
-        if (data && data.length > 0) {
+        // The API returns an array, so we get the first element
+        if (data && Array.isArray(data) && data.length > 0) {
             return data[0];
         }
         return null;
@@ -50,9 +56,10 @@ async function getProduct(slug: string) {
 export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
   const product = await getProduct(params.slug);
 
+  // Critical check: If no product is found, stop execution immediately.
   if (!product) {
     notFound();
-    return null; // Ensure no further execution
+    return null; // Ensure no further rendering happens if product is not found.
   }
 
   return (
@@ -116,7 +123,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
                                  <ShieldCheck className="w-5 h-5 text-muted-foreground" />
                                 <span>Pago 100% seguro</span>
                             </div>
-                             {product.attributes.map((attr: any) => (
+                             {product.attributes && product.attributes.map((attr: any) => (
                              <div key={attr.id} className="flex items-start gap-2 text-sm">
                                 <Info className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
                                 <div>

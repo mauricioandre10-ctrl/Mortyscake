@@ -32,10 +32,15 @@ export async function generateStaticParams() {
     }
 
     const courses = await response.json();
+    if (!Array.isArray(courses)) {
+      return [];
+    }
     
-    return courses.map((course: any) => ({
-      slug: course.slug,
-    }));
+    return courses
+        .filter(course => course && course.slug) // Ensure course and slug exist
+        .map((course: any) => ({
+            slug: course.slug,
+        }));
   } catch (error) {
     console.error("Error in generateStaticParams for courses:", error);
     return [];
@@ -50,7 +55,8 @@ async function getCourse(slug: string) {
             return null;
         }
         const data = await response.json();
-        if (data && data.length > 0) {
+        // The API returns an array, so we get the first element
+        if (data && Array.isArray(data) && data.length > 0) {
             return data[0];
         }
         return null;
@@ -64,9 +70,10 @@ async function getCourse(slug: string) {
 export default async function CourseDetailPage({ params }: { params: { slug: string } }) {
   const course = await getCourse(params.slug);
 
+  // Critical check: If no course is found, stop execution immediately.
   if (!course) {
     notFound();
-    return null; // Ensure no further execution
+    return null; // Ensure no further rendering happens if course is not found.
   }
 
   return (
@@ -134,7 +141,7 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
                               <p className="text-muted-foreground text-xs">Aprende a tu ritmo, cuando y donde quieras.</p>
                             </div>
                           </div>
-                          {course.attributes.map((attr: any) => (
+                          {course.attributes && course.attributes.map((attr: any) => (
                              <div key={attr.id} className="flex items-start">
                                 <Info className="h-4 w-4 mr-3 mt-1 shrink-0" />
                                 <div>
