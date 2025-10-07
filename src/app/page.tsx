@@ -12,7 +12,6 @@ import { galleryImages } from '@/lib/gallery-images';
 import { useEffect, useState, useRef } from 'react';
 import Autoplay from "embla-carousel-autoplay"
 import { Skeleton } from '@/components/ui/skeleton';
-import { AddToCart } from '@/components/AddToCart';
 
 const WP_API_URL = 'https://cms.mortyscake.com';
 
@@ -58,6 +57,8 @@ export default function Home() {
 
   useEffect(() => {
     const fetchProductsAndCourses = async () => {
+      setLoadingCourses(true);
+      setLoadingProducts(true);
       try {
         // 1. Get Course Category ID
         const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
@@ -85,7 +86,7 @@ export default function Home() {
         } else {
             console.error("Failed to fetch courses");
         }
-        setLoadingCourses(false);
+       
 
         // 3. Fetch Products (excluding course category)
         const productsResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category_exclude=${courseCategoryId}&per_page=4`);
@@ -95,10 +96,10 @@ export default function Home() {
         } else {
             console.error("Failed to fetch products");
         }
-        setLoadingProducts(false);
 
       } catch (error) {
         console.error('Error fetching data for homepage:', error);
+      } finally {
         setLoadingCourses(false);
         setLoadingProducts(false);
       }
@@ -144,7 +145,7 @@ export default function Home() {
                   <Image src="https://picsum.photos/seed/cat-courses/800/600" alt="Alumna decorando un pastel en un curso" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="pastry class" unoptimized />
                 </div>
                 <CardHeader>
-                  <CardTitle as="h2">Cursos de Repostería</CardTitle>
+                  <CardTitle>Cursos de Repostería</CardTitle>
                   <CardDescription>Aprende técnicas profesionales desde casa.</CardDescription>
                 </CardHeader>
                 <CardFooter>
@@ -160,7 +161,7 @@ export default function Home() {
                   <Image src="https://picsum.photos/seed/cat-shop/800/600" alt="Productos de repostería de alta calidad" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="baking products" unoptimized />
                 </div>
                 <CardHeader>
-                  <CardTitle as="h2">Nuestros Productos</CardTitle>
+                  <CardTitle>Nuestros Productos</CardTitle>
                   <CardDescription>Ingredientes y herramientas de alta calidad para tus creaciones.</CardDescription>
                 </CardHeader>
                 <CardFooter>
@@ -200,21 +201,28 @@ export default function Home() {
               ))
             ) : (
               courses.map((course: Product) => (
-                <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
-                  <Link href="/courses" className="flex flex-col flex-grow">
+                 <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
+                  <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow">
                     <CardHeader className="p-0">
+                      <div className="aspect-[4/3] w-full bg-muted relative overflow-hidden">
                        {course.images?.[0]?.src ? (
                           <Image
                             src={course.images[0].src}
                             alt={course.name}
-                            width={800}
-                            height={600}
-                            className="object-cover w-full h-auto aspect-[4/3]"
+                            fill
+                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                             unoptimized
                           />
                         ) : (
-                          <div className="aspect-[4/3] w-full bg-muted" />
+                           <Image
+                            src={`https://picsum.photos/seed/${course.id}/800/600`}
+                            alt={course.name}
+                            fill
+                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                            unoptimized
+                          />
                         )}
+                        </div>
                     </CardHeader>
                     <CardContent className="flex flex-col flex-grow p-6">
                       <CardTitle className="font-headline text-xl mb-2">{course.name}</CardTitle>
@@ -232,17 +240,7 @@ export default function Home() {
                       <span className="text-2xl font-bold text-primary">
                         {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
                       </span>
-                       <AddToCart
-                          name={course.name}
-                          description={course.short_description || ''}
-                          id={String(course.id)}
-                          price={parseFloat(course.price)}
-                          currency="EUR"
-                          image={course.images?.[0]?.src}
-                          size="sm"
-                      >
-                         {course.price === "0.00" ? "Inscribirse" : "Al carrito"}
-                      </AddToCart>
+                       <Button variant="secondary" size="sm">Ver Detalles</Button>
                     </CardFooter>
                   </Link>
                 </Card>
@@ -317,21 +315,28 @@ export default function Home() {
               ))
             ) : (
               products.map((product: Product) => (
-                <Card key={product.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
-                  <Link href="/shop" className="flex flex-col flex-grow">
+                <Card key={product.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
+                  <Link href={`/shop/${product.slug}`} className="flex flex-col flex-grow">
                     <CardHeader className="p-0">
+                      <div className="aspect-square w-full bg-muted relative overflow-hidden">
                        {product.images?.[0]?.src ? (
                           <Image
                             src={product.images[0].src}
                             alt={product.name}
-                            width={600}
-                            height={600}
-                            className="object-cover w-full h-auto aspect-square"
+                            fill
+                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                             unoptimized
                           />
                         ) : (
-                          <div className="aspect-square w-full bg-muted" />
+                          <Image
+                            src={`https://picsum.photos/seed/${product.id}/600/600`}
+                            alt={product.name}
+                            fill
+                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                            unoptimized
+                          />
                         )}
+                        </div>
                     </CardHeader>
                     <CardContent className="flex flex-col flex-grow p-6">
                       <CardTitle className="font-headline text-xl mb-2">{product.name}</CardTitle>
@@ -341,17 +346,7 @@ export default function Home() {
                       <span className="text-2xl font-bold text-primary">
                         €{product.price}
                       </span>
-                      <AddToCart
-                          name={product.name}
-                          description={product.short_description || ''}
-                          id={String(product.id)}
-                          price={parseFloat(product.price)}
-                          currency="EUR"
-                          image={product.images?.[0]?.src}
-                          size="sm"
-                      >
-                         Al carrito
-                      </AddToCart>
+                      <Button variant="secondary" size="sm">Ver Detalles</Button>
                     </CardFooter>
                   </Link>
                 </Card>
@@ -508,7 +503,7 @@ export default function Home() {
                           </div>
                           <CardContent className="p-6">
                               <span className="text-sm text-primary font-semibold">{post.category}</span>
-                              <CardTitle as="h3" className="font-headline text-xl mt-2">{post.title}</CardTitle>
+                              <CardTitle className="font-headline text-xl mt-2">{post.title}</CardTitle>
                               <p className="text-muted-foreground mt-2 text-sm">{post.description}</p>
                           </CardContent>
                         </Link>
@@ -526,5 +521,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
