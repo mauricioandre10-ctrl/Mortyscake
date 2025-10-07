@@ -2,13 +2,14 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useEffect, useState, useMemo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Star } from 'lucide-react';
 import { AddToCart } from '@/components/AddToCart';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'alpha-asc' | 'alpha-desc' | 'date-desc';
 
@@ -25,16 +26,34 @@ const CACHE_KEY = 'all_courses_cache';
 const CACHE_DURATION = 3600 * 1000; // 1 hora en milisegundos
 const WP_API_URL = 'https://cms.mortyscake.com';
 
+interface Course {
+  id: number;
+  name: string;
+  slug: string;
+  price: string;
+  short_description: string;
+  description: string;
+  images: { id: number; src: string; alt: string }[];
+  average_rating: number;
+  rating_count: number;
+  date_created: string;
+  menu_order: number;
+}
+
+
 export default function CoursesPage() {
-  const [courses, setCourses] = useState<any[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortOrder, setSortOrder] = useState<SortOption>('default');
+
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loadingModal, setLoadingModal] = useState(false);
 
   useEffect(() => {
     const fetchCourses = async () => {
       setLoading(true);
       
-      // Try loading from cache first
       try {
           const cachedItem = localStorage.getItem(CACHE_KEY);
           if (cachedItem) {
@@ -42,14 +61,12 @@ export default function CoursesPage() {
               if ((new Date().getTime() - timestamp) < CACHE_DURATION) {
                   setCourses(data);
                   setLoading(false);
-                  // Still fetch in background, but UI is already populated
               }
           }
       } catch(e) {
           console.error("Failed to read from localStorage", e);
       }
 
-      // Fetch from network
       try {
         const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
         if (!catResponse.ok) {
@@ -81,6 +98,24 @@ export default function CoursesPage() {
     fetchCourses();
   }, []);
 
+  const handleCourseClick = async (course: Course) => {
+    setIsModalOpen(true);
+    setLoadingModal(true);
+    try {
+        const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${course.slug}`);
+         if (!response.ok) {
+            throw new Error(`Failed to fetch course details: ${response.statusText}`);
+        }
+        const courseDetails = await response.json();
+        setSelectedCourse(courseDetails[0]); 
+    } catch(error) {
+        console.error("Error fetching course details", error);
+        setIsModalOpen(false);
+    } finally {
+        setLoadingModal(false);
+    }
+  }
+
   const sortedCourses = useMemo(() => {
     const sorted = [...courses];
     switch (sortOrder) {
@@ -96,7 +131,6 @@ export default function CoursesPage() {
         return sorted.sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime());
       case 'default':
       default:
-        // Default is based on menu_order which corresponds to popularity/default sort
         return courses.sort((a, b) => a.menu_order - b.menu_order);
     }
   }, [courses, sortOrder]);
@@ -145,7 +179,7 @@ export default function CoursesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {sortedCourses.map((course: any) => (
+          {sortedCourses.map((course: Course) => (
             <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card">
               <CardHeader className="p-0">
                 <div className="block relative aspect-[4/3]">
@@ -175,21 +209,67 @@ export default function CoursesPage() {
                 <span className="text-2xl font-bold text-primary">
                    {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
                 </span>
-                <AddToCart 
-                  name={course.name}
-                  description={course.short_description || ''}
-                  id={String(course.id)}
-                  price={parseFloat(course.price)}
-                  currency="EUR"
-                  image={course.images?.[0]?.src || 'https://picsum.photos/seed/placeholder/800/600'}
-                >
-                  {course.price === "0.00" ? "Inscribirse Gratis" : "Añadir al carrito"}
-                </AddToCart>
+                <Button onClick={() => handleCourseClick(course)}>Ver Detalles</Button>
               </CardFooter>
             </Card>
           ))}
         </div>
       )}
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-4xl p-0">
+            {loadingModal || !selectedCourse ? (
+                <div className="flex items-center justify-center h-96">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary"></div>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+                     <div className="p-4">
+                        <Carousel>
+                            <CarouselContent>
+                                {selectedCourse.images.map(image => (
+                                    <CarouselItem key={image.id}>
+                                        <div className="aspect-square relative">
+                                            <Image src={image.src} alt={image.alt} fill className="object-cover rounded-md" unoptimized/>
+                                        </div>
+                                    </CarouselItem>
+                                ))}
+                            </CarouselContent>
+                             {selectedCourse.images.length > 1 && (
+                              <>
+                                <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10" />
+                                <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10" />
+                              </>
+                            )}
+                        </Carousel>
+                    </div>
+                    <div className="flex flex-col p-8">
+                        <DialogHeader>
+                            <DialogTitle className="font-headline text-3xl mb-4">{selectedCourse.name}</DialogTitle>
+                        </DialogHeader>
+                        <div className="prose prose-sm dark:prose-invert max-w-none flex-grow overflow-y-auto pr-2" dangerouslySetInnerHTML={{ __html: selectedCourse.description }}/>
+                        <DialogFooter className="mt-8 flex-col sm:flex-col sm:space-x-0 items-stretch gap-4">
+                            <div className="flex justify-between items-center">
+                                <span className="text-3xl font-bold text-primary">
+                                    {selectedCourse.price === "0.00" ? 'Gratis' : `€${selectedCourse.price}`}
+                                </span>
+                                <AddToCart 
+                                    name={selectedCourse.name}
+                                    description={selectedCourse.short_description || ''}
+                                    id={String(selectedCourse.id)}
+                                    price={parseFloat(selectedCourse.price)}
+                                    currency="EUR"
+                                    image={selectedCourse.images?.[0]?.src || 'https://picsum.photos/seed/placeholder/800/600'}
+                                >
+                                    {selectedCourse.price === "0.00" ? "Inscribirse Gratis" : "Añadir al carrito"}
+                                </AddToCart>
+                            </div>
+                        </DialogFooter>
+                    </div>
+                </div>
+            )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
