@@ -22,7 +22,7 @@ const sortOptions: { value: SortOption; label: string }[] = [
 
 const CACHE_KEY = 'all_courses_cache';
 const CACHE_DURATION = 3600 * 1000; // 1 hora en milisegundos
-const WP_API_URL = 'https://cms.mortyscake.com';
+const WP_API_URL = 'https://cms.mortyscake.es';
 
 interface Course {
   id: number;
@@ -170,13 +170,7 @@ export default function CoursesPage() {
                               unoptimized
                             />
                           ) : (
-                             <Image
-                                src={`https://picsum.photos/seed/${course.id}/800/600`}
-                                alt={course.name}
-                                fill
-                                className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                                unoptimized
-                              />
+                             <div className="w-full h-full bg-muted"></div>
                           )}
                         </div>
                     </CardHeader>

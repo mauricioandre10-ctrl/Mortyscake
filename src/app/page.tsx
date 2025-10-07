@@ -13,7 +13,7 @@ import { useEffect, useState, useRef } from 'react';
 import Autoplay from "embla-carousel-autoplay"
 import { Skeleton } from '@/components/ui/skeleton';
 
-const WP_API_URL = 'https://cms.mortyscake.com';
+const WP_API_URL = 'https://cms.mortyscake.es';
 
 interface Product {
   id: number;

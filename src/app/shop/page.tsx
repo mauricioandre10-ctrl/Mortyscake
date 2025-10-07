@@ -20,7 +20,7 @@ const sortOptions: { value: SortOption; label: string }[] = [
 
 const CACHE_KEY = 'all_products_cache';
 const CACHE_DURATION = 3600 * 1000; // 1 hora en milisegundos
-const WP_API_URL = 'https://cms.mortyscake.com';
+const WP_API_URL = 'https://cms.mortyscake.es';
 
 interface Product {
   id: number;
@@ -150,13 +150,7 @@ export default function ShopPage() {
                           unoptimized
                         />
                       ) : (
-                        <Image
-                          src={`https://picsum.photos/seed/${product.id}/600/600`}
-                          alt={product.name}
-                          fill
-                          className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                          unoptimized
-                        />
+                        <div className="w-full h-full bg-muted"></div>
                       )}
                   </div>
                 </CardHeader>

@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +9,7 @@ import { AddToCart } from '@/components/AddToCart';
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel';
 import { ShareButton } from '@/components/ShareButton';
 
-const WP_API_URL = 'https://cms.mortyscake.com';
+const WP_API_URL = 'https://cms.mortyscake.es';
 
 // This enables ISR (Incremental Static Regeneration)
 // The page will be re-generated at most once per hour
