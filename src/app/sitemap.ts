@@ -26,6 +26,12 @@ async function getAllProducts(): Promise<Product[]> {
             return [];
         }
         
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            console.error(`[Sitemap] Expected application/json but received ${contentType}`);
+            return [];
+        }
+        
         const data = await response.json();
         return data;
 
@@ -68,7 +74,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     {
       url: `${siteUrl}/courses`,
-      lastModified: new Date(),
+      lastModified: new date(),
       changeFrequency: 'daily',
       priority: 0.9,
     },
