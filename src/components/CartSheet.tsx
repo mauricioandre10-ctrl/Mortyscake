@@ -9,7 +9,7 @@ import {
   SheetTitle,
   SheetFooter,
 } from '@/components/ui/sheet';
-import { useShoppingCart, CartEntry } from 'use-shopping-cart';
+import { useShoppingCart } from 'use-shopping-cart';
 import { Button } from './ui/button';
 import { Minus, Plus, Trash2, Loader2 } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
@@ -77,7 +77,7 @@ export function CartSheet() {
           <>
             <ScrollArea className="flex-1">
               <div className="flex flex-col gap-4 p-4">
-                {Object.values(cartDetails ?? {}).map((item: CartEntry) => (
+                {Object.values(cartDetails ?? {}).map((item: any) => (
                   <div key={item.id} className="flex items-center gap-4">
                     <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border">
                         {item.image && (
