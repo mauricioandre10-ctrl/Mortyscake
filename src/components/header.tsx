@@ -15,6 +15,7 @@ const Header = () => {
   const accountUrl = storeUrl ? `${storeUrl}/mi-cuenta` : '#';
 
   const navLinks = [
+    { href: '/', label: 'Inicio' },
     { href: '/shop', label: 'Tienda' },
     { href: '/courses', label: 'Cursos' },
     { href: '/gallery', label: 'Galería' },
