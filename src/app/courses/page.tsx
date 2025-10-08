@@ -39,7 +39,7 @@ async function getCourses(): Promise<Course[]> {
 
     console.log(`[getCourses] Fetching URL: ${coursesApiUrl.toString()}`);
     
-    const response = await fetch(coursesApiUrl.toString(), { next: { revalidate: 60 } }); // Revalidate every minute
+    const response = await fetch(coursesApiUrl.toString(), { cache: 'no-store' });
     
     console.log(`[getCourses] Response status: ${response.status}`);
 

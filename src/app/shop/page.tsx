@@ -34,7 +34,7 @@ async function getProducts(): Promise<Product[]> {
         productsApiUrl.searchParams.set('per_page', '100');
 
         console.log(`[getProducts] Fetching URL: ${productsApiUrl.toString()}`);
-        const response = await fetch(productsApiUrl.toString(), { next: { revalidate: 60 } }); // Revalidate every minute
+        const response = await fetch(productsApiUrl.toString(), { cache: 'no-store' });
         
         console.log(`[getProducts] Response status: ${response.status}`);
         if (!response.ok) {
@@ -101,7 +101,7 @@ function ProductCard({ product, siteUrl }: { product: Product, siteUrl: string |
 
 async function ProductsList() {
     const products = await getProducts();
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+    const siteUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
 
     if (!products || products.length === 0) {
         return <p className="text-center text-muted-foreground col-span-full">No se encontraron productos en este momento. Por favor, inténtalo de nuevo más tarde.</p>

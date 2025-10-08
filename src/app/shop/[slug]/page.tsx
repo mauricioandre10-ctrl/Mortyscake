@@ -40,7 +40,7 @@ async function getProduct(slug: string): Promise<Product | null> {
     url.searchParams.set('per_page', '1');
     
     console.log(`[getProduct] Fetching URL: ${url.toString()}`);
-    const response = await fetch(url.toString(), { next: { revalidate: 60 } });
+    const response = await fetch(url.toString(), { cache: 'no-store' });
     
     console.log(`[getProduct] Response status for slug ${slug}: ${response.status}`);
     if (!response.ok) {

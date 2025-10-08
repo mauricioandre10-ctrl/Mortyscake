@@ -43,7 +43,7 @@ async function getCourse(slug: string): Promise<Course | null> {
     
     console.log(`[getCourse] Fetching URL: ${url.toString()}`);
 
-    const response = await fetch(url.toString(), { next: { revalidate: 60 } });
+    const response = await fetch(url.toString(), { cache: 'no-store' });
     
     console.log(`[getCourse] Response status for slug ${slug}: ${response.status}`);
 
