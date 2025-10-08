@@ -10,11 +10,11 @@ import {
 } from '@/components/ui/sheet';
 import { useShoppingCart, CartEntry } from 'use-shopping-cart';
 import { Button } from './ui/button';
-import { Minus, Plus, Trash2 } from 'lucide-react';
+import { Minus, Plus, Trash2, Loader2 } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
 import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import Link from 'next/link';
+import { useState } from 'react';
 
 export function CartSheet() {
   const {
@@ -26,12 +26,43 @@ export function CartSheet() {
     incrementItem,
     decrementItem,
     formattedTotalPrice,
-    redirectToCheckout
+    clearCart,
   } = useShoppingCart();
   const { toast } = useToast();
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
-  const handleCheckout = () => {
-    handleCartClick(); // Cierra el sheet antes de navegar
+  const handleCheckout = async () => {
+    setIsRedirecting(true);
+    const checkoutUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_CHECKOUT_URL;
+
+    if (!checkoutUrl) {
+      toast({
+        variant: 'destructive',
+        title: 'Error de configuración',
+        description: 'La URL de checkout no está definida.',
+      });
+      setIsRedirecting(false);
+      return;
+    }
+
+    // Construir la URL de "añadir al carrito" de WooCommerce
+    // Formato: /checkout/?add-to-cart=ID_PROD_1&quantity[ID_PROD_1]=CANTIDAD_1&add-to-cart=ID_PROD_2&quantity[ID_PROD_2]=CANTIDAD_2
+    const wooCheckoutUrl = new URL(checkoutUrl);
+
+    // Primero, vaciamos el carrito de WC por si acaso
+    wooCheckoutUrl.searchParams.set('empty-cart', 'true');
+
+    // Añadimos cada producto
+    Object.values(cartDetails ?? {}).forEach(item => {
+        wooCheckoutUrl.searchParams.append('add-to-cart', item.id);
+        wooCheckoutUrl.searchParams.append(`quantity[${item.id}]`, item.quantity.toString());
+    });
+
+    // Limpiamos el carrito local antes de redirigir
+    clearCart();
+
+    // Redirigir al usuario
+    window.location.href = wooCheckoutUrl.toString();
   };
 
   return (
@@ -107,12 +138,12 @@ export function CartSheet() {
                   <span>{formattedTotalPrice}</span>
                 </div>
                 <Button
-                  asChild
                   className="w-full"
                   onClick={handleCheckout}
-                  disabled={cartCount === 0}
+                  disabled={cartCount === 0 || isRedirecting}
                 >
-                  <Link href="/checkout">Finalizar Compra</Link>
+                  {isRedirecting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Finalizar Compra
                 </Button>
               </div>
             </SheetFooter>
