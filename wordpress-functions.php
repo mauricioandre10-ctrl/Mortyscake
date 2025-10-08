@@ -9,23 +9,19 @@
  * 4. Busca y haz clic en el archivo `functions.php` (Funciones del Tema).
  * 5. Copia TODO este código y pégalo al final del archivo.
  * 6. Guarda los cambios.
- *
- * NOTA: Con la nueva arquitectura de proxy, la configuración de CORS ya no es necesaria aquí,
- * pero se deja comentada por si se necesita en el futuro para otras integraciones.
  */
 
-/*
 // **AÑADIDO IMPORTANTE PARA CORS**
+// Esto soluciona los errores "Failed to fetch" al llamar a la API desde un dominio diferente.
 add_action( 'rest_api_init', function() {
     remove_filter( 'rest_pre_serve_request', 'rest_send_cors_headers' );
     add_filter( 'rest_pre_serve_request', function( $value ) {
         header( 'Access-Control-Allow-Origin: *' );
         header( 'Access-Control-Allow-Methods: GET' );
-        header( 'Access-Control-Allow-Headers: Content-Type, Authorization' ); // Added Authorization
+        header( 'Access-Control-Allow-Headers: Content-Type, Authorization' );
         return $value;
     });
 }, 15 );
-*/
 
 
 add_action('rest_api_init', function () {
@@ -73,16 +69,25 @@ function morty_get_products(WP_REST_Request $request) {
     }
     
     if (!empty($params['category_exclude'])) {
-        $category_ids_to_exclude = array_map('intval', explode(',', sanitize_text_field($params['category_exclude'])));
+        $category_slugs_to_exclude = explode(',', sanitize_text_field($params['category_exclude']));
+        $category_ids_to_exclude = [];
+        foreach($category_slugs_to_exclude as $slug) {
+            $term = get_term_by('slug', $slug, 'product_cat');
+            if ($term) {
+                $category_ids_to_exclude[] = $term->term_id;
+            }
+        }
         
-        $products_to_exclude = wc_get_products(array(
-            'category' => $category_ids_to_exclude,
-            'limit' => -1,
-            'return' => 'ids',
-        ));
+        if (!empty($category_ids_to_exclude)) {
+            $products_to_exclude = wc_get_products(array(
+                'category' => $category_ids_to_exclude,
+                'limit' => -1,
+                'return' => 'ids',
+            ));
 
-        if (!empty($products_to_exclude)) {
-            $args['exclude'] = array_merge(isset($args['exclude']) ? $args['exclude'] : array(), $products_to_exclude);
+            if (!empty($products_to_exclude)) {
+                $args['exclude'] = array_merge(isset($args['exclude']) ? $args['exclude'] : array(), $products_to_exclude);
+            }
         }
     }
     
@@ -99,34 +104,41 @@ function morty_get_products(WP_REST_Request $request) {
     foreach ($products as $product_obj) {
         $product_data = $product_obj->get_data();
         
-        // Adjuntar datos de imágenes de forma explícita
         $image_gallery_ids = $product_obj->get_gallery_image_ids();
         $images = [];
-        // Añadir imagen principal
         if (has_post_thumbnail($product_obj->get_id())) {
              $main_image_id = get_post_thumbnail_id($product_obj->get_id());
              $main_image_url = wp_get_attachment_url($main_image_id);
-             $images[] = array(
-                 'id' => $main_image_id,
-                 'src' => $main_image_url,
-                 'alt' => get_post_meta($main_image_id, '_wp_attachment_image_alt', true),
-             );
+             if ($main_image_url) {
+                $images[] = array(
+                    'id' => $main_image_id,
+                    'src' => $main_image_url,
+                    'alt' => get_post_meta($main_image_id, '_wp_attachment_image_alt', true),
+                );
+             }
         }
-        // Añadir imágenes de la galería
         foreach ($image_gallery_ids as $image_id) {
             $image_url = wp_get_attachment_url($image_id);
             if ($image_url) {
-                $images[] = array(
-                    'id' => $image_id,
-                    'src' => $image_url,
-                    'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true),
-                );
+                // Evitar duplicar la imagen principal si también está en la galería
+                $is_duplicate = false;
+                foreach($images as $existing_image) {
+                    if ($existing_image['id'] === $image_id) {
+                        $is_duplicate = true;
+                        break;
+                    }
+                }
+                if (!$is_duplicate) {
+                    $images[] = array(
+                        'id' => $image_id,
+                        'src' => $image_url,
+                        'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true),
+                    );
+                }
             }
         }
-        // Si no hay ninguna imagen, usamos un array vacío. WC a veces devuelve un placeholder.
-        $product_data['images'] = !empty($images) ? $images : [];
+        $product_data['images'] = $images;
 
-        // Devolver datos completos del producto, incluidas las imágenes procesadas.
         $data[] = $product_data;
     }
 
@@ -148,12 +160,11 @@ function morty_get_category_by_slug(WP_REST_Request $request) {
     if (!$term) {
         return new WP_Error('category_not_found', 'La categoría no se ha encontrado.', array('status' => 404));
     }
-    // Convertir el objeto WP_Term a un array para consistencia de JSON
-    $term_data = get_object_vars($term);
+    
+    $term_data = (array) $term;
     $term_data['id'] = $term->term_id;
 
     return new WP_REST_Response($term_data, 200);
 }
 
 ?>
-    

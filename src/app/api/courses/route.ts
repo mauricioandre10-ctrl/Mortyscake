@@ -12,23 +12,9 @@ export async function GET(request: Request) {
   const limit = searchParams.get('limit') || '100';
 
   try {
-    // 1. Get Course Category ID
-    const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`, { next: { revalidate: 3600 } });
-    if (!catResponse.ok) {
-      const errorText = await catResponse.text();
-      console.error("Failed to fetch course category:", catResponse.status, errorText);
-      return NextResponse.json({ error: `Failed to fetch course category: ${catResponse.statusText}` }, { status: catResponse.status });
-    }
-    const courseCategory = await catResponse.json();
-    const courseCategoryId = courseCategory?.id;
-
-    if (!courseCategoryId) {
-      return NextResponse.json({ error: 'Course category not found' }, { status: 404 });
-    }
-
-    // 2. Fetch Courses from that category
+    // Fetch Courses from the 'cursos' category slug directly
     const coursesApiUrl = new URL(`${WP_API_URL}/wp-json/morty/v1/products`);
-    coursesApiUrl.searchParams.set('category', courseCategoryId);
+    coursesApiUrl.searchParams.set('category', 'cursos');
     coursesApiUrl.searchParams.set('per_page', limit);
     
     const coursesResponse = await fetch(coursesApiUrl.toString(), { next: { revalidate: 3600 } }); // Revalidate every hour
