@@ -1,8 +1,6 @@
 
 import { NextResponse } from 'next/server';
 
-export const runtime = 'edge';
-
 const WP_API_URL = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
 
 export async function GET(request: Request) {
