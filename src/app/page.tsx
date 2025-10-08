@@ -450,8 +450,8 @@ export default function Home() {
                      </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="left-2 top-1/2 -translate-y-1/2 z-10 bg-background/50 hover:bg-background/80" />
-                <CarouselNext className="right-2 top-1/2 -translate-y-1/2 z-10 bg-background/50 hover:bg-background/80" />
+                <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-background/50 hover:bg-background/80" />
+                <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-background/50 hover:bg-background/80" />
               </Carousel>
               <div className="text-center mt-12">
                 <Button asChild size="lg" variant="outline">
@@ -472,37 +472,39 @@ export default function Home() {
               Un vistazo a las dulces creaciones de nuestros cursos y encargos.
             </p>
           </div>
-          <Carousel
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-            className="w-full max-w-4xl mx-auto"
-          >
-            <CarouselContent>
-              {localGalleryImages.map((image, index) => ( // Show first 9 images
-                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                  <div className="p-1">
-                    <Card className="overflow-hidden">
-                      <CardContent className="flex aspect-square items-center justify-center p-0">
-                         <div className="relative w-full h-full">
-                           <Image
-                              src={image.src}
-                              alt={image.alt}
-                              fill
-                              className="object-cover"
-                              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                            />
-                         </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+          <div className="relative">
+            <Carousel
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full max-w-4xl mx-auto"
+            >
+              <CarouselContent>
+                {localGalleryImages.map((image, index) => ( // Show first 9 images
+                  <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                    <div className="p-1">
+                      <Card className="overflow-hidden">
+                        <CardContent className="flex aspect-square items-center justify-center p-0">
+                           <div className="relative w-full h-full">
+                             <Image
+                                src={image.src}
+                                alt={image.alt}
+                                fill
+                                className="object-cover"
+                                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                              />
+                           </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10" />
+              <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10" />
+            </Carousel>
+          </div>
            <div className="text-center mt-12">
               <Button asChild>
                   <Link href="/gallery">
@@ -575,5 +577,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
