@@ -1,8 +1,7 @@
 
-'use client';
-
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Star, ArrowLeft, Info, FileText, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
@@ -12,7 +11,6 @@ import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext
 import { ShareButton } from '@/components/ShareButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -43,90 +41,78 @@ interface Course {
   reviews: Review[];
 }
 
-export default function CourseDetailPage({ params }: { params: { slug: string } }) {
-  const [course, setCourse] = useState<Course | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function getCourse(slug: string) {
-        const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
-        console.log('[CLIENT] WOOCOMMERCE_API_URL:', apiUrl);
-
-        if (!apiUrl) {
-            console.error("[CLIENT] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_STORE_URL no está configurada.");
-            setError("La configuración del sitio no es correcta.");
-            setLoading(false);
-            return;
-        }
-
-        try {
-            setLoading(true);
-            const url = new URL(`${apiUrl}/wp-json/morty/v1/products`);
-            url.searchParams.set('slug', slug);
-            url.searchParams.set('per_page', '1');
-            
-            console.log(`[CLIENT] Fetching URL: ${url.toString()}`);
-
-            const response = await fetch(url.toString(), { cache: 'no-store' });
-            
-            console.log(`[CLIENT] Response status for slug ${slug}: ${response.status}`);
-
-            if (!response.ok) {
-                console.error(`[CLIENT] Failed to fetch course. Status: ${response.status}, StatusText: ${response.statusText}`);
-                throw new Error(`No se pudo cargar la información del curso (Estatus: ${response.status}).`);
-            }
-            
-            const courses = await response.json();
-            if (courses.length === 0) {
-                console.log(`[CLIENT] No course found for slug: ${slug}`);
-                throw new Error("El curso que buscas no existe o no está disponible.");
-            }
-            
-            const fetchedCourse = courses[0];
-
-            if (fetchedCourse && fetchedCourse.category_names && fetchedCourse.category_names.includes('Cursos')) {
-                console.log(`[CLIENT] Successfully found course: ${fetchedCourse.name}`);
-                setCourse(fetchedCourse);
-            } else {
-                 console.log(`[CLIENT] Product found for slug ${slug}, but it's not in 'Cursos' category.`);
-                 throw new Error("Este producto no es un curso válido.");
-            }
-        } catch (err) {
-            console.error('[CLIENT] An unexpected error occurred:', err);
-            setError(err instanceof Error ? err.message : 'Ocurrió un error inesperado.');
-        } finally {
-            setLoading(false);
-        }
+async function getCourse(slug: string): Promise<Course | null> {
+    const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+    if (!apiUrl) {
+        console.error("[SERVER] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_STORE_URL no está configurada.");
+        return null;
     }
-    
-    if (params.slug) {
-        getCourse(params.slug);
+
+    try {
+        const url = new URL(`${apiUrl}/wp-json/morty/v1/products`);
+        url.searchParams.set('slug', slug);
+        url.searchParams.set('per_page', '1');
+        
+        const response = await fetch(url.toString(), { cache: 'no-store' });
+        
+        if (!response.ok) {
+            console.error(`[SERVER] Failed to fetch course. Status: ${response.status}`);
+            return null;
+        }
+        
+        const courses = await response.json();
+        if (courses.length === 0) {
+            return null;
+        }
+        
+        const fetchedCourse = courses[0];
+
+        if (fetchedCourse && fetchedCourse.category_names && fetchedCourse.category_names.includes('Cursos')) {
+            return fetchedCourse;
+        } else {
+            return null;
+        }
+    } catch (err) {
+        console.error('[SERVER] An unexpected error occurred:', err);
+        return null;
     }
-  }, [params.slug]);
+}
 
-
-  if (loading) {
-    return <LoadingSkeleton />;
-  }
-
-  if (error) {
-    return (
-        <div className="container mx-auto py-12 px-4 md:px-6 text-center">
-            <h2 className="text-2xl font-bold text-destructive mb-4">No se pudo cargar el curso</h2>
-            <p className="text-muted-foreground mb-6">{error}</p>
-            <Button asChild variant="outline">
-              <Link href="/courses">
-                <ArrowLeft className="mr-2" />
-                Volver a Cursos
-              </Link>
-            </Button>
-        </div>
-    );
-  }
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const course = await getCourse(params.slug);
 
   if (!course) {
-    return null; // or a not found component
+    return {
+      title: 'Curso no encontrado',
+      description: 'El curso que buscas no existe o no está disponible.',
+    };
+  }
+
+  const cleanDescription = course.short_description.replace(/<[^>]*>?/gm, '');
+
+  return {
+    title: course.name,
+    description: cleanDescription,
+    openGraph: {
+      title: course.name,
+      description: cleanDescription,
+      images: course.images.length > 0 ? [course.images[0].src] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: course.name,
+      description: cleanDescription,
+      images: course.images.length > 0 ? [course.images[0].src] : [],
+    },
+  };
+}
+
+
+export default async function CourseDetailPage({ params }: { params: { slug: string } }) {
+  const course = await getCourse(params.slug);
+
+  if (!course) {
+    notFound();
   }
   
   const fullDescription = course.description || course.short_description || 'No hay descripción disponible.';
@@ -296,34 +282,3 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
     </div>
   );
 }
-
-
-function LoadingSkeleton() {
-    return (
-      <div className="container mx-auto py-12 px-4 md:px-6">
-        <div className="mb-8">
-            <Skeleton className="h-10 w-48" />
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
-            <div className="lg:col-span-1">
-                <Skeleton className="w-full aspect-square" />
-            </div>
-            <div className="flex flex-col lg:col-span-2 space-y-4">
-                <Skeleton className="h-12 w-3/4" />
-                <Skeleton className="h-6 w-1/4" />
-                <Skeleton className="h-20 w-full" />
-                <div className="mt-auto pt-4 space-y-4">
-                    <Skeleton className="h-10 w-1/3" />
-                    <Skeleton className="h-12 w-full" />
-                </div>
-            </div>
-        </div>
-        <div className="mt-12">
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-48 w-full mt-2" />
-        </div>
-      </div>
-    );
-}
-
-    
