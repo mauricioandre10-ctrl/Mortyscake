@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { ArrowLeft, FileText, Info, MessageSquare, Star, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, FileText, Info, MessageSquare, Star } from 'lucide-react';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -17,7 +17,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ShareButton } from './ShareButton';
-import { trackAddToCart } from '@/lib/events';
+import { AddToCart } from './AddToCart';
+
 
 interface Review {
   id: number;
@@ -48,10 +49,6 @@ interface Course {
 export function CourseDetails({ course }: { course: Course }) {
   const fullDescription = course.description || course.short_description || 'No hay descripción disponible.';
   const courseAttributes = Array.isArray(course.attributes) ? course.attributes : Object.values(course.attributes);
-
-  const phoneNumber = "34616284463";
-  const message = `¡Hola! Estoy interesado en el curso "${course.name}". ¿Podrías darme más información?`;
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -120,17 +117,21 @@ export function CourseDetails({ course }: { course: Course }) {
           />
 
           <div className="mt-auto">
-            <div className="flex items-center mb-6">
+            <div className="flex items-baseline gap-4 mb-6">
               <span className="text-4xl font-bold text-primary">
                 {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
               </span>
             </div>
-            <Button asChild size="lg" onClick={() => trackAddToCart(course.name, 'Curso', course.price)}>
-              <Link href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-                <ShoppingCart className="mr-2" />
-                {course.price === "0.00" ? "Inscribirse Gratis" : "Inscribirse por WhatsApp"}
-              </Link>
-            </Button>
+            <AddToCart
+                name={course.name}
+                id={course.id.toString()}
+                price={parseFloat(course.price)}
+                currency="EUR"
+                image={course.images?.[0]?.src}
+                description={course.short_description}
+                sku={course.sku}
+                isCourse={true}
+            />
           </div>
         </div>
       </div>

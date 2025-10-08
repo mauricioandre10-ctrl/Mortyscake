@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { ArrowLeft, Info, FileText, MessageSquare, Star, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Info, FileText, MessageSquare, Star } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel';
@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { trackAddToCart } from '@/lib/events';
+import { AddToCart } from './AddToCart';
 
 interface Review {
   id: number;
@@ -42,11 +42,6 @@ interface Product {
 export function ProductDetails({ product }: { product: Product }) {
   const fullDescription = product.description || product.short_description || 'No hay descripción disponible.';
   const productAttributes = Array.isArray(product.attributes) ? product.attributes : Object.values(product.attributes);
-  
-  const phoneNumber = "34616284463";
-  const message = `¡Hola! Estoy interesado en el producto "${product.name}". ¿Podrías darme más información?`;
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -120,12 +115,16 @@ export function ProductDetails({ product }: { product: Product }) {
                 €{product.price}
               </span>
             </div>
-            <Button asChild size="lg" onClick={() => trackAddToCart(product.name, 'Producto', product.price)}>
-                <Link href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-                    <ShoppingCart className="mr-2" />
-                    Pedir por WhatsApp
-                </Link>
-            </Button>
+            <AddToCart
+                name={product.name}
+                id={product.id.toString()}
+                price={parseFloat(product.price)}
+                currency="EUR"
+                image={product.images?.[0]?.src}
+                description={product.short_description}
+                sku={product.sku}
+                isCourse={false}
+            />
           </div>
         </div>
       </div>

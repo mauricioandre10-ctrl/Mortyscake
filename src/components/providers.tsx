@@ -1,8 +1,7 @@
 'use client';
 
-// This component is no longer strictly necessary but is kept for structure.
-// You could add other global providers here in the future (e.g., ThemeProvider).
+import { CartProvider } from '@/context/CartProvider';
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return <CartProvider>{children}</CartProvider>;
 }

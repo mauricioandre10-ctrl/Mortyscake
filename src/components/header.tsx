@@ -4,13 +4,15 @@ import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription, SheetHeader } from '@/components/ui/sheet';
-import { Menu, User } from 'lucide-react';
+import { Menu, User, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from './ui/separator';
+import { useShoppingCart } from 'use-shopping-cart';
 
 const Header = () => {
   const storeUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
   const accountUrl = storeUrl ? `${storeUrl}/mi-cuenta` : '#';
+  const { handleCartClick, cartCount } = useShoppingCart();
 
   const navLinks = [
     { href: '/', label: 'Inicio' },
@@ -41,11 +43,20 @@ const Header = () => {
         </nav>
         
         <div className="flex items-center gap-2">
-           <Button asChild variant="ghost" size="icon" className="hidden md:flex" disabled={!storeUrl}>
+            <Button asChild variant="ghost" size="icon" className="hidden md:flex" disabled={!storeUrl}>
                 <Link href={accountUrl} target="_blank" rel="noopener noreferrer" aria-label="Iniciar Sesión">
                     <User className="h-6 w-6"/>
                 </Link>
-           </Button>
+            </Button>
+
+            <Button variant="ghost" size="icon" className="relative" onClick={() => handleCartClick()} aria-label="Abrir carrito">
+                <ShoppingCart className="h-6 w-6" />
+                {cartCount !== undefined && cartCount > 0 && (
+                    <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                        {cartCount}
+                    </span>
+                )}
+            </Button>
 
           <div className="md:hidden">
             <Sheet>

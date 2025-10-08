@@ -12,6 +12,7 @@ import InstagramButton from '@/components/InstagramButton';
 import { Providers } from '@/components/providers';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
+import { CartSheet } from '@/components/CartSheet';
 
 
 const fontSans = FontSans({ 
@@ -104,6 +105,7 @@ export default function RootLayout({
         <Providers>
           <Header />
           <main className="flex-grow">{children}</main>
+          <CartSheet />
           <Footer />
           <Toaster />
         </Providers>
