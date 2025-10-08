@@ -1,112 +1,66 @@
 <?php
-
 if (function_exists('set_time_limit')) {
     set_time_limit(30);
 }
 
-// 1. CORS Headers
+// CORS headers
 add_action('rest_api_init', function () {
     remove_filter('rest_pre_serve_request', 'rest_send_cors_headers');
-    add_filter('rest_pre_serve_request', 'morty_cors_headers', 15);
+    add_filter('rest_pre_serve_request', function ($value) {
+        $allowed_origins = [
+            'https://mortyscake-website.vercel.app',
+            'https://mortyscake-website-git-main-mauricio-s-projects-bb335663.vercel.app',
+            'http://localhost:3000',
+            'http://localhost:9002'
+        ];
+        $origin = get_http_origin();
+        if ($origin && in_array($origin, $allowed_origins, true)) {
+            header('Access-Control-Allow-Origin: ' . esc_url_raw($origin));
+            header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+            header('Access-Control-Allow-Headers: Content-Type, Authorization');
+            header('Access-Control-Allow-Credentials: true');
+        }
+        if ('OPTIONS' === $_SERVER['REQUEST_METHOD']) {
+            status_header(200);
+            exit();
+        }
+        return $value;
+    }, 15);
 }, 15);
 
-function morty_cors_headers($value) {
-    $allowed_origins = [
-        'https://mortyscake-website.vercel.app',
-        'https://mortyscake-website-git-main-mauricio-s-projects-bb335663.vercel.app',
-        'http://localhost:3000',
-        'http://localhost:9002'
-    ];
-    
-    $origin = get_http_origin();
+// Registrar endpoint básico
+add_action('rest_api_init', function () {
+    register_rest_route('morty/v1', '/products', [
+        'methods' => WP_REST_Server::READABLE,
+        'callback' => function (WP_REST_Request $request) {
+            if (!class_exists('WooCommerce')) {
+                return new WP_Error('woocommerce_not_active', 'WooCommerce no está activado.', ['status' => 500]);
+            }
 
-    if ($origin && in_array($origin, $allowed_origins, true)) {
-        header('Access-Control-Allow-Origin: ' . esc_url_raw($origin));
-        header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-        header('Access-control-allow-headers: content-type, authorization');
-        header('Access-Control-Allow-Credentials: true');
-    }
+            $products = wc_get_products(['status' => 'publish', 'limit' => 100]);
+            $data = [];
 
-    if ('OPTIONS' === $_SERVER['REQUEST_METHOD']) {
-        status_header(200);
-        exit();
-    }
+            foreach ($products as $product) {
+                 $product_data = $product->get_data();
+        
+                $product_data['price'] = wc_format_decimal($product->get_price(), 2);
+                $product_data['category_names'] = morty_get_product_terms($product->get_id(), 'product_cat', 'name');
+                $product_data['tags'] = morty_get_product_terms($product->get_id(), 'product_tag');
+                $product_data['attributes'] = morty_get_product_attributes($product);
+                $product_data['images'] = morty_get_product_images($product);
+                $product_data['reviews'] = morty_get_product_reviews($product->get_id());
+                
+                unset($product_data['downloads'], $product_data['meta_data']);
+                
+                $data[] = $product_data;
+            }
 
-    return $value;
-}
-
-// 2. Register API Routes
-add_action('rest_api_init', 'morty_register_rest_routes');
-
-function morty_register_rest_routes() {
-    $namespace = 'morty/v1';
-
-    register_rest_route($namespace, '/products', [
-        'methods'             => WP_REST_Server::READABLE,
-        'callback'            => 'morty_get_products_with_details',
+            return new WP_REST_Response($data, 200);
+        },
         'permission_callback' => '__return_true',
-        'args'                => [
-            'per_page' => [
-                'validate_callback' => function($param, $request, $key) { return is_numeric($param); }
-            ],
-            'slug' => [
-                'validate_callback' => function($param, $request, $key) { return is_string($param); }
-            ],
-            'category_slug' => [
-                'validate_callback' => function($param, $request, $key) { return is_string($param); }
-            ],
-            'category_exclude_slug' => [
-                'validate_callback' => function($param, $request, $key) { return is_string($param); }
-            ],
-        ],
     ]);
-}
+});
 
-// 3. API Callback Function
-function morty_get_products_with_details(WP_REST_Request $request) {
-    if (!class_exists('WooCommerce')) {
-        return new WP_Error('woocommerce_not_active', 'WooCommerce no está activado.', ['status' => 500]);
-    }
-
-    $params = $request->get_params();
-    $args = [
-        'status'   => 'publish',
-        'limit'    => isset($params['per_page']) ? intval($params['per_page']) : -1,
-        'paginate' => false,
-    ];
-
-    if (!empty($params['slug'])) { $args['slug'] = sanitize_text_field($params['slug']); }
-    if (!empty($params['category_slug'])) { $args['category'] = [sanitize_text_field($params['category_slug'])]; }
-    
-    if (!empty($params['category_exclude_slug'])) {
-        $term = get_term_by('slug', sanitize_text_field($params['category_exclude_slug']), 'product_cat');
-        if ($term) { $args['category__not_in'] = [$term->term_id]; }
-    }
-
-    $products = wc_get_products($args);
-    $data = [];
-
-    foreach ($products as $product) {
-        if (!$product instanceof WC_Product) continue;
-        
-        $product_data = $product->get_data();
-        
-        $product_data['price'] = wc_format_decimal($product->get_price(), 2);
-        $product_data['category_names'] = morty_get_product_terms($product->get_id(), 'product_cat', 'name');
-        $product_data['tags'] = morty_get_product_terms($product->get_id(), 'product_tag');
-        $product_data['attributes'] = morty_get_product_attributes($product);
-        $product_data['images'] = morty_get_product_images($product);
-        $product_data['reviews'] = morty_get_product_reviews($product->get_id());
-        
-        unset($product_data['downloads'], $product_data['meta_data']);
-        
-        $data[] = $product_data;
-    }
-
-    return new WP_REST_Response($data, 200);
-}
-
-// 4. Helper Functions
 function morty_get_product_terms($product_id, $taxonomy, $field = null) {
     $terms = get_the_terms($product_id, $taxonomy);
     if (empty($terms) || is_wp_error($terms)) return [];
@@ -118,20 +72,21 @@ function morty_get_product_terms($product_id, $taxonomy, $field = null) {
 
 function morty_get_product_attributes($product) {
     $attributes_data = [];
-    if (!$product->is_type('variable')) {
-        $attributes = $product->get_attributes();
-        if (empty($attributes)) return $attributes_data;
-        foreach ($attributes as $attribute) {
-            if ($attribute->get_visible()) {
-                $attributes_data[] = [
-                    'name'    => wc_get_attribute_label($attribute->get_name()),
-                    'options' => $attribute->get_options(),
-                ];
-            }
+    $attributes = $product->get_attributes();
+    if (empty($attributes)) return [];
+
+    foreach ($attributes as $attribute) {
+        if (!$attribute->get_visible()) {
+            continue;
         }
+        $attributes_data[] = [
+            'name'    => wc_get_attribute_label($attribute->get_name()),
+            'options' => $attribute->get_options(),
+        ];
     }
     return $attributes_data;
 }
+
 
 function morty_get_product_images($product) {
     $images = [];
