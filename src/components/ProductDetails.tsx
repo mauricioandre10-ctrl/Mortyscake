@@ -91,7 +91,7 @@ export function ProductDetails({ product }: { product: Product }) {
 
         <div className="flex flex-col lg:col-span-2">
           <div className="flex justify-between items-start">
-            <h1 className="font-headline text-4xl md:text-5xl mb-4">{product.name}</h1>
+            <h1 className="font-card-title text-4xl md:text-5xl mb-4">{product.name}</h1>
             <ShareButton title={product.name} text={`Echa un vistazo a este producto: ${product.name}`} />
           </div>
 

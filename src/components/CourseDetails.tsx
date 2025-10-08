@@ -97,7 +97,7 @@ export function CourseDetails({ course }: { course: Course }) {
 
         <div className="flex flex-col lg:col-span-2">
           <div className="flex justify-between items-start">
-            <h1 className="font-headline text-4xl md:text-5xl mb-2">{course.name}</h1>
+            <h1 className="font-card-title text-4xl md:text-5xl mb-2">{course.name}</h1>
             <ShareButton title={course.name} text={`Echa un vistazo a este curso: ${course.name}`} />
           </div>
 
