@@ -62,11 +62,11 @@ async function getCourse(slug: string): Promise<Course | null> {
     const data = await response.json();
     
     // Ensure we are actually on a course page
-    if (data.length > 0 && data[0].category_names && !data[0].category_names.includes('Cursos')) {
-        return null;
+    if (data.length > 0 && data[0].category_names && data[0].category_names.includes('Cursos')) {
+        return data[0];
     }
 
-    return data[0] || null;
+    return null;
   } catch (error) {
     console.error('Error fetching course:', error);
     return null;

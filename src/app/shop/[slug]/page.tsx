@@ -23,6 +23,7 @@ interface Product {
   short_description: string;
   description: string;
   images: { id: number; src: string; alt: string }[];
+  category_names: string[];
 }
 
 // This function tells Next.js which slugs to pre-render at build time
@@ -61,11 +62,11 @@ async function getProduct(slug: string): Promise<Product | null> {
     const data = await response.json();
     
     // Ensure we're not getting a course on a product page
-    if (data.length > 0 && data[0].category_names && data[0].category_names.includes('Cursos')) {
-        return null;
+    if (data.length > 0 && (!data[0].category_names || !data[0].category_names.includes('Cursos'))) {
+        return data[0];
     }
     
-    return data[0] || null;
+    return null;
   } catch (error) {
     console.error('Error fetching product:', error);
     return null;
