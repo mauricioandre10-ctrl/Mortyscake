@@ -32,13 +32,11 @@ interface Course {
 export async function generateStaticParams() {
   if (!WP_API_URL) return [];
   try {
-    const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
-    if (!catResponse.ok) return [];
-
-    const courseCategory = await catResponse.json();
-    if (!courseCategory?.id) return [];
-
-    const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=100`);
+    const apiUrl = new URL(`${WP_API_URL}/wp-json/morty/v1/products`);
+    apiUrl.searchParams.set('category_slug', 'cursos');
+    apiUrl.searchParams.set('per_page', '100');
+    
+    const response = await fetch(apiUrl.toString());
     if (!response.ok) return [];
 
     const courses: Course[] = await response.json();
@@ -55,7 +53,10 @@ async function getCourse(slug: string): Promise<Course | null> {
   if (!WP_API_URL) return null;
   try {
     // We can fetch directly from WordPress here because this runs on the server
-    const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`);
+    const apiUrl = new URL(`${WP_API_URL}/wp-json/morty/v1/products`);
+    apiUrl.searchParams.set('slug', slug);
+    
+    const response = await fetch(apiUrl.toString());
     if (!response.ok) return null;
     const data = await response.json();
     return data[0] || null;
@@ -65,7 +66,7 @@ async function getCourse(slug: string): Promise<Course | null> {
   }
 }
 
-export default async function CourseDetailPage({ params }: PageProps<{ slug: string }>) {
+export default async function CourseDetailPage({ params }: { params: { slug: string } }) {
   const course = await getCourse(params.slug);
 
   if (!course) {
@@ -163,5 +164,3 @@ export default async function CourseDetailPage({ params }: PageProps<{ slug: str
     </div>
   );
 }
-
-    

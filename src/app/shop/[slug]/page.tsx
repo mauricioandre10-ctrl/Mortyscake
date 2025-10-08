@@ -30,19 +30,11 @@ interface Product {
 export async function generateStaticParams() {
   if (!WP_API_URL) return [];
   try {
-    const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
-    const courseCategory = await catResponse.json();
-    const courseCategoryId = courseCategory?.id;
+    const apiUrl = new URL(`${WP_API_URL}/wp-json/morty/v1/products`);
+    apiUrl.searchParams.set('category_exclude_slug', 'cursos');
+    apiUrl.searchParams.set('per_page', '100');
 
-    if (!catResponse.ok || !courseCategoryId) {
-      // Fetch all products if course category fails
-      const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?per_page=100`);
-      if (!response.ok) return [];
-      const products: Product[] = await response.json();
-      return products.map((product) => ({ slug: product.slug }));
-    }
-
-    const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category_exclude=${courseCategoryId}&per_page=100`);
+    const response = await fetch(apiUrl.toString());
     if (!response.ok) return [];
 
     const products: Product[] = await response.json();
@@ -59,7 +51,10 @@ async function getProduct(slug: string): Promise<Product | null> {
   if (!WP_API_URL) return null;
   try {
     // We can fetch directly from WordPress here because this runs on the server
-    const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`);
+    const apiUrl = new URL(`${WP_API_URL}/wp-json/morty/v1/products`);
+    apiUrl.searchParams.set('slug', slug);
+
+    const response = await fetch(apiUrl.toString());
     if (!response.ok) {
       return null;
     }
@@ -71,7 +66,7 @@ async function getProduct(slug: string): Promise<Product | null> {
   }
 }
 
-export default async function ProductDetailPage({ params }: PageProps<{ slug: string }>) {
+export default async function ProductDetailPage({ params }: { params: { slug: string }}) {
   const product = await getProduct(params.slug);
 
   if (!product) {
@@ -158,5 +153,3 @@ export default async function ProductDetailPage({ params }: PageProps<{ slug: st
     </div>
   );
 }
-
-    
