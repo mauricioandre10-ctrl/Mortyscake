@@ -7,7 +7,8 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { ShareButton } from '@/components/ShareButton';
 
 // Genera una lista de 60 imágenes con nombres consecutivos y alturas variables
 const localGalleryImages = Array.from({ length: 60 }, (_, i) => ({
@@ -27,6 +28,14 @@ interface GalleryImage {
 
 export default function GalleryPage() {
     const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
+    const [siteUrl, setSiteUrl] = useState('');
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setSiteUrl(window.location.origin);
+        }
+    }, []);
+
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -58,7 +67,7 @@ export default function GalleryPage() {
         
         {selectedImage && (
              <DialogContent className="max-w-none w-auto h-auto max-h-[90vh] p-2 bg-transparent border-0 flex items-center justify-center">
-                <div className="relative h-full w-full">
+                <div className="relative h-auto w-auto max-h-[90vh] max-w-[90vw]">
                     <Image 
                         src={selectedImage.src}
                         alt={selectedImage.alt}
@@ -67,6 +76,13 @@ export default function GalleryPage() {
                         className="object-contain h-full w-auto max-h-[90vh] rounded-lg shadow-2xl"
                         sizes="90vw"
                     />
+                     <ShareButton
+                        title="Mira esta creación de Morty's Cake"
+                        text="¡Me encantó esta foto de la galería de Morty's Cake!"
+                        url={siteUrl ? `${siteUrl}${selectedImage.src}` : selectedImage.src}
+                        className="absolute top-4 right-4 z-10 bg-black/50 text-white hover:bg-black/70"
+                        size="icon"
+                     />
                 </div>
             </DialogContent>
         )}
