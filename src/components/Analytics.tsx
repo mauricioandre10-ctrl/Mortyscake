@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect } from 'react';
@@ -17,7 +18,7 @@ export const Analytics = () => {
     if (!gaId || !hasAnalyticsConsent) {
       return;
     }
-    const url = pathname + searchParams.toString();
+    const url = pathname + (searchParams?.toString() ?? '');
     pageview(gaId, url);
   }, [pathname, searchParams, gaId, hasAnalyticsConsent]);
   
