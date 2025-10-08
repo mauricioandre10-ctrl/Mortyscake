@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -9,15 +10,14 @@ const InstagramIcon = () => (
 )
 
 const InstagramButton = () => {
-  const instagramUsername = "pasteleria_morty"; 
-  const instagramUrl = `https://ig.me/m/${instagramUsername}`;
+  const instagramUrl = "https://www.instagram.com/mortyscake.ourense/";
 
   return (
     <Button
       asChild
       size="icon"
       className="fixed bottom-6 right-6 h-[52px] w-[52px] rounded-full shadow-lg bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 hover:opacity-90 transition-opacity text-white"
-      aria-label="Chat en Instagram"
+      aria-label="Ir al perfil de Instagram"
     >
       <Link href={instagramUrl} target="_blank" rel="noopener noreferrer">
         <InstagramIcon />

@@ -26,10 +26,10 @@ const Footer = () => {
             <div className="flex flex-col items-end">
               <h3 className="font-bold text-lg mb-4 font-headline">Síguenos</h3>
               <div className="flex gap-4">
-                <Link href="https://www.facebook.com/share/1Sa7bU9phV/" target="_blank" rel="noopener noreferrer" className="text-white hover:opacity-80">
+                <Link href="https://www.facebook.com/MortysCake/" target="_blank" rel="noopener noreferrer" className="text-white hover:opacity-80">
                   <Facebook className="h-7 w-7" />
                 </Link>
-                <Link href="https://www.instagram.com/mortyscake.ourense?igsh=eHB4ZXo4M3hpMmhp" target="_blank" rel="noopener noreferrer" className="text-white hover:opacity-80">
+                <Link href="https://www.instagram.com/mortyscake.ourense/" target="_blank" rel="noopener noreferrer" className="text-white hover:opacity-80">
                   <Instagram className="h-7 w-7" />
                 </Link>
               </div>
