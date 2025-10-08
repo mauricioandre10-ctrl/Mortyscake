@@ -5,24 +5,13 @@
  * Este archivo contiene todas las funciones personalizadas de PHP para el sitio de WordPress.
  * Incluye la configuración de la API REST para la comunicación con la aplicación Next.js,
  * la gestión del carrito y la obtención de productos.
- *
- * INSTRUCCIONES:
- * 1. Accede a tu panel de WordPress.
- * 2. Ve a Apariencia > Editor de archivos de temas.
- * 3. Asegúrate de tener seleccionado tu tema hijo (child theme).
- * 4. Busca y haz clic en el archivo `functions.php` (Funciones del Tema).
- * 5. Reemplaza el contenido existente con este código.
- * 6. Guarda los cambios.
  */
 
 // =============================================================================
 // 1. REGISTRO DE HOOKS
 // =============================================================================
 
-// Registra los endpoints personalizados de la API REST cuando WordPress se inicializa.
 add_action('rest_api_init', 'morty_register_rest_routes');
-
-// Inicializa la sesión de WooCommerce para las llamadas a la API de usuarios no autenticados.
 add_action('init', 'morty_init_wc_session_for_api');
 
 
@@ -43,20 +32,19 @@ function morty_register_rest_routes() {
             'https://mortyscake-website.vercel.app',
             'https://mortyscake-sitio-web-git-main-mauricio-s-projects-bb335663.vercel.app',
             'https://mortyscake-sitio-web-iyfpw5yl3-mauricio-s-projects-bb335663.vercel.app',
-            'http://localhost:9002', // Desarrollo local
+            'http://localhost:9002',
         ];
 
         $origin = get_http_origin();
         if ($origin && in_array($origin, $allowed_origins)) {
             header('Access-Control-Allow-Origin: ' . esc_url_raw($origin));
         } else {
-            header('Access-Control-Allow-Origin: *');
+             header('Access-Control-Allow-Origin: *');
         }
 
         header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type, Authorization, X-WP-Nonce, X-WC-Session');
+        header('Access-Control-Allow-Headers: Content-Type, Authorization');
         header('Access-Control-Allow-Credentials: true');
-        header('Access-Control-Expose-Headers: X-WC-Session');
 
         if ('OPTIONS' === $_SERVER['REQUEST_METHOD']) {
             status_header(200);
@@ -66,69 +54,104 @@ function morty_register_rest_routes() {
         return $value;
     });
 
-    // --- Registro de Endpoints ---
     $namespace = 'morty/v1';
 
+    // --- Registro de Endpoints ---
+    
     // Endpoint para obtener productos
     register_rest_route($namespace, '/products', [
-        'methods' => 'GET',
+        'methods' => WP_REST_Server::READABLE,
         'callback' => 'morty_get_products_with_details',
         'permission_callback' => '__return_true',
+        'args' => [
+            'per_page' => [
+                'description' => 'Maximum number of items to be returned in result set.',
+                'type' => 'integer',
+                'sanitize_callback' => 'absint',
+                'validate_callback' => function($param) { return is_numeric($param); },
+            ],
+            'slug' => [
+                'description' => 'Get a product by its slug.',
+                'type' => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+                'validate_callback' => function($param) { return is_string($param); },
+            ],
+            'category_slug' => [
+                'description' => 'Get products from a specific category slug.',
+                'type' => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+                'validate_callback' => function($param) { return is_string($param); },
+            ],
+            'category_exclude_slug' => [
+                'description' => 'Exclude products from a specific category slug.',
+                'type' => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+                'validate_callback' => function($param) { return is_string($param); },
+            ],
+        ],
     ]);
     
     // Endpoint para obtener el carrito
     register_rest_route($namespace, '/cart', [
-        'methods' => 'GET',
-        'callback' => function () { return new WP_REST_Response(morty_format_cart_data(), 200); },
+        'methods' => WP_REST_Server::READABLE,
+        'callback' => 'morty_handle_get_cart',
         'permission_callback' => '__return_true',
     ]);
     
     // Endpoint para añadir al carrito
     register_rest_route($namespace, '/cart/add', [
-        'methods' => 'POST',
+        'methods' => WP_REST_Server::CREATABLE,
         'callback' => 'morty_handle_cart_add',
         'permission_callback' => '__return_true',
     ]);
 
     // Endpoint para eliminar del carrito
     register_rest_route($namespace, '/cart/remove', [
-        'methods' => 'POST',
+        'methods' => WP_REST_Server::CREATABLE,
         'callback' => 'morty_handle_cart_remove',
         'permission_callback' => '__return_true',
     ]);
 
     // Endpoint para actualizar el carrito
     register_rest_route($namespace, '/cart/update', [
-        'methods' => 'POST',
+        'methods' => WP_REST_Server::CREATABLE,
         'callback' => 'morty_handle_cart_update',
         'permission_callback' => '__return_true',
     ]);
 
     // Endpoint para vaciar el carrito
     register_rest_route($namespace, '/cart/clear', [
-        'methods' => 'POST',
-        'callback' => function () {
-            WC()->cart->empty_cart();
-            return new WP_REST_Response(morty_format_cart_data(), 200);
-        },
+        'methods' => WP_REST_Server::CREATABLE,
+        'callback' => 'morty_handle_cart_clear',
         'permission_callback' => '__return_true',
     ]);
 }
+
 
 /**
  * Inicializa la sesión de WC si no existe, para que el carrito persista entre llamadas a la API.
  */
 function morty_init_wc_session_for_api() {
-    if (strpos($_SERVER['REQUEST_URI'], '/wp-json/morty/v1/') !== false && !is_user_logged_in()) {
+    if (strpos($_SERVER['REQUEST_URI'], '/wp-json/morty/v1/cart') !== false && !is_user_logged_in()) {
         if (isset(WC()->session) && !WC()->session->has_session()) {
             WC()->session->set_customer_session_cookie(true);
         }
     }
 }
 
+
 // =============================================================================
 // 3. FUNCIONES DE MANEJO DEL CARRITO
 // =============================================================================
+
+function morty_handle_get_cart() {
+    return new WP_REST_Response(morty_format_cart_data(), 200);
+}
+
+function morty_handle_cart_clear() {
+    WC()->cart->empty_cart();
+    return new WP_REST_Response(morty_format_cart_data(), 200);
+}
 
 /**
  * Formatea los datos del carrito para una respuesta JSON consistente y limpia.
@@ -212,6 +235,7 @@ function morty_handle_cart_update(WP_REST_Request $request) {
     return new WP_REST_Response(morty_format_cart_data(), 200);
 }
 
+
 // =============================================================================
 // 4. FUNCIONES DE MANEJO DE PRODUCTOS
 // =============================================================================
@@ -252,11 +276,9 @@ function morty_get_products_with_details(WP_REST_Request $request) {
         
         $product_data = $product->get_data();
         
-        // Limpia datos que no se necesitan en el frontend.
         unset($product_data['downloads'], $product_data['meta_data']);
         $product_data['price'] = wc_format_decimal($product->get_price(), 2);
         
-        // Añade detalles adicionales.
         $product_data['category_names'] = morty_get_product_terms($product->get_id(), 'product_cat', 'name');
         $product_data['tags'] = morty_get_product_terms($product->get_id(), 'product_tag');
         $product_data['attributes'] = morty_get_product_attributes($product);
@@ -320,7 +342,6 @@ function morty_get_product_images($product) {
         }
     }
 
-    // Si no hay imágenes, se proporciona una de placeholder.
     if (empty($images)) {
         $images[] = [
             'id' => 0,
