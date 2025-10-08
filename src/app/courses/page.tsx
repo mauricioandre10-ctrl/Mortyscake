@@ -29,7 +29,7 @@ interface Course {
 function CourseCard({ course, siteUrl }: { course: Course, siteUrl: string | undefined}) {
   return (
     <Card className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
-      <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow">
+      <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(course.name, 'Curso')}>
           <CardHeader className="p-0 relative">
              <ShareButton 
                 title={course.name} 
@@ -68,7 +68,7 @@ function CourseCard({ course, siteUrl }: { course: Course, siteUrl: string | und
             <span className="text-2xl font-bold text-primary">
                {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
             </span>
-            <Button variant="secondary" onClick={() => trackViewDetails(course.name, 'Curso')}>Ver Detalles</Button>
+            <Button variant="secondary">Ver Detalles</Button>
           </CardFooter>
         </Link>
     </Card>

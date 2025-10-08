@@ -120,7 +120,7 @@ function FeaturedCourses() {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {courses.map(course => (
          <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
-          <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow">
+          <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(course.name, 'Curso')}>
               <CardHeader className="p-0 relative">
                 <ShareButton 
                     title={course.name} 
@@ -159,7 +159,7 @@ function FeaturedCourses() {
                 <span className="text-2xl font-bold text-primary">
                   {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
                 </span>
-                <Button variant="secondary" onClick={(e) => { e.preventDefault(); trackViewDetails(course.name, 'Curso'); }}>Ver Detalles</Button>
+                <Button variant="secondary">Ver Detalles</Button>
               </CardFooter>
             </Link>
         </Card>
@@ -242,7 +242,7 @@ function FeaturedProducts() {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {products.map(product => (
          <Card key={product.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
-          <Link href={`/shop/${product.slug}`} className="flex flex-col flex-grow">
+          <Link href={`/shop/${product.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(product.name, 'Producto')}>
               <CardHeader className="p-0 relative">
                 <ShareButton 
                     title={product.name} 
@@ -281,7 +281,7 @@ function FeaturedProducts() {
                 <span className="text-2xl font-bold text-primary">
                   {product.price === "0.00" ? 'Gratis' : `€${product.price}`}
                 </span>
-                <Button variant="secondary" onClick={(e) => { e.preventDefault(); e.stopPropagation(); trackViewDetails(product.name, 'Producto'); }}>Ver Detalles</Button>
+                <Button variant="secondary">Ver Detalles</Button>
               </CardFooter>
             </Link>
         </Card>

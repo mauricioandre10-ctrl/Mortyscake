@@ -25,7 +25,7 @@ interface Product {
 function ProductCard({ product, siteUrl }: { product: Product, siteUrl: string | undefined }) {
   return (
     <Card className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
-        <Link href={`/shop/${product.slug}`} className="flex flex-col flex-grow">
+        <Link href={`/shop/${product.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(product.name, 'Producto')}>
         <CardHeader className="p-0 relative">
             <ShareButton 
                 title={product.name} 
@@ -58,7 +58,7 @@ function ProductCard({ product, siteUrl }: { product: Product, siteUrl: string |
             <span className="text-2xl font-bold text-primary">
             €{product.price}
             </span>
-            <Button variant="secondary" onClick={() => trackViewDetails(product.name, 'Producto')}>Ver Detalles</Button>
+            <Button variant="secondary">Ver Detalles</Button>
         </CardFooter>
         </Link>
     </Card>
