@@ -9,12 +9,12 @@ import {
 } from "@/components/ui/dialog"
 import { useState } from 'react';
 
-// Se reemplazan las imágenes de marcador de posición por imágenes locales.
-const localGalleryImages = Array.from({ length: 12 }, (_, i) => ({
-  src: `/image/galeria/galeria_${i + 1}.webp`,
+// Genera una lista de 59 imágenes con nombres consecutivos y alturas variables
+const localGalleryImages = Array.from({ length: 59 }, (_, i) => ({
+  src: `/image/galeria/foto${i + 1}.webp`,
   alt: `Imagen de la galería de repostería ${i + 1}`,
-  width: 800,
-  height: 600 + (i % 3 - 1) * 100, // Variar ligeramente la altura para el efecto masonry
+  width: 800, // Ancho base constante
+  height: 600 + ((i % 5) - 2) * 80, // Genera 5 alturas diferentes para un efecto más variado
 }));
 
 interface GalleryImage {
@@ -49,6 +49,7 @@ export default function GalleryPage() {
                         height={image.height}
                         className="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105"
                         sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                        priority={index < 12} // Prioriza la carga de las primeras 12 imágenes
                     />
                 </div>
             </DialogTrigger>
@@ -56,8 +57,8 @@ export default function GalleryPage() {
         </div>
         
         {selectedImage && (
-             <DialogContent className="max-w-4xl p-0 border-0">
-                <div className="relative aspect-[4/3]">
+             <DialogContent className="max-w-4xl w-[90vw] h-auto p-0 border-0">
+                <div className="relative w-full aspect-video">
                     <Image 
                         src={selectedImage.src}
                         alt={selectedImage.alt}
@@ -72,5 +73,3 @@ export default function GalleryPage() {
     </div>
   );
 }
-
-    

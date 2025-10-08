@@ -28,7 +28,7 @@ interface Product {
 }
 
 const localGalleryImages = Array.from({ length: 9 }, (_, i) => ({
-  src: `/image/galeria/galeria_${i + 1}.webp`,
+  src: `/image/galeria/foto${i + 1}.webp`,
   alt: `Imagen de la galería de repostería ${i + 1}`,
 }));
 
@@ -535,7 +535,7 @@ export default function Home() {
                           </div>
                           <CardContent className="p-6">
                               <span className="text-sm text-primary font-semibold">{post.category}</span>
-                              <CardTitle className="font-headline text-xl mt-2">{post.title}</CardTitle>
+                              <CardTitle className="font-card-title text-xl mt-2">{post.title}</CardTitle>
                               <p className="text-muted-foreground mt-2 text-sm">{post.description}</p>
                           </CardContent>
                         </Link>
@@ -571,10 +571,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
-    
-
-    
-
-    
