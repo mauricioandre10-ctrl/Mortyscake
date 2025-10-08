@@ -1,4 +1,3 @@
-
 <?php
 /**
  * CÓDIGO PARA AÑADIR AL `functions.php` DE TU TEMA HIJO EN WORDPRESS.
@@ -39,7 +38,7 @@ add_action('rest_api_init', function () {
  * - Prioriza la búsqueda por 'slug' si se proporciona.
  * - Filtra por categoría (para 'cursos').
  * - Excluye una categoría (para 'productos').
- * - Siempre devuelve los nombres de las categorías.
+ * - Siempre devuelve nombres de categorías, SKU y etiquetas.
  */
 function morty_get_products_with_details(WP_REST_Request $request) {
     if (!class_exists('WooCommerce')) {
@@ -55,8 +54,6 @@ function morty_get_products_with_details(WP_REST_Request $request) {
 
     // Prioridad 1: Si se pasa un 'slug', buscar ese producto específico.
     if (!empty($params['slug'])) {
-        // Al buscar por slug, queremos solo UN producto.
-        // Usamos 'post_type' y 'name' para una búsqueda más directa que wc_get_products.
         $product_query = new WP_Query(array(
             'post_type' => 'product',
             'name' => sanitize_text_field($params['slug']),
@@ -66,8 +63,7 @@ function morty_get_products_with_details(WP_REST_Request $request) {
         if ($product_query->have_posts()) {
             while ($product_query->have_posts()) {
                 $product_query->the_post();
-                $product_id = get_the_ID();
-                $product_obj = wc_get_product($product_id);
+                $product_obj = wc_get_product(get_the_ID());
                 if ($product_obj) {
                     $products[] = $product_obj;
                 }
@@ -94,6 +90,8 @@ function morty_get_products_with_details(WP_REST_Request $request) {
     
     $data = array();
     foreach ($products as $product_obj) {
+        if (!$product_obj) continue;
+
         $product_data = $product_obj->get_data();
         
         // Obtener nombres de las categorías y añadirlos a la respuesta
@@ -103,6 +101,16 @@ function morty_get_products_with_details(WP_REST_Request $request) {
             $category_names = wp_list_pluck($category_objects, 'name');
         }
         $product_data['category_names'] = $category_names;
+
+        // Obtener etiquetas (tags)
+        $tag_objects = get_the_terms($product_obj->get_id(), 'product_tag');
+        $tags = [];
+        if (!empty($tag_objects) && !is_wp_error($tag_objects)) {
+            foreach ($tag_objects as $tag) {
+                $tags[] = ['name' => $tag->name, 'slug' => $tag->slug];
+            }
+        }
+        $product_data['tags'] = $tags;
 
         // Obtener todas las imágenes (destacada + galería)
         $images = [];

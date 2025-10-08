@@ -1,18 +1,20 @@
 
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { ArrowLeft, Info, FileText, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { AddToCart } from '@/components/AddToCart';
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel';
 import { ShareButton } from '@/components/ShareButton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from '@/components/ui/badge';
+
 
 const WP_API_URL = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
 
 // This enables ISR (Incremental Static Regeneration)
-// The page will be re-generated at most once per hour
 export const revalidate = 3600;
 
 interface Product {
@@ -24,6 +26,9 @@ interface Product {
   description: string;
   images: { id: number; src: string; alt: string }[];
   category_names: string[];
+  sku: string;
+  tags: { name: string; slug: string }[];
+  rating_count: number;
 }
 
 // This function tells Next.js which slugs to pre-render at build time
@@ -58,6 +63,8 @@ async function getProduct(slug: string): Promise<Product | null> {
       return null;
     }
     const products = await response.json();
+    if (products.length === 0) return null;
+
     const product = products[0];
 
     // After fetching the specific slug, ensure it's NOT a course.
@@ -131,11 +138,11 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
           <h1 className="font-headline text-4xl md:text-5xl font-bold mb-4">{product.name}</h1>
           
           <div 
-            className="prose dark:prose-invert max-w-none text-muted-foreground flex-grow"
-            dangerouslySetInnerHTML={{ __html: fullDescription }}
+            className="prose dark:prose-invert max-w-none text-muted-foreground mb-6"
+            dangerouslySetInnerHTML={{ __html: product.short_description || '' }}
           />
 
-          <div className="mt-8 pt-8 border-t">
+          <div className="mt-auto">
               <div className="flex justify-between items-center mb-6">
                    <span className="text-4xl font-bold text-primary">
                       €{product.price}
@@ -155,6 +162,47 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
               />
           </div>
         </div>
+      </div>
+
+       <div className="mt-12">
+        <Tabs defaultValue="description">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="description"><FileText className="mr-2"/>Descripción</TabsTrigger>
+            <TabsTrigger value="additional-info"><Info className="mr-2"/>Info Adicional</TabsTrigger>
+            <TabsTrigger value="reviews"><MessageSquare className="mr-2"/>Valoraciones ({product.rating_count})</TabsTrigger>
+          </TabsList>
+          <TabsContent value="description" className="py-6 px-4 border rounded-b-md">
+             <div 
+                className="prose dark:prose-invert max-w-none"
+                dangerouslySetInnerHTML={{ __html: fullDescription }}
+              />
+          </TabsContent>
+          <TabsContent value="additional-info" className="py-6 px-4 border rounded-b-md">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {product.sku && (
+                    <div>
+                        <h4 className="font-semibold mb-1">SKU</h4>
+                        <p>{product.sku}</p>
+                    </div>
+                )}
+                 {product.tags?.length > 0 && (
+                    <div>
+                        <h4 className="font-semibold mb-2">Etiquetas</h4>
+                        <div className="flex flex-wrap gap-2">
+                            {product.tags.map(tag => (
+                                <Badge key={tag.slug} variant="secondary">{tag.name}</Badge>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+          </TabsContent>
+          <TabsContent value="reviews" className="py-6 px-4 border rounded-b-md">
+             <h3 className="text-xl font-bold mb-4">Opiniones de los clientes</h3>
+            <p className="text-muted-foreground">Actualmente no hay valoraciones para este producto.</p>
+             {/* TODO: Implementar la muestra de valoraciones de WooCommerce */}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
