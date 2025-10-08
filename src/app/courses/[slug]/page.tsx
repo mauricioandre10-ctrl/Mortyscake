@@ -52,20 +52,21 @@ export async function generateStaticParams() {
 async function getCourse(slug: string): Promise<Course | null> {
   if (!WP_API_URL) return null;
   try {
-    // We can fetch directly from WordPress here because this runs on the server
     const apiUrl = new URL(`${WP_API_URL}/wp-json/morty/v1/products`);
     apiUrl.searchParams.set('slug', slug);
-    apiUrl.searchParams.set('per_page', '1'); // Ensure we only get one
-
+    
     const response = await fetch(apiUrl.toString());
     if (!response.ok) return null;
-    const data = await response.json();
     
-    // Ensure we are actually on a course page
-    if (data.length > 0 && data[0].category_names && data[0].category_names.includes('Cursos')) {
-        return data[0];
+    const courses = await response.json();
+    const course = courses[0];
+
+    // After fetching the specific slug, ensure it's actually a course.
+    if (course && course.category_names && course.category_names.includes('Cursos')) {
+        return course;
     }
 
+    // If no product is found, or it's not in the 'Cursos' category, return null.
     return null;
   } catch (error) {
     console.error('Error fetching course:', error);

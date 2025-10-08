@@ -1,3 +1,4 @@
+
 <?php
 /**
  * CÓDIGO PARA AÑADIR AL `functions.php` DE TU TEMA HIJO EN WORDPRESS.
@@ -54,9 +55,27 @@ function morty_get_products_with_details(WP_REST_Request $request) {
 
     // Prioridad 1: Si se pasa un 'slug', buscar ese producto específico.
     if (!empty($params['slug'])) {
-        $args['slug'] = sanitize_text_field($params['slug']);
+        // Al buscar por slug, queremos solo UN producto.
+        // Usamos 'post_type' y 'name' para una búsqueda más directa que wc_get_products.
+        $product_query = new WP_Query(array(
+            'post_type' => 'product',
+            'name' => sanitize_text_field($params['slug']),
+            'posts_per_page' => 1
+        ));
+        $products = array();
+        if ($product_query->have_posts()) {
+            while ($product_query->have_posts()) {
+                $product_query->the_post();
+                $product_id = get_the_ID();
+                $product_obj = wc_get_product($product_id);
+                if ($product_obj) {
+                    $products[] = $product_obj;
+                }
+            }
+        }
+        wp_reset_postdata();
     } 
-    // Prioridad 2: Si no hay slug, aplicar filtros de categoría.
+    // Prioridad 2: Si no hay slug, aplicar filtros de categoría para listas.
     else {
         // Para obtener solo productos de una categoría específica (ej: 'cursos')
         if (!empty($params['category_slug'])) {
@@ -70,10 +89,9 @@ function morty_get_products_with_details(WP_REST_Request $request) {
                 $args['category__not_in'] = array($term->term_id);
             }
         }
+        $products = wc_get_products($args);
     }
     
-    $products = wc_get_products($args);
-
     $data = array();
     foreach ($products as $product_obj) {
         $product_data = $product_obj->get_data();
