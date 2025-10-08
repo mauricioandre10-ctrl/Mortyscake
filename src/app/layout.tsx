@@ -59,7 +59,7 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  icons: null, // Explicitly disable icon generation to prevent build error
+  icons: {}, // Explicitly disable icon generation to prevent build error
 };
 
 export const viewport: Viewport = {
