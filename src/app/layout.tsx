@@ -1,7 +1,7 @@
 
 import { Suspense } from 'react';
 import type { Metadata, Viewport } from 'next';
-import { Alegreya as FontSans, Alegreya as FontHeadline } from 'next/font/google';
+import { Alegreya as FontSans, Playwrite_US_Modern as FontHeadline } from 'next/font/google';
 import { Analytics } from '@/components/Analytics';
 import { cn } from '@/lib/utils';
 import Header from '@/components/header';
@@ -24,6 +24,7 @@ const fontHeadline = FontHeadline({
   subsets: ['latin'],
   variable: '--font-headline',
   display: 'swap',
+  weight: '100..400',
 });
 
 export const metadata: Metadata = {
