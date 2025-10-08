@@ -13,6 +13,7 @@ interface AddToCartProps extends ButtonProps {
 export const AddToCart = ({ id, className, size = 'default', children }: AddToCartProps) => {
   const storeUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
   if (!storeUrl) {
+    console.error('La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_STORE_URL no está definida.');
     return (
       <Button className={className} size={size} disabled>
         {children || 'Añadir al carrito'}
