@@ -20,8 +20,6 @@ const sortOptions: { value: SortOption; label: string }[] = [
     { value: 'alpha-desc', label: 'Alfabético: Z-A' },
 ];
 
-const WP_API_URL = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
-
 interface Course {
   id: number;
   name: string;
@@ -44,27 +42,13 @@ export default function CoursesPage() {
 
   useEffect(() => {
     const fetchCourses = async () => {
-      if (!WP_API_URL) return;
       setLoading(true);
       try {
-        const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
-        if (!catResponse.ok) {
-           throw new Error(`Failed to fetch course category: ${catResponse.statusText}`);
-        }
-        const courseCategory = await catResponse.json();
-
-        if (!courseCategory || !courseCategory.id) {
-            console.error('Course category not found or API error:', courseCategory?.error);
-            setLoading(false);
-            return;
-        }
-        
-        const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${courseCategory.id}&per_page=100`);
+        const response = await fetch('/api/courses?limit=100');
         if (!response.ok) {
             throw new Error(`Failed to fetch courses: ${response.statusText}`);
         }
         const data = await response.json();
-        
         setCourses(data);
       } catch (error) {
         console.error('Error fetching course products from API:', error);
@@ -183,3 +167,5 @@ export default function CoursesPage() {
     </div>
   );
 }
+
+    

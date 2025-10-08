@@ -58,6 +58,7 @@ export async function generateStaticParams() {
 async function getProduct(slug: string): Promise<Product | null> {
   if (!WP_API_URL) return null;
   try {
+    // We can fetch directly from WordPress here because this runs on the server
     const response = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?slug=${slug}`);
     if (!response.ok) {
       return null;
@@ -157,3 +158,5 @@ export default async function ProductDetailPage({ params }: PageProps<{ slug: st
     </div>
   );
 }
+
+    

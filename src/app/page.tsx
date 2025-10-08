@@ -13,8 +13,6 @@ import { useEffect, useState, useRef } from 'react';
 import Autoplay from "embla-carousel-autoplay"
 import { Skeleton } from '@/components/ui/skeleton';
 
-const WP_API_URL = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
-
 interface Product {
   id: number;
   name: string;
@@ -57,31 +55,11 @@ export default function Home() {
 
   useEffect(() => {
     const fetchProductsAndCourses = async () => {
-      if (!WP_API_URL) return;
-
       setLoadingCourses(true);
       setLoadingProducts(true);
       try {
-        // 1. Get Course Category ID
-        const catResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/category-by-slug?slug=cursos`);
-        if (!catResponse.ok) {
-           console.error("Failed to fetch course category");
-           setLoadingCourses(false);
-           setLoadingProducts(false);
-           return;
-        }
-        const courseCategory = await catResponse.json();
-        const courseCategoryId = courseCategory?.id;
-
-        if (!courseCategoryId) {
-            console.error('Course category not found.');
-            setLoadingCourses(false);
-            setLoadingProducts(false);
-            return;
-        }
-
-        // 2. Fetch Courses (only from course category)
-        const coursesResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category=${courseCategoryId}&per_page=4`);
+        // Fetch Courses
+        const coursesResponse = await fetch('/api/courses?limit=4');
         if (coursesResponse.ok) {
             const coursesData = await coursesResponse.json();
             setCourses(coursesData);
@@ -89,9 +67,8 @@ export default function Home() {
             console.error("Failed to fetch courses");
         }
        
-
-        // 3. Fetch Products (excluding course category)
-        const productsResponse = await fetch(`${WP_API_URL}/wp-json/morty/v1/products?category_exclude=${courseCategoryId}&per_page=4`);
+        // Fetch Products
+        const productsResponse = await fetch('/api/products?limit=4');
          if (productsResponse.ok) {
             const productsData = await productsResponse.json();
             setProducts(productsData);
@@ -511,7 +488,5 @@ export default function Home() {
     </div>
   );
 }
-
-    
 
     

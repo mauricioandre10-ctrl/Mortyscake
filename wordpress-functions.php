@@ -9,20 +9,23 @@
  * 4. Busca y haz clic en el archivo `functions.php` (Funciones del Tema).
  * 5. Copia TODO este código y pégalo al final del archivo.
  * 6. Guarda los cambios.
+ *
+ * NOTA: Con la nueva arquitectura de proxy, la configuración de CORS ya no es necesaria aquí,
+ * pero se deja comentada por si se necesita en el futuro para otras integraciones.
  */
 
+/*
 // **AÑADIDO IMPORTANTE PARA CORS**
-// Esta acción añade la cabecera 'Access-Control-Allow-Origin' a todas las respuestas de la API REST.
-// Es la solución más robusta para permitir que tu app Next.js (desde cualquier dominio) pueda obtener datos.
 add_action( 'rest_api_init', function() {
     remove_filter( 'rest_pre_serve_request', 'rest_send_cors_headers' );
     add_filter( 'rest_pre_serve_request', function( $value ) {
         header( 'Access-Control-Allow-Origin: *' );
         header( 'Access-Control-Allow-Methods: GET' );
-        header( 'Access-Control-Allow-Headers: Content-Type' );
+        header( 'Access-Control-Allow-Headers: Content-Type, Authorization' ); // Added Authorization
         return $value;
     });
 }, 15 );
+*/
 
 
 add_action('rest_api_init', function () {
@@ -153,3 +156,4 @@ function morty_get_category_by_slug(WP_REST_Request $request) {
 }
 
 ?>
+    
