@@ -28,17 +28,19 @@ add_action( 'rest_api_init', function() {
 add_action('rest_api_init', function () {
     register_rest_route('morty/v1', '/products', array(
         'methods' => 'GET',
-        'callback' => 'morty_get_products',
+        'callback' => 'morty_get_products_with_details',
         'permission_callback' => '__return_true'
     ));
 });
 
 /**
  * Función robusta y simplificada para obtener productos de WooCommerce.
- * - Prioriza la búsqueda por slug para las páginas de detalle.
- * - Maneja correctamente la inclusión/exclusión de categorías por slug.
+ * - Obtiene un producto por slug si se proporciona.
+ * - Filtra por categoría (para 'cursos').
+ * - Excluye una categoría (para 'productos').
+ * - Siempre devuelve los nombres de las categorías.
  */
-function morty_get_products(WP_REST_Request $request) {
+function morty_get_products_with_details(WP_REST_Request $request) {
     if (!class_exists('WooCommerce')) {
         return new WP_Error('woocommerce_not_active', 'WooCommerce no está activado.', array('status' => 500));
     }
@@ -65,81 +67,57 @@ function morty_get_products(WP_REST_Request $request) {
         // Para excluir una categoría (ej: 'cursos' de la tienda principal)
         if (!empty($params['category_exclude_slug'])) {
             $term = get_term_by('slug', sanitize_text_field($params['category_exclude_slug']), 'product_cat');
-            // Si la categoría existe, usamos su ID para excluirla.
             if ($term) {
+                // Usamos 'category__not_in' que es el método correcto para wc_get_products
                 $args['category__not_in'] = array($term->term_id);
             }
         }
     }
-
-    // Ordenación (opcional, se puede añadir si es necesario)
-    if (!empty($params['orderby'])) {
-        $args['orderby'] = sanitize_text_field($params['orderby']);
-    }
-    if (!empty($params['order'])) {
-        $args['order'] = sanitize_text_field($params['order']);
-    }
-
-    // Obtener los productos usando los argumentos construidos
+    
     $products = wc_get_products($args);
 
-    // Formatear los datos para la respuesta JSON
     $data = array();
     foreach ($products as $product_obj) {
         $product_data = $product_obj->get_data();
         
-        // Obtener todas las imágenes (destacada + galería)
-        $image_gallery_ids = $product_obj->get_gallery_image_ids();
-        $images = [];
-        
-        // Añadir la imagen destacada primero
-        if (has_post_thumbnail($product_obj->get_id())) {
-             $main_image_id = get_post_thumbnail_id($product_obj->get_id());
-             $main_image_url = wp_get_attachment_url($main_image_id);
-             if ($main_image_url) {
-                $images[] = array(
-                    'id' => $main_image_id,
-                    'src' => $main_image_url,
-                    'alt' => get_post_meta($main_image_id, '_wp_attachment_image_alt', true),
-                );
-             }
-        }
-        
-        // Añadir las imágenes de la galería, evitando duplicados
-        foreach ($image_gallery_ids as $image_id) {
-            $image_url = wp_get_attachment_url($image_id);
-            if ($image_url) {
-                // Comprobamos si la imagen ya ha sido añadida (como imagen destacada)
-                $is_duplicate = false;
-                foreach($images as $existing_image) {
-                    if ($existing_image['id'] === $image_id) {
-                        $is_duplicate = true;
-                        break;
-                    }
-                }
-                if (!$is_duplicate) {
-                    $images[] = array(
-                        'id' => $image_id,
-                        'src' => $image_url,
-                        'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true),
-                    );
-                }
-            }
-        }
-        
-        // Sobrescribir el campo de imágenes con nuestra lista completa
-        $product_data['images'] = $images;
-
-        // Añadir los nombres de las categorías a la respuesta para facilitar el debugging
+        // Obtener nombres de las categorías y añadirlos a la respuesta
         $category_objects = get_the_terms($product_obj->get_id(), 'product_cat');
         $category_names = [];
-        if (!empty($category_objects)) {
+        if (!empty($category_objects) && !is_wp_error($category_objects)) {
             foreach ($category_objects as $cat) {
                 $category_names[] = $cat->name;
             }
         }
         $product_data['category_names'] = $category_names;
 
+        // Obtener todas las imágenes (destacada + galería)
+        $images = [];
+        $main_image_id = $product_obj->get_image_id();
+        if ($main_image_id) {
+            $main_image_url = wp_get_attachment_url($main_image_id);
+            if ($main_image_url) {
+                $images[] = array(
+                    'id' => intval($main_image_id),
+                    'src' => $main_image_url,
+                    'alt' => get_post_meta($main_image_id, '_wp_attachment_image_alt', true),
+                );
+            }
+        }
+
+        $gallery_image_ids = $product_obj->get_gallery_image_ids();
+        foreach ($gallery_image_ids as $image_id) {
+            if (intval($image_id) !== intval($main_image_id)) {
+                $image_url = wp_get_attachment_url($image_id);
+                if ($image_url) {
+                    $images[] = array(
+                        'id' => intval($image_id),
+                        'src' => $image_url,
+                        'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true),
+                    );
+                }
+            }
+        }
+        $product_data['images'] = $images;
 
         $data[] = $product_data;
     }

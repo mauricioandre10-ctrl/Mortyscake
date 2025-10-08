@@ -25,6 +25,7 @@ interface Product {
   menu_order: number;
   average_rating: number;
   rating_count: number;
+  category_names: string[];
 }
 
 // Datos simulados para el blog
@@ -69,7 +70,11 @@ export default function Home() {
         const coursesResponse = await fetch('/api/courses?limit=4');
         if (coursesResponse.ok) {
             const coursesData = await coursesResponse.json();
-            setCourses(coursesData);
+             // Final safety filter on the client
+            const filteredCourses = coursesData.filter((item: Product) => 
+                item.category_names && item.category_names.includes('Cursos')
+            );
+            setCourses(filteredCourses);
         } else {
             console.error("Failed to fetch courses");
         }
@@ -78,7 +83,11 @@ export default function Home() {
         const productsResponse = await fetch('/api/products?limit=4');
          if (productsResponse.ok) {
             const productsData = await productsResponse.json();
-            setProducts(productsData);
+            // Final safety filter on the client
+            const filteredProducts = productsData.filter((item: Product) => 
+                !item.category_names || !item.category_names.includes('Cursos')
+            );
+            setProducts(filteredProducts);
         } else {
             console.error("Failed to fetch products");
         }

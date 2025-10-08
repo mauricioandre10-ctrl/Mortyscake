@@ -31,8 +31,9 @@ interface Course {
   images: { id: number; src: string; alt: string }[];
   average_rating: number;
   rating_count: number;
-  date_created: string;
+  date_created: string | { date: string };
   menu_order: number;
+  category_names: string[];
 }
 
 
@@ -55,7 +56,11 @@ export default function CoursesPage() {
             throw new Error(`Failed to fetch courses: ${response.statusText}`);
         }
         const data = await response.json();
-        setCourses(data);
+        // Final safety filter on the client
+        const filteredCourses = data.filter((item: Course) => 
+            item.category_names && item.category_names.includes('Cursos')
+        );
+        setCourses(filteredCourses);
       } catch (error) {
         console.error('Error fetching course products from API:', error);
       } finally {
@@ -81,10 +86,9 @@ export default function CoursesPage() {
         return courses.sort((a, b) => a.menu_order - b.menu_order);
       case 'date-desc':
       default:
-        // Make sure date_created is a valid date string before comparing
         return sorted.sort((a, b) => {
-            const dateA = a.date_created ? new Date(a.date_created).getTime() : 0;
-            const dateB = b.date_created ? new Date(b.date_created).getTime() : 0;
+            const dateA = new Date(typeof a.date_created === 'object' ? a.date_created.date : a.date_created).getTime();
+            const dateB = new Date(typeof b.date_created === 'object' ? b.date_created.date : b.date_created).getTime();
             return dateB - dateA;
         });
     }

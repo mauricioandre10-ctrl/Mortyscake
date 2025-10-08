@@ -28,6 +28,7 @@ interface Product {
   description: string;
   images: { id: number; src: string; alt: string }[];
   menu_order: number;
+  category_names: string[];
 }
 
 export default function ShopPage() {
@@ -50,7 +51,11 @@ export default function ShopPage() {
         }
         const data = await response.json();
         
-        setProducts(data);
+        // Final safety filter on the client-side
+        const filteredProducts = data.filter((item: Product) => 
+            !item.category_names || !item.category_names.includes('Cursos')
+        );
+        setProducts(filteredProducts);
       } catch (error) {
         console.error('Error fetching products from API:', error);
       } finally {

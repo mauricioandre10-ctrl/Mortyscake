@@ -17,7 +17,7 @@ export async function GET(request: Request) {
     coursesApiUrl.searchParams.set('category_slug', 'cursos');
     coursesApiUrl.searchParams.set('per_page', limit);
     
-    const coursesResponse = await fetch(coursesApiUrl.toString(), { next: { revalidate: 3600 } }); // Revalidate every hour
+    const coursesResponse = await fetch(coursesApiUrl.toString(), { next: { revalidate: 60 } }); // Revalidate every minute
     if (!coursesResponse.ok) {
        const errorText = await coursesResponse.text();
       console.error("Failed to fetch courses:", coursesResponse.status, errorText);

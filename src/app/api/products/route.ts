@@ -12,12 +12,11 @@ export async function GET(request: Request) {
   const limit = searchParams.get('limit') || '100';
 
   try {
-    // We just need to tell the API to exclude the 'cursos' category slug
     const productsApiUrl = new URL(`${WP_API_URL}/wp-json/morty/v1/products`);
-    productsApiUrl.searchParams.set('category_exclude_slug', 'cursos'); // Pass slug directly for exclusion
+    productsApiUrl.searchParams.set('category_exclude_slug', 'cursos');
     productsApiUrl.searchParams.set('per_page', limit);
 
-    const productsResponse = await fetch(productsApiUrl.toString(), { next: { revalidate: 3600 } }); // Revalidate every hour
+    const productsResponse = await fetch(productsApiUrl.toString(), { next: { revalidate: 60 } }); // Revalidate every minute
     if (!productsResponse.ok) {
       const errorText = await productsResponse.text();
       console.error("Failed to fetch products:", productsResponse.status, errorText);
