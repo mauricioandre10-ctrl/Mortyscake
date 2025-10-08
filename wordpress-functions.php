@@ -36,7 +36,6 @@ add_action('init', 'morty_init_wc_session_for_api');
 function morty_register_rest_routes() {
     
     // --- Configuración de CORS ---
-    // Se elimina el filtro por defecto y se añade uno personalizado para mayor control.
     remove_filter('rest_pre_serve_request', 'rest_send_cors_headers');
     add_filter('rest_pre_serve_request', function ($value) {
         $allowed_origins = [
@@ -51,7 +50,6 @@ function morty_register_rest_routes() {
         if ($origin && in_array($origin, $allowed_origins)) {
             header('Access-Control-Allow-Origin: ' . esc_url_raw($origin));
         } else {
-            // Como fallback, se permite cualquier origen, aunque en producción es mejor ser estricto.
             header('Access-Control-Allow-Origin: *');
         }
 
@@ -60,7 +58,6 @@ function morty_register_rest_routes() {
         header('Access-Control-Allow-Credentials: true');
         header('Access-Control-Expose-Headers: X-WC-Session');
 
-        // Si la solicitud es de tipo OPTIONS (pre-vuelo CORS), se termina la ejecución.
         if ('OPTIONS' === $_SERVER['REQUEST_METHOD']) {
             status_header(200);
             exit();
@@ -69,56 +66,62 @@ function morty_register_rest_routes() {
         return $value;
     });
 
-    // --- Definición de Endpoints ---
-    $endpoints = [
-        '/cart' => [
-            'methods' => 'GET',
-            'callback' => function () { return new WP_REST_Response(morty_format_cart_data(), 200); },
-        ],
-        '/cart/add' => [
-            'methods' => 'POST',
-            'callback' => 'morty_handle_cart_add',
-        ],
-        '/cart/remove' => [
-            'methods' => 'POST',
-            'callback' => 'morty_handle_cart_remove',
-        ],
-        '/cart/update' => [
-            'methods' => 'POST',
-            'callback' => 'morty_handle_cart_update',
-        ],
-        '/cart/clear' => [
-            'methods' => 'POST',
-            'callback' => function () {
-                WC()->cart->empty_cart();
-                return new WP_REST_Response(morty_format_cart_data(), 200);
-            },
-        ],
-        '/products' => [
-            'methods' => 'GET',
-            'callback' => 'morty_get_products_with_details',
-        ],
-    ];
-
     // --- Registro de Endpoints ---
-    foreach ($endpoints as $route => $config) {
-        register_rest_route('morty/v1', $route, [
-            'methods' => $config['methods'],
-            'callback' => $config['callback'],
-            'permission_callback' => '__return_true', // Abierto para acceso público
-        ]);
-    }
+    $namespace = 'morty/v1';
+
+    // Endpoint para obtener productos
+    register_rest_route($namespace, '/products', [
+        'methods' => 'GET',
+        'callback' => 'morty_get_products_with_details',
+        'permission_callback' => '__return_true',
+    ]);
+    
+    // Endpoint para obtener el carrito
+    register_rest_route($namespace, '/cart', [
+        'methods' => 'GET',
+        'callback' => function () { return new WP_REST_Response(morty_format_cart_data(), 200); },
+        'permission_callback' => '__return_true',
+    ]);
+    
+    // Endpoint para añadir al carrito
+    register_rest_route($namespace, '/cart/add', [
+        'methods' => 'POST',
+        'callback' => 'morty_handle_cart_add',
+        'permission_callback' => '__return_true',
+    ]);
+
+    // Endpoint para eliminar del carrito
+    register_rest_route($namespace, '/cart/remove', [
+        'methods' => 'POST',
+        'callback' => 'morty_handle_cart_remove',
+        'permission_callback' => '__return_true',
+    ]);
+
+    // Endpoint para actualizar el carrito
+    register_rest_route($namespace, '/cart/update', [
+        'methods' => 'POST',
+        'callback' => 'morty_handle_cart_update',
+        'permission_callback' => '__return_true',
+    ]);
+
+    // Endpoint para vaciar el carrito
+    register_rest_route($namespace, '/cart/clear', [
+        'methods' => 'POST',
+        'callback' => function () {
+            WC()->cart->empty_cart();
+            return new WP_REST_Response(morty_format_cart_data(), 200);
+        },
+        'permission_callback' => '__return_true',
+    ]);
 }
 
 /**
  * Inicializa la sesión de WC si no existe, para que el carrito persista entre llamadas a la API.
  */
 function morty_init_wc_session_for_api() {
-    // Solo se ejecuta para nuestras rutas de API y si el usuario no está logueado.
     if (strpos($_SERVER['REQUEST_URI'], '/wp-json/morty/v1/') !== false && !is_user_logged_in()) {
-        if (!WC()->session) {
-            WC()->session = new WC_Session_Handler();
-            WC()->session->init();
+        if (isset(WC()->session) && !WC()->session->has_session()) {
+            WC()->session->set_customer_session_cookie(true);
         }
     }
 }
@@ -364,5 +367,3 @@ function morty_get_product_reviews($product_id) {
     return $reviews;
 }
 ?>
-
-    
