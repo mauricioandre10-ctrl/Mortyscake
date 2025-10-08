@@ -450,8 +450,8 @@ export default function Home() {
                      </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="-left-4 md:-left-12" />
-                <CarouselNext className="-right-4 md:-right-12" />
+                <CarouselPrevious className="left-2 top-1/2 -translate-y-1/2 z-10 bg-background/50 hover:bg-background/80" />
+                <CarouselNext className="right-2 top-1/2 -translate-y-1/2 z-10 bg-background/50 hover:bg-background/80" />
               </Carousel>
               <div className="text-center mt-12">
                 <Button asChild size="lg" variant="outline">
