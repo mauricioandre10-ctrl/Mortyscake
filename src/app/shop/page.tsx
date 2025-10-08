@@ -103,7 +103,7 @@ function ProductsList() {
                 );
                 console.log(`[CLIENT] Filtered to ${filteredData.length} products.`);
                 
-                const sortedProducts = filteredData.sort((a, b) => a.menu_order - b.menu_order);
+                const sortedProducts = filteredData.sort((a: Product, b: Product) => a.menu_order - b.menu_order);
                 setProducts(sortedProducts);
             } catch (err) {
                 console.error('[CLIENT] An unexpected error occurred:', err);
@@ -173,5 +173,3 @@ function LoadingSkeleton() {
       </div>
     );
 }
-
-    
