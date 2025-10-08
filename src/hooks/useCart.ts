@@ -51,21 +51,21 @@ export const useCart = () => {
   return context;
 };
 
-const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
-
 // 4. Crear el componente Provider
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<Cart | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { toast } = useToast();
+  
+  const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
 
   const fetchCart = useCallback(async () => {
     if (!apiUrl) {
       console.error("WooCommerce Store URL no está configurado.");
       setIsLoading(false);
       return;
-    };
+    }
     setIsLoading(true);
     try {
       const response = await fetch(`${apiUrl}/wp-json/morty/v1/cart`, { cache: 'no-store' });
@@ -82,7 +82,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [toast]);
+  }, [toast, apiUrl]);
 
   useEffect(() => {
     fetchCart();
