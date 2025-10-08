@@ -25,7 +25,7 @@ export const AddToCart = ({ id, className, size = 'default', children }: AddToCa
 
   return (
     <Button asChild className={className} size={size}>
-      <Link href={addToCartUrl} target="_blank" rel="noopener noreferrer">
+      <Link href={addToCartUrl} rel="noopener noreferrer">
         <ShoppingCart className="mr-2" />
         {children || 'Añadir al carrito'}
       </Link>
