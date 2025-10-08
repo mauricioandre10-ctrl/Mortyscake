@@ -165,12 +165,7 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
               </div>
             
               <AddToCart 
-                  name={course.name}
-                  description={course.short_description || ''}
                   id={String(course.id)}
-                  price={parseFloat(course.price)}
-                  currency="EUR"
-                  image={course.images?.[0]?.src}
                   size="lg"
               >
                   {course.price === "0.00" ? "Inscribirse Gratis" : "Añadir al carrito"}

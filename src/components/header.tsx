@@ -5,15 +5,13 @@ import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription, SheetHeader, SheetFooter } from '@/components/ui/sheet';
-import { Menu, ShoppingCart, User, X } from 'lucide-react';
+import { Menu, ShoppingCart, User } from 'lucide-react';
 import Image from 'next/image';
-import { useShoppingCart } from 'use-shopping-cart';
 import { Separator } from './ui/separator';
 
 const Header = () => {
-  const { cartCount, cartDetails, removeItem, totalPrice, clearCart } = useShoppingCart();
-  const [isCartOpen, setIsCartOpen] = React.useState(false);
   const storeUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+  const cartUrl = `${storeUrl}/cart`;
 
   const navLinks = [
     { href: '/shop', label: 'Tienda' },
@@ -22,81 +20,6 @@ const Header = () => {
     { href: '/#about', label: 'Sobre Nosotros' },
     { href: '/#footer', 'label': 'Contacto' },
   ];
-
-  const handleCheckoutClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    
-    if (!cartDetails || !storeUrl) return;
-
-    const wooCommerceCartUrl = `${storeUrl}/cart`;
-    const params = new URLSearchParams({
-      'clear-cart': 'true' // Optional: clear previous cart items
-    });
-    
-    Object.values(cartDetails).forEach(item => {
-      params.append('add-to-cart', item.id);
-      // WooCommerce expects quantity as a separate parameter for each item if using certain plugins, 
-      // but for the basic add-to-cart URL, it's often one by one.
-      // A more robust way is to build the URL iteratively.
-      // This simplified version adds each product ID. Quantity handling might need adjustment depending on server setup.
-    });
-
-    const products = Object.values(cartDetails).map(item => `${item.id}:${item.quantity}`).join(',');
-    
-    const redirectUrl = `${wooCommerceCartUrl}?add-to-cart=${Object.keys(cartDetails).join(',')}&quantities=${Object.values(cartDetails).map(i => i.quantity).join(',')}`;
-    
-    // A simpler redirect that adds one of each item
-    const simpleRedirectUrl = `${storeUrl}/cart?${Object.keys(cartDetails).map(id => `add-to-cart=${id}`).join('&')}`;
-
-    // Let's create a URL that redirects with quantities
-    const checkoutParams = new URLSearchParams();
-    Object.values(cartDetails).forEach(item => {
-        checkoutParams.append(`add-to-cart[${item.id}]`, String(item.quantity));
-    });
-    
-    // The most common way to redirect to a pre-filled cart is less standard.
-    // A simple link to the cart page is the most reliable cross-platform method,
-    // and we'll construct an add-to-cart URL as a fallback.
-    
-    const finalRedirectUrl = new URL(`${storeUrl}/cart`);
-    Object.entries(cartDetails).forEach(([id, item]) => {
-      finalRedirectUrl.searchParams.append('add-to-cart', id);
-      finalRedirectUrl.searchParams.append('quantity', item.quantity.toString());
-    });
-
-    
-    // The most reliable method is to create a single URL that adds all items.
-    // The structure `?add-to-cart=ID1&quantity=QTY1&add-to-cart=ID2&quantity=QTY2` is not standard.
-    // The best approach is to redirect to the cart and let the user checkout.
-    // A better approach is to use a custom endpoint or specific WooCommerce plugin if direct checkout is needed.
-    // For now, let's create the multi-add-to-cart URL that works with default WooCommerce.
-    
-    const cartUrl = new URL(`${storeUrl}/cart`);
-    Object.values(cartDetails).forEach((item, index) => {
-      cartUrl.searchParams.append('add-to-cart', item.id);
-      // Note: This adds multiple 'add-to-cart' params. WooCommerce handles this.
-    });
-
-
-    // Final logic: Redirect to a pre-filled cart.
-    const checkoutUrl = new URL(process.env.NEXT_PUBLIC_WOOCOMMERCE_CHECKOUT_URL || `${storeUrl}/cart`);
-    const queryParams = new URLSearchParams();
-    Object.values(cartDetails).forEach(item => {
-        queryParams.append('add-to-cart', item.id);
-        queryParams.append('quantity', String(item.quantity));
-    });
-    
-    // As simple add-to-cart urls are more reliable, we build one.
-    let cartRedirect = `${storeUrl}/cart?`;
-    const cartItems = Object.values(cartDetails).map(item => `add-to-cart=${item.id}&quantity=${item.quantity}`);
-    cartRedirect += cartItems.join('&');
-
-
-    clearCart();
-    // Use window.location.href to redirect the user
-    window.location.href = cartRedirect;
-  };
-
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -124,84 +47,12 @@ const Header = () => {
                 </Link>
            </Button>
 
-           <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="relative">
+           <Button asChild variant="ghost" size="icon" className="relative">
+             <Link href={cartUrl} target="_blank" rel="noopener noreferrer">
                 <ShoppingCart className="h-6 w-6" />
-                {cartCount !== undefined && cartCount > 0 && (
-                  <span className="absolute top-0 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground transform translate-x-1/2 -translate-y-1/2">
-                    {cartCount}
-                  </span>
-                )}
-                <span className="sr-only">Abrir carrito</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent>
-              <SheetHeader>
-                <SheetTitle>Tu Carrito</SheetTitle>
-                <SheetDescription>
-                  {cartCount === 0
-                    ? 'Tu carrito está vacío.'
-                    : `Tienes ${cartCount} artículo(s) en tu carrito.`}
-                </SheetDescription>
-              </SheetHeader>
-              <div className="flex flex-col h-full">
-                {cartCount !== undefined && cartCount > 0 ? (
-                  <>
-                    <div className="flex-1 overflow-y-auto pr-4 my-4">
-                      {Object.values(cartDetails ?? {}).map((item) => (
-                        <div key={item.id} className="flex items-center gap-4 py-4">
-                          {item.image && (
-                            <Image
-                              src={item.image as string}
-                              alt={item.name}
-                              width={64}
-                              height={64}
-                              className="rounded-md object-cover"
-                              unoptimized
-                            />
-                          )}
-                          <div className="flex-1">
-                            <p className="font-medium">{item.name}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {item.quantity} x {item.formattedValue}
-                            </p>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => removeItem(item.id)}
-                            aria-label={`Eliminar ${item.name} del carrito`}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                    <Separator />
-                    <SheetFooter className="mt-auto p-4 space-y-4">
-                      <div className="flex justify-between items-center font-semibold">
-                        <span>Total:</span>
-                        <span>€{(totalPrice ?? 0) / 100}</span>
-                      </div>
-                      <Button className="w-full" onClick={handleCheckoutClick} disabled={!storeUrl}>
-                        Finalizar Compra
-                      </Button>
-                      <p className="text-xs text-center text-muted-foreground">Serás redirigido a WooCommerce para finalizar la compra.</p>
-                    </SheetFooter>
-                  </>
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-full">
-                    <ShoppingCart className="w-20 h-20 text-muted-foreground" />
-                    <p className="mt-4 text-muted-foreground">¡Empieza a llenarlo!</p>
-                     <Button variant="outline" className="mt-6" onClick={() => setIsCartOpen(false)}>
-                        Seguir comprando
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </SheetContent>
-          </Sheet>
+                <span className="sr-only">Ver carrito</span>
+             </Link>
+            </Button>
 
 
           <div className="md:hidden">

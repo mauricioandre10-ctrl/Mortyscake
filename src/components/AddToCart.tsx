@@ -1,51 +1,34 @@
 
 'use client';
 
-import { useShoppingCart, formatCurrencyString } from 'use-shopping-cart';
 import { Button, ButtonProps } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
-import { Product } from 'use-shopping-cart/core';
-import { QuantityManager } from './QuantityManager';
+import Link from 'next/link';
 
 interface AddToCartProps extends ButtonProps {
-  name: string;
-  description: string;
   id: string;
-  price: number;
-  currency: string;
-  image?: string;
   children?: React.ReactNode;
 }
 
-export const AddToCart = ({ name, description, id, price, currency, image, className, size = 'default', children }: AddToCartProps) => {
-  const { addItem, cartDetails } = useShoppingCart();
-
-  const product: Product = {
-    name: name,
-    description: description,
-    id: id,
-    price: price * 100, // Price in cents
-    sku: id,
-    currency: currency,
-    image: image,
-    quantity: 1,
-  };
+export const AddToCart = ({ id, className, size = 'default', children }: AddToCartProps) => {
+  const storeUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
   
-  const isInCart = cartDetails?.[id];
-
-  const handleAddItem = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    addItem(product);
-  };
-  
-  if(isInCart) {
-    return <QuantityManager product={product} />
+  if (!storeUrl) {
+    return (
+      <Button className={className} size={size} disabled>
+        {children || 'Añadir al carrito'}
+      </Button>
+    );
   }
+  
+  const addToCartUrl = `${storeUrl}/cart/?add-to-cart=${id}`;
 
   return (
-    <Button onClick={handleAddItem} className={className} size={size}>
-      <ShoppingCart className="mr-2" />
-      {children || 'Añadir al carrito'}
+    <Button asChild className={className} size={size}>
+      <Link href={addToCartUrl} target="_blank" rel="noopener noreferrer">
+        <ShoppingCart className="mr-2" />
+        {children || 'Añadir al carrito'}
+      </Link>
     </Button>
   );
 };

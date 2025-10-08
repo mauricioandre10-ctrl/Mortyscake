@@ -156,12 +156,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
               </div>
             
               <AddToCart 
-                  name={product.name}
-                  description={product.short_description || ''}
                   id={String(product.id)}
-                  price={parseFloat(product.price)}
-                  currency="EUR"
-                  image={product.images?.[0]?.src}
                   size="lg"
               />
           </div>
