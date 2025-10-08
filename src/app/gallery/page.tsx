@@ -57,14 +57,15 @@ export default function GalleryPage() {
         </div>
         
         {selectedImage && (
-             <DialogContent className="max-w-4xl w-[90vw] h-auto p-0 border-0">
-                <div className="relative w-full aspect-video">
+             <DialogContent className="max-w-none w-auto h-auto max-h-[90vh] p-2 bg-transparent border-0 flex items-center justify-center">
+                <div className="relative h-full w-full">
                     <Image 
                         src={selectedImage.src}
                         alt={selectedImage.alt}
-                        fill
-                        className="object-contain"
-                        sizes="100vw"
+                        width={selectedImage.width}
+                        height={selectedImage.height}
+                        className="object-contain h-full w-auto max-h-[90vh] rounded-lg shadow-2xl"
+                        sizes="90vw"
                     />
                 </div>
             </DialogContent>
