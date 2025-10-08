@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,6 +24,7 @@ import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { Label } from './ui/label';
 
 
 const formSchema = z.object({
@@ -346,7 +346,7 @@ export function CheckoutForm() {
                 </div>
 
 
-                <Button type="submit" className="w-full" size="lg" disabled={loading || cartCount === 0}>
+                <Button type="submit" className="w-full" size="lg" disabled={loading || cartCount === 0 || !stripe || !elements}>
                     {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                     {loading ? 'Procesando...' : `Pagar ${formattedTotalPrice}`}
                 </Button>

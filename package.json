@@ -50,7 +50,6 @@
     "recharts": "^2.15.1",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.0",
-    "use-shopping-cart": "^3.2.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
