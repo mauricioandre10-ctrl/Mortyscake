@@ -46,8 +46,8 @@ const blogPosts = [
   }
 ];
 
-function FeaturedCourses() {
-  const [courses, setCourses] = useState<Product[]>([]);
+function FeaturedProducts() {
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [siteUrl, setSiteUrl] = useState('');
 
@@ -57,7 +57,7 @@ function FeaturedCourses() {
       setSiteUrl(window.location.origin);
     }
     
-    async function fetchCourses() {
+    async function fetchProducts() {
       const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
       if (!apiUrl) {
         console.error("[CLIENT] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_STORE_URL no está configurada.");
@@ -66,25 +66,25 @@ function FeaturedCourses() {
       }
 
       try {
-        const coursesApiUrl = new URL(`${apiUrl}/wp-json/morty/v1/products`);
-        coursesApiUrl.searchParams.set('category_slug', 'cursos');
-        coursesApiUrl.searchParams.set('per_page', '3'); // Fetch only 3 courses
+        const productsApiUrl = new URL(`${apiUrl}/wp-json/morty/v1/products`);
+        productsApiUrl.searchParams.set('category_exclude_slug', 'cursos');
+        productsApiUrl.searchParams.set('per_page', '3'); 
 
-        const response = await fetch(coursesApiUrl.toString(), { cache: 'no-store' });
+        const response = await fetch(productsApiUrl.toString(), { cache: 'no-store' });
         
         if (!response.ok) {
-          throw new Error(`Failed to fetch courses: ${response.statusText}`);
+          throw new Error(`Failed to fetch products: ${response.statusText}`);
         }
         const data = await response.json();
-        setCourses(data);
+        setProducts(data);
       } catch (err) {
-        console.error('[CLIENT] An unexpected error occurred fetching featured courses:', err);
+        console.error('[CLIENT] An unexpected error occurred fetching featured products:', err);
       } finally {
         setLoading(false);
       }
     }
     
-    fetchCourses();
+    fetchProducts();
   }, []);
 
   if (loading) {
@@ -108,28 +108,28 @@ function FeaturedCourses() {
     );
   }
   
-  if (!courses.length) {
-    return null; // Don't render the section if there are no courses
+  if (!products.length) {
+    return null; // Don't render the section if there are no products
   }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {courses.map(course => (
-         <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
-          <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow">
+      {products.map(product => (
+         <Card key={product.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
+          <Link href={`/shop/${product.slug}`} className="flex flex-col flex-grow">
               <CardHeader className="p-0 relative">
                 <ShareButton 
-                    title={course.name} 
-                    text={`Echa un vistazo a este curso: ${course.name}`} 
-                    url={`${siteUrl}/courses/${course.slug}`}
+                    title={product.name} 
+                    text={`Echa un vistazo a este producto: ${product.name}`} 
+                    url={`${siteUrl}/shop/${product.slug}`}
                     className="absolute top-2 right-2 z-10 h-8 w-8"
                     size="icon"
                   />
                 <div className="aspect-[4/3] w-full bg-muted relative overflow-hidden">
-                  {course.images?.[0]?.src ? (
+                  {product.images?.[0]?.src ? (
                       <Image
-                        src={course.images[0].src}
-                        alt={course.name}
+                        src={product.images[0].src}
+                        alt={product.name}
                         fill
                         className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                       />
@@ -139,20 +139,20 @@ function FeaturedCourses() {
                   </div>
               </CardHeader>
               <CardContent className="flex flex-col flex-grow p-6">
-                <CardTitle className="font-headline text-xl mb-2">{course.name}</CardTitle>
+                <CardTitle className="font-headline text-xl mb-2">{product.name}</CardTitle>
                     <div className="flex items-center gap-2 mb-2">
                       <div className="flex text-yellow-400">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} className={`w-4 h-4 ${i < course.average_rating ? 'fill-current' : 'text-muted-foreground fill-muted'}`} />
+                          <Star key={i} className={`w-4 h-4 ${i < product.average_rating ? 'fill-current' : 'text-muted-foreground fill-muted'}`} />
                         ))}
                       </div>
-                      <span className="text-xs text-muted-foreground">({course.rating_count} reseñas)</span>
+                      <span className="text-xs text-muted-foreground">({product.rating_count} reseñas)</span>
                     </div>
-                <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: course.short_description || '' }} />
+                <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
               </CardContent>
               <CardFooter className="flex justify-between items-center bg-muted/30 p-4 mt-auto">
                 <span className="text-2xl font-bold text-primary">
-                  {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
+                  {product.price === "0.00" ? 'Gratis' : `€${product.price}`}
                 </span>
                 <Button variant="secondary">Ver Detalles</Button>
               </CardFooter>
@@ -204,20 +204,20 @@ export default function Home() {
          </div>
       </section>
 
-      {/* 2. Featured Courses Section */}
-      <section id="featured-courses" className="py-16 md:py-24 bg-background">
+      {/* 2. Featured Products Section */}
+      <section id="featured-products" className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center mb-12">
-            <h2 className="font-headline text-3xl md:text-4xl font-bold">Cursos Destacados</h2>
+            <h2 className="font-headline text-3xl md:text-4xl font-bold">Nuestros Productos</h2>
             <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-              Empieza tu viaje en el mundo de la repostería con nuestros cursos más populares.
+              Descubre nuestros productos estrella, perfectos para empezar a crear.
             </p>
           </div>
-          <FeaturedCourses />
+          <FeaturedProducts />
            <div className="text-center mt-12">
               <Button asChild>
-                  <Link href="/courses">
-                      Ver todos los cursos
+                  <Link href="/shop">
+                      Ver toda la tienda
                   </Link>
               </Button>
           </div>
@@ -432,3 +432,4 @@ export default function Home() {
     </div>
   );
 }
+
