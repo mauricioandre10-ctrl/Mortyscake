@@ -29,32 +29,48 @@ interface Course {
 
 async function getCourse(slug: string): Promise<Course | null> {
   const apiUrl = process.env.WOOCOMMERCE_API_URL;
+  console.log('[getCourse] WOOCOMMERCE_API_URL:', apiUrl);
+
   if (!apiUrl) {
-    console.error("WooCommerce API URL is not configured.");
+    console.error("[getCourse] Error: La variable de entorno WOOCOMMERCE_API_URL no está configurada.");
     return null;
   };
+
   try {
     const url = new URL(`${apiUrl}/wp-json/morty/v1/products`);
     url.searchParams.set('slug', slug);
     url.searchParams.set('per_page', '1');
     
+    console.log(`[getCourse] Fetching URL: ${url.toString()}`);
+
     const response = await fetch(url.toString(), { next: { revalidate: 60 } });
-    if (!response.ok) return null;
+    
+    console.log(`[getCourse] Response status for slug ${slug}: ${response.status}`);
+
+    if (!response.ok) {
+        console.error(`[getCourse] Failed to fetch course. Status: ${response.status}, StatusText: ${response.statusText}`);
+        return null;
+    }
     
     const courses = await response.json();
-    if (courses.length === 0) return null;
+    if (courses.length === 0) {
+        console.log(`[getCourse] No course found for slug: ${slug}`);
+        return null;
+    }
     
     const course = courses[0];
 
     // After fetching the specific slug, ensure it's actually a course.
     if (course && course.category_names && course.category_names.includes('Cursos')) {
+        console.log(`[getCourse] Successfully found course: ${course.name}`);
         return course;
     }
 
     // If no product is found, or it's not in the 'Cursos' category, return null.
+    console.log(`[getCourse] Product found for slug ${slug}, but it's not in 'Cursos' category.`);
     return null;
   } catch (error) {
-    console.error('Error fetching course:', error);
+    console.error('[getCourse] An unexpected error occurred:', error);
     return null;
   }
 }

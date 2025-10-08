@@ -25,8 +25,10 @@ interface Course {
 
 async function getCourses(): Promise<Course[]> {
   const apiUrl = process.env.WOOCOMMERCE_API_URL;
+  console.log('[getCourses] WOOCOMMERCE_API_URL:', apiUrl);
+
   if (!apiUrl) {
-    console.error('WooCommerce API URL not configured');
+    console.error('[getCourses] Error: La variable de entorno WOOCOMMERCE_API_URL no está configurada.');
     return [];
   }
   
@@ -35,17 +37,28 @@ async function getCourses(): Promise<Course[]> {
     coursesApiUrl.searchParams.set('category_slug', 'cursos');
     coursesApiUrl.searchParams.set('per_page', '100');
 
+    console.log(`[getCourses] Fetching URL: ${coursesApiUrl.toString()}`);
+    
     const response = await fetch(coursesApiUrl.toString(), { next: { revalidate: 60 } }); // Revalidate every minute
+    
+    console.log(`[getCourses] Response status: ${response.status}`);
+
     if (!response.ok) {
+        console.error(`[getCourses] Failed to fetch courses. Status: ${response.status}, StatusText: ${response.statusText}`);
         throw new Error(`Failed to fetch courses: ${response.statusText}`);
     }
     const data = await response.json();
+    console.log(`[getCourses] Received ${data.length} items from API.`);
+    
     // Final safety filter
-    return data.filter((item: Course) => 
+    const filteredData = data.filter((item: Course) => 
         item.category_names && item.category_names.includes('Cursos')
     );
+    console.log(`[getCourses] Filtered to ${filteredData.length} courses.`);
+    return filteredData;
+
   } catch (error) {
-    console.error('Error fetching course products from API:', error);
+    console.error('[getCourses] An unexpected error occurred:', error);
     return [];
   }
 }
@@ -101,6 +114,10 @@ function CourseCard({ course, siteUrl }: { course: Course, siteUrl: string | und
 async function CoursesList() {
     const courses = await getCourses();
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
+    if (!courses || courses.length === 0) {
+        return <p className="text-center text-muted-foreground col-span-full">No se encontraron cursos en este momento. Por favor, inténtalo de nuevo más tarde.</p>
+    }
 
     // Simple sort by date, can be expanded later
     const sortedCourses = courses.sort((a, b) => {

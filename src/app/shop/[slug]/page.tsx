@@ -28,8 +28,10 @@ interface Product {
 
 async function getProduct(slug: string): Promise<Product | null> {
   const apiUrl = process.env.WOOCOMMERCE_API_URL;
+  console.log('[getProduct] WOOCOMMERCE_API_URL:', apiUrl);
+
   if (!apiUrl) {
-    console.error("WooCommerce API URL is not configured.");
+    console.error("[getProduct] Error: La variable de entorno WOOCOMMERCE_API_URL no está configurada.");
     return null;
   }
   try {
@@ -37,23 +39,32 @@ async function getProduct(slug: string): Promise<Product | null> {
     url.searchParams.set('slug', slug);
     url.searchParams.set('per_page', '1');
     
+    console.log(`[getProduct] Fetching URL: ${url.toString()}`);
     const response = await fetch(url.toString(), { next: { revalidate: 60 } });
+    
+    console.log(`[getProduct] Response status for slug ${slug}: ${response.status}`);
     if (!response.ok) {
+      console.error(`[getProduct] Failed to fetch course. Status: ${response.status}, StatusText: ${response.statusText}`);
       return null;
     }
     const products = await response.json();
-    if (products.length === 0) return null;
+    if (products.length === 0) {
+      console.log(`[getProduct] No product found for slug: ${slug}`);
+      return null;
+    }
 
     const product = products[0];
 
     // After fetching the specific slug, ensure it's NOT a course.
     if (product && product.category_names && product.category_names.includes('Cursos')) {
+        console.log(`[getProduct] Product found for slug ${slug}, but it IS a course. Skipping.`);
         return null;
     }
     
+    console.log(`[getProduct] Successfully found product: ${product.name}`);
     return product;
   } catch (error) {
-    console.error('Error fetching product:', error);
+    console.error('[getProduct] An unexpected error occurred:', error);
     return null;
   }
 }

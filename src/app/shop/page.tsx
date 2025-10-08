@@ -21,8 +21,10 @@ interface Product {
 
 async function getProducts(): Promise<Product[]> {
     const apiUrl = process.env.WOOCOMMERCE_API_URL;
+    console.log('[getProducts] WOOCOMMERCE_API_URL:', apiUrl);
+
     if (!apiUrl) {
-        console.error('WooCommerce API URL not configured');
+        console.error('[getProducts] Error: La variable de entorno WOOCOMMERCE_API_URL no está configurada.');
         return [];
     }
 
@@ -31,17 +33,25 @@ async function getProducts(): Promise<Product[]> {
         productsApiUrl.searchParams.set('category_exclude_slug', 'cursos');
         productsApiUrl.searchParams.set('per_page', '100');
 
+        console.log(`[getProducts] Fetching URL: ${productsApiUrl.toString()}`);
         const response = await fetch(productsApiUrl.toString(), { next: { revalidate: 60 } }); // Revalidate every minute
+        
+        console.log(`[getProducts] Response status: ${response.status}`);
         if (!response.ok) {
+            console.error(`[getProducts] Failed to fetch products. Status: ${response.status}, StatusText: ${response.statusText}`);
             throw new Error(`Failed to fetch products: ${response.statusText}`);
         }
         const data = await response.json();
+        console.log(`[getProducts] Received ${data.length} items from API.`);
+
         // Final safety filter
-        return data.filter((item: Product) => 
+        const filteredData = data.filter((item: Product) => 
             !item.category_names || !item.category_names.includes('Cursos')
         );
+        console.log(`[getProducts] Filtered to ${filteredData.length} products.`);
+        return filteredData;
     } catch (error) {
-        console.error('Error fetching products from API:', error);
+        console.error('[getProducts] An unexpected error occurred:', error);
         return [];
     }
 }
@@ -92,6 +102,10 @@ function ProductCard({ product, siteUrl }: { product: Product, siteUrl: string |
 async function ProductsList() {
     const products = await getProducts();
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
+    if (!products || products.length === 0) {
+        return <p className="text-center text-muted-foreground col-span-full">No se encontraron productos en este momento. Por favor, inténtalo de nuevo más tarde.</p>
+    }
 
     const sortedProducts = products.sort((a, b) => a.menu_order - b.menu_order);
 
