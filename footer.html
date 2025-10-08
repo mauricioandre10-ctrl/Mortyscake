@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pie de Página - Morty's Cake</title>
+    <style>
+        /* --- Fuentes (Opcional, pero recomendado para que se vea igual) --- */
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Pacifico&display=swap');
+
+        /* --- Estilos Generales --- */
+        body {
+            margin: 0;
+            font-family: 'Lato', sans-serif;
+        }
+
+        /* --- Estilos del Footer --- */
+        .morty-footer {
+            width: 100%;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .footer-top-section {
+            background-color: #513938;
+            color: #ffffff;
+            padding: 2rem 0;
+        }
+
+        .footer-container {
+            max-width: 1280px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .footer-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .footer-headline {
+            font-family: 'Pacifico', cursive;
+            font-weight: 700;
+            font-size: 1.125rem; /* 18px */
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .footer-contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-contact-item svg {
+            flex-shrink: 0;
+        }
+
+        .footer-logo-column {
+            align-items: center;
+        }
+
+        .footer-logo {
+            height: auto;
+            width: 90px;
+            object-fit: contain;
+        }
+
+        .footer-social-column {
+            align-items: flex-start;
+        }
+
+        .footer-social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .footer-social-links a {
+            color: #ffffff;
+            transition: opacity 0.3s;
+        }
+
+        .footer-social-links a:hover {
+            opacity: 0.8;
+        }
+
+        .footer-bottom-section {
+            background-color: #ffffff;
+            border-top: 1px solid #f3f4f6;
+            padding: 1rem 0;
+        }
+
+        .footer-bottom-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .footer-copyright {
+            font-size: 0.875rem; /* 14px */
+            color: #6b7280;
+        }
+
+        .footer-copyright a {
+            color: #F6B1AC;
+            text-decoration: none;
+        }
+        .footer-copyright a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-legal-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .footer-legal-links a {
+            font-size: 0.875rem; /* 14px */
+            color: #374151;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-legal-links a:hover {
+            color: #F6B1AC;
+        }
+
+        /* --- Estilos para pantallas más grandes (Tablets y Escritorio) --- */
+        @media (min-width: 768px) {
+            .footer-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .footer-social-column {
+                align-items: flex-end;
+            }
+            .footer-bottom-container {
+                flex-direction: row;
+            }
+            .footer-legal-links {
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<footer class="morty-footer">
+  <div class="footer-top-section">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <!-- Columna de Contacto -->
+        <div class="footer-column">
+          <h3 class="footer-headline">Contacto</h3>
+          <div class="footer-contact-item">
+            <!-- Icono de Mapa -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            <span>Rúa Valle Inclán, 23, Bajo 11, 32004 Ourense, Province of Ourense</span>
+          </div>
+          <div class="footer-contact-item">
+            <!-- Icono de Teléfono -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"
+              />
+            </svg>
+            <span>616 28 44 63</span>
+          </div>
+        </div>
+        <!-- Columna del Logo -->
+        <div class="footer-column footer-logo-column">
+          <img
+            src="https://mortyscake.com/image/Logo_mortys_cake.webp"
+            alt="Pastelería de Morty"
+            class="footer-logo"
+          />
+        </div>
+        <!-- Columna de Redes Sociales -->
+        <div class="footer-column footer-social-column">
+          <h3 class="footer-headline">Síguenos</h3>
+          <div class="footer-social-links">
+            <a href="https://www.facebook.com/MortysCake/" target="_blank" rel="noopener noreferrer">
+              <!-- Icono de Facebook -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+              </svg>
+            </a>
+            <a href="https://www.instagram.com/mortyscake.ourense/" target="_blank" rel="noopener noreferrer">
+              <!-- Icono de Instagram -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom-section">
+    <div class="footer-container footer-bottom-container">
+      <div class="footer-copyright">
+        &copy; 2024
+        <a href="https://tecnovacenter.es/" target="_blank" rel="noopener noreferrer"> TecnovaCenter </a>. Todos los derechos reservados.
+      </div>
+      <nav class="footer-legal-links">
+        <a href="https://mortyscake.es/terminos-y-condiciones">Términos de Servicio</a>
+        <a href="https://mortyscake.es/politica-de-privacidad">Política de Privacidad</a>
+        <a href="https://mortyscake.es/politica-de-cookies">Política de Cookies</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
