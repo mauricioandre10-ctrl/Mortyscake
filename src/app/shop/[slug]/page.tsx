@@ -11,7 +11,6 @@ import { ShareButton } from '@/components/ShareButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 
-
 const WP_API_URL = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
 
 // This enables ISR (Incremental Static Regeneration)
