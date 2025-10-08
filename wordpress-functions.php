@@ -54,20 +54,24 @@ function morty_get_products(WP_REST_Request $request) {
         'paginate' => false,
     );
 
+    // ************ CORRECCIÓN CLAVE ************
+    // Si se pasa un 'slug', la búsqueda debe ser específica para ese producto.
     if (!empty($params['slug'])) {
         $args['slug'] = sanitize_text_field($params['slug']);
-    }
+        // Cuando se busca por slug, es bueno poner el límite a 1.
+        $args['limit'] = 1; 
+    } else {
+        // Los filtros de categoría solo deben aplicarse cuando NO se busca un slug específico.
+        if (!empty($params['category_slug'])) {
+            $args['category'] = array(sanitize_text_field($params['category_slug']));
+        }
 
-    // Filtrar por slug de categoría (para obtener solo los cursos)
-    if (!empty($params['category_slug'])) {
-        $args['category'] = array(sanitize_text_field($params['category_slug']));
-    }
-
-    // Excluir por slug de categoría (para obtener todo menos los cursos)
-    if (!empty($params['category_exclude_slug'])) {
-        $term = get_term_by('slug', sanitize_text_field($params['category_exclude_slug']), 'product_cat');
-        if ($term) {
-            $args['category__not_in'] = array($term->term_id);
+        if (!empty($params['category_exclude_slug'])) {
+            $term = get_term_by('slug', sanitize_text_field($params['category_exclude_slug']), 'product_cat');
+            if ($term) {
+                // 'category__not_in' espera un array de IDs.
+                $args['category__not_in'] = array($term->term_id);
+            }
         }
     }
 
@@ -100,7 +104,6 @@ function morty_get_products(WP_REST_Request $request) {
         foreach ($image_gallery_ids as $image_id) {
             $image_url = wp_get_attachment_url($image_id);
             if ($image_url) {
-                // Evitar duplicar la imagen principal si también está en la galería
                 $is_duplicate = false;
                 foreach($images as $existing_image) {
                     if ($existing_image['id'] === $image_id) {
