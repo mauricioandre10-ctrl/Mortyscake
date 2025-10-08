@@ -30,18 +30,11 @@ add_action('rest_api_init', function () {
         'callback' => 'morty_get_products',
         'permission_callback' => '__return_true'
     ));
-
-    // Endpoint para obtener una categoría por su slug
-    register_rest_route('morty/v1', '/category-by-slug', array(
-        'methods' => 'GET',
-        'callback' => 'morty_get_category_by_slug',
-        'permission_callback' => '__return_true'
-    ));
 });
 
 /**
- * Función que maneja la petición para obtener productos de WooCommerce.
- * Esta función ahora maneja correctamente la búsqueda por slug y la exclusión de categorías.
+ * Función robusta para obtener productos de WooCommerce.
+ * Prioriza la búsqueda por slug y maneja correctamente la inclusión/exclusión de categorías.
  */
 function morty_get_products(WP_REST_Request $request) {
     if (!class_exists('WooCommerce')) {
@@ -58,10 +51,9 @@ function morty_get_products(WP_REST_Request $request) {
     // Prioridad 1: Si se pasa un 'slug', buscar ese producto específico.
     if (!empty($params['slug'])) {
         $args['slug'] = sanitize_text_field($params['slug']);
-        // Cuando se busca por slug, el límite es 1.
-        $args['limit'] = 1; 
+        $args['limit'] = 1; // Un slug debe devolver un único producto.
     } else {
-        // Prioridad 2: Aplicar filtros de categoría solo si no se busca un slug.
+        // Prioridad 2: Aplicar filtros de categoría solo si no se busca por slug.
         if (!empty($params['category_slug'])) {
             $args['category'] = array(sanitize_text_field($params['category_slug']));
         }
@@ -91,6 +83,7 @@ function morty_get_products(WP_REST_Request $request) {
         
         $image_gallery_ids = $product_obj->get_gallery_image_ids();
         $images = [];
+        
         // Añadir la imagen destacada primero
         if (has_post_thumbnail($product_obj->get_id())) {
              $main_image_id = get_post_thumbnail_id($product_obj->get_id());
@@ -103,10 +96,12 @@ function morty_get_products(WP_REST_Request $request) {
                 );
              }
         }
+        
         // Añadir las imágenes de la galería, evitando duplicados
         foreach ($image_gallery_ids as $image_id) {
             $image_url = wp_get_attachment_url($image_id);
             if ($image_url) {
+                // Comprobamos si la imagen ya ha sido añadida (como imagen destacada)
                 $is_duplicate = false;
                 foreach($images as $existing_image) {
                     if ($existing_image['id'] === $image_id) {
@@ -130,28 +125,4 @@ function morty_get_products(WP_REST_Request $request) {
 
     return new WP_REST_Response($data, 200);
 }
-
-/**
- * Función que maneja la petición para obtener una categoría por su slug.
- */
-function morty_get_category_by_slug(WP_REST_Request $request) {
-    $slug = $request->get_param('slug');
-
-    if (empty($slug)) {
-        return new WP_Error('no_slug_provided', 'No se ha proporcionado un slug de categoría.', array('status' => 400));
-    }
-
-    $term = get_term_by('slug', sanitize_text_field($slug), 'product_cat');
-
-    if (!$term) {
-        return new WP_Error('category_not_found', 'La categoría no se ha encontrado.', array('status' => 404));
-    }
-    
-    // Devolvemos el objeto del término completo, que incluye el ID.
-    $term_data = (array) $term;
-    $term_data['id'] = $term->term_id;
-
-    return new WP_REST_Response($term_data, 200);
-}
-
 ?>

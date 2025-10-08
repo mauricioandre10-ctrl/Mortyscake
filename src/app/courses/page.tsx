@@ -10,11 +10,11 @@ import { Star } from 'lucide-react';
 import Link from 'next/link';
 import { ShareButton } from '@/components/ShareButton';
 
-type SortOption = 'default' | 'price-asc' | 'price-desc' | 'alpha-asc' | 'alpha-desc' | 'date-desc';
+type SortOption = 'date-desc' | 'price-asc' | 'price-desc' | 'alpha-asc' | 'alpha-desc' | 'default';
 
 const sortOptions: { value: SortOption; label: string }[] = [
-    { value: 'default', label: 'Popularidad' },
     { value: 'date-desc', label: 'Más Recientes' },
+    { value: 'default', label: 'Popularidad' },
     { value: 'price-asc', label: 'Precio: Menor a Mayor' },
     { value: 'price-desc', label: 'Precio: Mayor a Menor' },
     { value: 'alpha-asc', label: 'Alfabético: A-Z' },
@@ -39,7 +39,7 @@ interface Course {
 export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortOrder, setSortOrder] = useState<SortOption>('default');
+  const [sortOrder, setSortOrder] = useState<SortOption>('date-desc');
   const [siteUrl, setSiteUrl] = useState('');
 
   useEffect(() => {
@@ -77,11 +77,11 @@ export default function CoursesPage() {
         return sorted.sort((a, b) => a.name.localeCompare(b.name));
       case 'alpha-desc':
         return sorted.sort((a, b) => b.name.localeCompare(a.name));
-      case 'date-desc':
-        return sorted.sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime());
       case 'default':
-      default:
         return courses.sort((a, b) => a.menu_order - b.menu_order);
+      case 'date-desc':
+      default:
+        return sorted.sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime());
     }
   }, [courses, sortOrder]);
   
