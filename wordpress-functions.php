@@ -20,7 +20,9 @@ function morty_cors_headers($value) {
     // Lista de dominios permitidos para hacer peticiones.
     $allowed_origins = [
         'https://mortyscake-website.vercel.app',
-        'https://mortyscake-website-git-main-mauricio-s-projects-bb335663.vercel.app'
+        'https://mortyscake-website-git-main-mauricio-s-projects-bb335663.vercel.app',
+        'http://localhost:3000',
+        'http://localhost:9002'
     ];
     
     // Obtiene el origen de la petición actual.
