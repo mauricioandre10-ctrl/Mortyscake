@@ -178,7 +178,7 @@ export function CourseDetails({ course }: { course: Course }) {
             </table>
           </TabsContent>
           <TabsContent value="reviews" className="py-6 px-4 border rounded-b-md">
-            <h3 className="text-xl font-bold mb-4">Opiniones de los alumnos ({course.reviews.length})</h3>
+            <h3 className="text-xl font-bold mb-4">Opiniones de los alumnos ({course.reviews?.length || 0})</h3>
             {course.reviews && course.reviews.length > 0 ? (
               <div className="space-y-6">
                 {course.reviews.map((review) => (
