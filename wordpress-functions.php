@@ -4,6 +4,7 @@ if (function_exists('set_time_limit')) {
     set_time_limit(30);
 }
 
+// 1. CORS Headers
 add_action('rest_api_init', function () {
     remove_filter('rest_pre_serve_request', 'rest_send_cors_headers');
     add_filter('rest_pre_serve_request', 'morty_cors_headers', 15);
@@ -22,7 +23,7 @@ function morty_cors_headers($value) {
     if ($origin && in_array($origin, $allowed_origins, true)) {
         header('Access-Control-Allow-Origin: ' . esc_url_raw($origin));
         header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type, Authorization');
+        header('Access-control-allow-headers: content-type, authorization');
         header('Access-Control-Allow-Credentials: true');
     }
 
@@ -34,6 +35,7 @@ function morty_cors_headers($value) {
     return $value;
 }
 
+// 2. Register API Routes
 add_action('rest_api_init', 'morty_register_rest_routes');
 
 function morty_register_rest_routes() {
@@ -44,14 +46,23 @@ function morty_register_rest_routes() {
         'callback'            => 'morty_get_products_with_details',
         'permission_callback' => '__return_true',
         'args'                => [
-            'per_page' => [ 'type' => 'integer', 'sanitize_callback' => 'absint' ],
-            'slug' => [ 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ],
-            'category_slug' => [ 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ],
-            'category_exclude_slug' => [ 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ],
+            'per_page' => [
+                'validate_callback' => function($param, $request, $key) { return is_numeric($param); }
+            ],
+            'slug' => [
+                'validate_callback' => function($param, $request, $key) { return is_string($param); }
+            ],
+            'category_slug' => [
+                'validate_callback' => function($param, $request, $key) { return is_string($param); }
+            ],
+            'category_exclude_slug' => [
+                'validate_callback' => function($param, $request, $key) { return is_string($param); }
+            ],
         ],
     ]);
 }
 
+// 3. API Callback Function
 function morty_get_products_with_details(WP_REST_Request $request) {
     if (!class_exists('WooCommerce')) {
         return new WP_Error('woocommerce_not_active', 'WooCommerce no está activado.', ['status' => 500]);
@@ -66,6 +77,7 @@ function morty_get_products_with_details(WP_REST_Request $request) {
 
     if (!empty($params['slug'])) { $args['slug'] = sanitize_text_field($params['slug']); }
     if (!empty($params['category_slug'])) { $args['category'] = [sanitize_text_field($params['category_slug'])]; }
+    
     if (!empty($params['category_exclude_slug'])) {
         $term = get_term_by('slug', sanitize_text_field($params['category_exclude_slug']), 'product_cat');
         if ($term) { $args['category__not_in'] = [$term->term_id]; }
@@ -75,10 +87,9 @@ function morty_get_products_with_details(WP_REST_Request $request) {
     $data = [];
 
     foreach ($products as $product) {
-        if (!$product) continue;
-        $product_data = $product->get_data();
+        if (!$product instanceof WC_Product) continue;
         
-        unset($product_data['downloads'], $product_data['meta_data']);
+        $product_data = $product->get_data();
         
         $product_data['price'] = wc_format_decimal($product->get_price(), 2);
         $product_data['category_names'] = morty_get_product_terms($product->get_id(), 'product_cat', 'name');
@@ -87,12 +98,15 @@ function morty_get_products_with_details(WP_REST_Request $request) {
         $product_data['images'] = morty_get_product_images($product);
         $product_data['reviews'] = morty_get_product_reviews($product->get_id());
         
+        unset($product_data['downloads'], $product_data['meta_data']);
+        
         $data[] = $product_data;
     }
 
     return new WP_REST_Response($data, 200);
 }
 
+// 4. Helper Functions
 function morty_get_product_terms($product_id, $taxonomy, $field = null) {
     $terms = get_the_terms($product_id, $taxonomy);
     if (empty($terms) || is_wp_error($terms)) return [];
@@ -104,14 +118,16 @@ function morty_get_product_terms($product_id, $taxonomy, $field = null) {
 
 function morty_get_product_attributes($product) {
     $attributes_data = [];
-    $attributes = $product->get_attributes();
-    if (empty($attributes)) return $attributes_data;
-    foreach ($attributes as $attribute) {
-        if ($attribute->get_visible()) {
-            $attributes_data[] = [
-                'name'    => wc_get_attribute_label($attribute->get_name()),
-                'options' => $attribute->get_options(),
-            ];
+    if (!$product->is_type('variable')) {
+        $attributes = $product->get_attributes();
+        if (empty($attributes)) return $attributes_data;
+        foreach ($attributes as $attribute) {
+            if ($attribute->get_visible()) {
+                $attributes_data[] = [
+                    'name'    => wc_get_attribute_label($attribute->get_name()),
+                    'options' => $attribute->get_options(),
+                ];
+            }
         }
     }
     return $attributes_data;
@@ -119,22 +135,21 @@ function morty_get_product_attributes($product) {
 
 function morty_get_product_images($product) {
     $images = [];
-    $attachment_ids = array_filter(array_merge([$product->get_image_id()], $product->get_gallery_image_ids()));
+    $attachment_ids = array_filter([$product->get_image_id(), ...$product->get_gallery_image_ids()]);
+    
     if (!empty($attachment_ids)) {
         foreach (array_unique($attachment_ids) as $image_id) {
             $image_url = wp_get_attachment_url($image_id);
             if ($image_url) {
                 $images[] = [
                     'id'  => intval($image_id),
-                    'src' => $image_url,
+                    'src' => esc_url($image_url),
                     'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true),
                 ];
             }
         }
     }
-    if (empty($images) && function_exists('wc_placeholder_img_src')) {
-        $images[] = ['id' => 0, 'src' => wc_placeholder_img_src(), 'alt' => 'Placeholder Image'];
-    }
+    
     return $images;
 }
 
