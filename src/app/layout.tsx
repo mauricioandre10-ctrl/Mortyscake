@@ -1,7 +1,7 @@
 
 import { Suspense } from 'react';
 import type { Metadata, Viewport } from 'next';
-import { Alegreya as FontSans } from 'next/font/google';
+import { Alegreya as FontSans, Playwrite_US_Modern as FontHeadline } from 'next/font/google';
 import { Analytics } from '@/components/Analytics';
 import { cn } from '@/lib/utils';
 import Header from '@/components/header';
@@ -11,10 +11,18 @@ import WhatsAppButton from '@/components/WhatsAppButton';
 import InstagramButton from '@/components/InstagramButton';
 import { Providers } from '@/components/providers';
 import './globals.css';
+import { Toaster } from '@/components/ui/toaster';
+
 
 const fontSans = FontSans({ 
   subsets: ['latin'], 
   variable: '--font-sans',
+  display: 'swap',
+});
+
+const fontHeadline = FontHeadline({
+  subsets: ['latin'],
+  variable: '--font-headline',
   display: 'swap',
 });
 
@@ -78,7 +86,8 @@ export default function RootLayout({
       <body
         className={cn(
           'min-h-screen bg-background font-body antialiased',
-          fontSans.variable
+          fontSans.variable,
+          fontHeadline.variable
         )}
       >
         <Suspense fallback={null}>
@@ -88,6 +97,7 @@ export default function RootLayout({
           <Header />
           <main className="flex-grow">{children}</main>
           <Footer />
+          <Toaster />
         </Providers>
         <CookieBanner />
         <WhatsAppButton />
