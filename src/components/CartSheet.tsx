@@ -33,22 +33,23 @@ export function CartSheet() {
 
   const handleCheckout = async () => {
     setIsRedirecting(true);
-    const checkoutUrl = 'https://cms.mortyscake.es/finalizar-compra/';
+    const storeUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
 
-    if (!checkoutUrl) {
+    if (!storeUrl) {
       toast({
         variant: 'destructive',
         title: 'Error de configuración',
-        description: 'La URL de checkout no está definida.',
+        description: 'La URL de la tienda no está definida.',
       });
       setIsRedirecting(false);
       return;
     }
 
-    const wooCheckoutUrl = new URL(checkoutUrl);
+    const wooCheckoutUrl = new URL(`${storeUrl}/cart/`);
     
     Object.values(cartDetails ?? {}).forEach(item => {
         wooCheckoutUrl.searchParams.append('add-to-cart', item.id);
+        wooCheckoutUrl.searchParams.append('quantity', item.quantity.toString());
     });
 
     clearCart();
