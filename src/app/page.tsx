@@ -46,9 +46,124 @@ const blogPosts = [
   }
 ];
 
-// NOTE: This component remains a client component because the fetching logic was moved out.
-// The interactive carousels require client-side hooks.
-// Data fetching for courses/products now happens on their respective list pages.
+function FeaturedCourses() {
+  const [courses, setCourses] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [siteUrl, setSiteUrl] = useState('');
+
+  useEffect(() => {
+    // Ensure we are on the client side before accessing window
+    if (typeof window !== 'undefined') {
+      setSiteUrl(window.location.origin);
+    }
+    
+    async function fetchCourses() {
+      const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+      if (!apiUrl) {
+        console.error("[CLIENT] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_STORE_URL no está configurada.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const coursesApiUrl = new URL(`${apiUrl}/wp-json/morty/v1/products`);
+        coursesApiUrl.searchParams.set('category_slug', 'cursos');
+        coursesApiUrl.searchParams.set('per_page', '3'); // Fetch only 3 courses
+
+        const response = await fetch(coursesApiUrl.toString(), { cache: 'no-store' });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch courses: ${response.statusText}`);
+        }
+        const data = await response.json();
+        setCourses(data);
+      } catch (err) {
+        console.error('[CLIENT] An unexpected error occurred fetching featured courses:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchCourses();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {[...Array(3)].map((_, i) => (
+           <Card key={i}>
+            <Skeleton className="aspect-[4/3] w-full" />
+            <CardContent className="p-6 space-y-2">
+              <Skeleton className="h-6 w-3/4" />
+              <Skeleton className="h-4 w-1/2" />
+               <Skeleton className="h-10 w-full" />
+            </CardContent>
+             <CardFooter className="flex justify-between items-center bg-muted/30 p-4">
+               <Skeleton className="h-8 w-1/4" />
+               <Skeleton className="h-10 w-1/2" />
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+  
+  if (!courses.length) {
+    return null; // Don't render the section if there are no courses
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {courses.map(course => (
+         <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
+          <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow">
+              <CardHeader className="p-0 relative">
+                <ShareButton 
+                    title={course.name} 
+                    text={`Echa un vistazo a este curso: ${course.name}`} 
+                    url={`${siteUrl}/courses/${course.slug}`}
+                    className="absolute top-2 right-2 z-10 h-8 w-8"
+                    size="icon"
+                  />
+                <div className="aspect-[4/3] w-full bg-muted relative overflow-hidden">
+                  {course.images?.[0]?.src ? (
+                      <Image
+                        src={course.images[0].src}
+                        alt={course.name}
+                        fill
+                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-muted"></div>
+                    )}
+                  </div>
+              </CardHeader>
+              <CardContent className="flex flex-col flex-grow p-6">
+                <CardTitle className="font-headline text-xl mb-2">{course.name}</CardTitle>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="flex text-yellow-400">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className={`w-4 h-4 ${i < course.average_rating ? 'fill-current' : 'text-muted-foreground fill-muted'}`} />
+                        ))}
+                      </div>
+                      <span className="text-xs text-muted-foreground">({course.rating_count} reseñas)</span>
+                    </div>
+                <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: course.short_description || '' }} />
+              </CardContent>
+              <CardFooter className="flex justify-between items-center bg-muted/30 p-4 mt-auto">
+                <span className="text-2xl font-bold text-primary">
+                  {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
+                </span>
+                <Button variant="secondary">Ver Detalles</Button>
+              </CardFooter>
+            </Link>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+
 export default function Home() {
   const plugin = useRef(
     Autoplay({ delay: 10000, stopOnInteraction: true })
@@ -89,42 +204,22 @@ export default function Home() {
          </div>
       </section>
 
-      {/* 2. Categories Section (Shop & Courses) */}
-      <section id="categories" className="w-full py-16 md:py-24 bg-muted/30">
-        <div className="container px-4 md:px-6 mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-            <Link href="/courses" className="group block">
-              <Card className="overflow-hidden h-full flex flex-col shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300">
-                <div className="relative aspect-[4/3] w-full">
-                  <Image src="https://picsum.photos/seed/cat-courses/800/600" alt="Alumna decorando un pastel en un curso" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="pastry class" unoptimized />
-                </div>
-                <CardHeader>
-                  <CardTitle>Cursos de Repostería</CardTitle>
-                  <CardDescription>Aprende técnicas profesionales desde casa.</CardDescription>
-                </CardHeader>
-                <CardFooter>
-                  <span className="flex items-center text-primary font-semibold">
-                    Explorar Cursos <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                  </span>
-                </CardFooter>
-              </Card>
-            </Link>
-            <Link href="/shop" className="group block">
-              <Card className="overflow-hidden h-full flex flex-col shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300">
-                <div className="relative aspect-[4/3] w-full">
-                  <Image src="https://picsum.photos/seed/cat-shop/800/600" alt="Productos de repostería de alta calidad" fill className="object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="baking products" unoptimized />
-                </div>
-                <CardHeader>
-                  <CardTitle>Nuestros Productos</CardTitle>
-                  <CardDescription>Ingredientes y herramientas de alta calidad para tus creaciones.</CardDescription>
-                </CardHeader>
-                <CardFooter>
-                   <span className="flex items-center text-primary font-semibold">
-                    Ir a la Tienda <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                  </span>
-                </CardFooter>
-              </Card>
-            </Link>
+      {/* 2. Featured Courses Section */}
+      <section id="featured-courses" className="py-16 md:py-24 bg-background">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="text-center mb-12">
+            <h2 className="font-headline text-3xl md:text-4xl font-bold">Cursos Destacados</h2>
+            <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
+              Empieza tu viaje en el mundo de la repostería con nuestros cursos más populares.
+            </p>
+          </div>
+          <FeaturedCourses />
+           <div className="text-center mt-12">
+              <Button asChild>
+                  <Link href="/courses">
+                      Ver todos los cursos
+                  </Link>
+              </Button>
           </div>
         </div>
       </section>
@@ -164,7 +259,7 @@ export default function Home() {
       {/* Testimonials Section */}
       <section id="testimonials" className="py-16 md:py-24 bg-background">
           <div className="container mx-auto px-4 md:px-6 text-center">
-              <h2 className="font-headline text-3xl md:text-4xl font-bold">Lo que dicen nuestros clientes</h2>
+              <h2 className="font-headline text-3xl md:text-4xl font-bold">Lo que dicen nuestros alumnos</h2>
               <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
                   La mayor satisfacción es ver la alegría en quienes prueban nuestras creaciones.
               </p>
@@ -315,9 +410,25 @@ export default function Home() {
               </div>
           </div>
       </section>
+      
+       {/* CTA Section */}
+        <section id="cta" className="w-full py-16 md:py-24 bg-primary/20">
+            <div className="container px-4 md:px-6 mx-auto text-center">
+                 <h2 className="font-headline text-3xl md:text-4xl font-bold text-primary-foreground/90">¿Listo para empezar a crear?</h2>
+                 <p className="text-primary-foreground/70 mt-2 max-w-2xl mx-auto">
+                     Explora nuestros cursos y encuentra el perfecto para ti, o visita nuestra tienda para conseguir los mejores ingredientes.
+                 </p>
+                <div className="flex justify-center gap-4 mt-8">
+                    <Button asChild size="lg">
+                        <Link href="/courses">Explorar Cursos</Link>
+                    </Button>
+                    <Button asChild size="lg" variant="secondary">
+                        <Link href="/shop">Ir a la Tienda</Link>
+                    </Button>
+                </div>
+            </div>
+        </section>
 
     </div>
   );
 }
-
-    
