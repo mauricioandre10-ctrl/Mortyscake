@@ -52,12 +52,19 @@ async function getProduct(slug: string): Promise<Product | null> {
     // We can fetch directly from WordPress here because this runs on the server
     const apiUrl = new URL(`${WP_API_URL}/wp-json/morty/v1/products`);
     apiUrl.searchParams.set('slug', slug);
+    apiUrl.searchParams.set('per_page', '1'); // Ensure we only get one
 
     const response = await fetch(apiUrl.toString());
     if (!response.ok) {
       return null;
     }
     const data = await response.json();
+    
+    // Ensure we're not getting a course on a product page
+    if (data.length > 0 && data[0].category_names && data[0].category_names.includes('Cursos')) {
+        return null;
+    }
+    
     return data[0] || null;
   } catch (error) {
     console.error('Error fetching product:', error);

@@ -25,6 +25,7 @@ interface Course {
   images: { id: number; src: string; alt: string }[];
   average_rating: number;
   rating_count: number;
+  category_names: string[];
 }
 
 // This function tells Next.js which slugs to pre-render at build time
@@ -54,10 +55,17 @@ async function getCourse(slug: string): Promise<Course | null> {
     // We can fetch directly from WordPress here because this runs on the server
     const apiUrl = new URL(`${WP_API_URL}/wp-json/morty/v1/products`);
     apiUrl.searchParams.set('slug', slug);
-    
+    apiUrl.searchParams.set('per_page', '1'); // Ensure we only get one
+
     const response = await fetch(apiUrl.toString());
     if (!response.ok) return null;
     const data = await response.json();
+    
+    // Ensure we are actually on a course page
+    if (data.length > 0 && data[0].category_names && !data[0].category_names.includes('Cursos')) {
+        return null;
+    }
+
     return data[0] || null;
   } catch (error) {
     console.error('Error fetching course:', error);

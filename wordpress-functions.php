@@ -35,7 +35,7 @@ add_action('rest_api_init', function () {
 
 /**
  * Función robusta y simplificada para obtener productos de WooCommerce.
- * - Obtiene un producto por slug si se proporciona.
+ * - Prioriza la búsqueda por 'slug' si se proporciona.
  * - Filtra por categoría (para 'cursos').
  * - Excluye una categoría (para 'productos').
  * - Siempre devuelve los nombres de las categorías.
@@ -55,7 +55,6 @@ function morty_get_products_with_details(WP_REST_Request $request) {
     // Prioridad 1: Si se pasa un 'slug', buscar ese producto específico.
     if (!empty($params['slug'])) {
         $args['slug'] = sanitize_text_field($params['slug']);
-        $args['limit'] = 1; // Un slug debe devolver un único producto.
     } 
     // Prioridad 2: Si no hay slug, aplicar filtros de categoría.
     else {
@@ -68,7 +67,6 @@ function morty_get_products_with_details(WP_REST_Request $request) {
         if (!empty($params['category_exclude_slug'])) {
             $term = get_term_by('slug', sanitize_text_field($params['category_exclude_slug']), 'product_cat');
             if ($term) {
-                // Usamos 'category__not_in' que es el método correcto para wc_get_products
                 $args['category__not_in'] = array($term->term_id);
             }
         }
@@ -84,9 +82,7 @@ function morty_get_products_with_details(WP_REST_Request $request) {
         $category_objects = get_the_terms($product_obj->get_id(), 'product_cat');
         $category_names = [];
         if (!empty($category_objects) && !is_wp_error($category_objects)) {
-            foreach ($category_objects as $cat) {
-                $category_names[] = $cat->name;
-            }
+            $category_names = wp_list_pluck($category_objects, 'name');
         }
         $product_data['category_names'] = $category_names;
 
@@ -106,11 +102,12 @@ function morty_get_products_with_details(WP_REST_Request $request) {
 
         $gallery_image_ids = $product_obj->get_gallery_image_ids();
         foreach ($gallery_image_ids as $image_id) {
-            if (intval($image_id) !== intval($main_image_id)) {
+            $image_id = intval($image_id);
+            if ($image_id !== intval($main_image_id)) { // Evita duplicar la imagen destacada si también está en la galería
                 $image_url = wp_get_attachment_url($image_id);
                 if ($image_url) {
                     $images[] = array(
-                        'id' => intval($image_id),
+                        'id' => $image_id,
                         'src' => $image_url,
                         'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true),
                     );
