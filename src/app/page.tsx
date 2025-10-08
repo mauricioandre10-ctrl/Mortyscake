@@ -488,6 +488,7 @@ export default function Home() {
                               alt={image.alt}
                               fill
                               className="object-cover"
+                              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                             />
                          </div>
                       </CardContent>
