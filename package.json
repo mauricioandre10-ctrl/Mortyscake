@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf .next && rm -rf node_modules",
+    "rebuild": "npm run clean && npm install && npm run build"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

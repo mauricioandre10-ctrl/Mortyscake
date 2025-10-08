@@ -23,10 +23,11 @@ interface Course {
   category_names: string[];
 }
 
+const WP_API_URL = process.env.WOOCOMMERCE_STORE_URL || process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+
 async function getCourses(): Promise<Course[]> {
-  const WP_API_URL = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
   if (!WP_API_URL) {
-    console.error('WordPress API URL not configured');
+    console.error('WooCommerce API URL not configured');
     return [];
   }
   
@@ -69,7 +70,6 @@ function CourseCard({ course, siteUrl }: { course: Course, siteUrl: string | und
                     alt={course.name}
                     fill
                     className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                    unoptimized
                   />
                 ) : (
                    <div className="w-full h-full bg-muted"></div>

@@ -6,7 +6,7 @@ import { ArrowLeft, Info, FileText, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { AddToCart } from '@/components/AddToCart';
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/componentsui/carousel';
 import { ShareButton } from '@/components/ShareButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
@@ -26,16 +26,19 @@ interface Product {
   attributes: { name: string; options: string[] }[] | Record<string, { name: string; options: string[] }>;
 }
 
-const WP_API_URL = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+const WP_API_URL = process.env.WOOCOMMERCE_STORE_URL || process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
 
 async function getProduct(slug: string): Promise<Product | null> {
-  if (!WP_API_URL) return null;
+  if (!WP_API_URL) {
+    console.error("WooCommerce API URL is not configured.");
+    return null;
+  }
   try {
     const apiUrl = new URL(`${WP_API_URL}/wp-json/morty/v1/products`);
     apiUrl.searchParams.set('slug', slug);
     apiUrl.searchParams.set('per_page', '1');
     
-    const response = await fetch(apiUrl.toString());
+    const response = await fetch(apiUrl.toString(), { next: { revalidate: 60 } });
     if (!response.ok) {
       return null;
     }
@@ -91,7 +94,6 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
                         alt={image.alt || product.name}
                         fill
                         className="object-cover"
-                        unoptimized
                       />
                     </div>
                   </CarouselItem>

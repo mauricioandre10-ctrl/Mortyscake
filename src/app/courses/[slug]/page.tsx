@@ -27,16 +27,19 @@ interface Course {
   attributes: { name: string; options: string[] }[] | Record<string, { name: string; options: string[] }>;
 }
 
-const WP_API_URL = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+const WP_API_URL = process.env.WOOCOMMERCE_STORE_URL || process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
 
 async function getCourse(slug: string): Promise<Course | null> {
-  if (!WP_API_URL) return null;
+  if (!WP_API_URL) {
+    console.error("WooCommerce API URL is not configured.");
+    return null;
+  };
   try {
     const apiUrl = new URL(`${WP_API_URL}/wp-json/morty/v1/products`);
     apiUrl.searchParams.set('slug', slug);
     apiUrl.searchParams.set('per_page', '1');
     
-    const response = await fetch(apiUrl.toString());
+    const response = await fetch(apiUrl.toString(), { next: { revalidate: 60 } });
     if (!response.ok) return null;
     
     const courses = await response.json();
@@ -91,7 +94,6 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
                         alt={image.alt || course.name}
                         fill
                         className="object-cover"
-                        unoptimized
                       />
                     </div>
                   </CarouselItem>
