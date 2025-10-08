@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -45,19 +46,19 @@ export function CartSheet() {
       return;
     }
 
-    const wooCheckoutUrl = new URL(`${storeUrl}/carrito/`);
-    
-    // Build query params for each item in the cart
+    // Start with the cart URL and the clear-cart parameter
+    let checkoutUrl = `${storeUrl}/carrito/?clear-cart=true`;
+
+    // Append each item to the URL
     Object.values(cartDetails ?? {}).forEach(item => {
-      wooCheckoutUrl.searchParams.append('add-to-cart', item.id);
-      wooCheckoutUrl.searchParams.append('quantity', item.quantity.toString());
+        checkoutUrl += `&add-to-cart=${item.id}&quantity=${item.quantity}`;
     });
     
     // Clear the local cart after preparing the redirect URL
     clearCart();
 
     // Redirect the user
-    window.location.href = wooCheckoutUrl.toString();
+    window.location.href = checkoutUrl;
   };
 
   return (
