@@ -11,8 +11,8 @@ import { Separator } from './ui/separator';
 
 const Header = () => {
   const storeUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
-  const cartUrl = `${storeUrl}/cart`;
-  const accountUrl = `${storeUrl}/mi-cuenta`;
+  const cartUrl = storeUrl ? `${storeUrl}/cart` : '#';
+  const accountUrl = storeUrl ? `${storeUrl}/mi-cuenta` : '#';
 
   const navLinks = [
     { href: '/shop', label: 'Tienda' },
@@ -43,13 +43,13 @@ const Header = () => {
         
         <div className="flex items-center gap-2">
            <Button asChild variant="ghost" size="icon" className="hidden md:flex" disabled={!storeUrl}>
-                <Link href={storeUrl ? accountUrl : '#'} target="_blank" rel="noopener noreferrer" aria-label="Iniciar Sesión">
+                <Link href={accountUrl} target="_blank" rel="noopener noreferrer" aria-label="Iniciar Sesión">
                     <User className="h-6 w-6"/>
                 </Link>
            </Button>
 
            <Button asChild variant="ghost" size="icon" className="relative" disabled={!storeUrl}>
-             <Link href={storeUrl ? cartUrl : '#'} target="_blank" rel="noopener noreferrer">
+             <Link href={cartUrl} target="_blank" rel="noopener noreferrer">
                 <ShoppingCart className="h-6 w-6" />
                 <span className="sr-only">Ver carrito</span>
              </Link>
@@ -83,7 +83,7 @@ const Header = () => {
                     </Link>
                   ))}
                   <Separator className="my-2"/>
-                   <Link href={storeUrl ? accountUrl : '#'} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-lg font-medium">
+                   <Link href={accountUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-lg font-medium">
                     <User className="h-5 w-5" />
                     <span>Mi Cuenta</span>
                   </Link>

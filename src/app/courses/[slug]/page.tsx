@@ -28,11 +28,11 @@ interface Course {
 }
 
 async function getCourse(slug: string): Promise<Course | null> {
-  const apiUrl = process.env.WOOCOMMERCE_API_URL;
+  const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
   console.log('[getCourse] WOOCOMMERCE_API_URL:', apiUrl);
 
   if (!apiUrl) {
-    console.error("[getCourse] Error: La variable de entorno WOOCOMMERCE_API_URL no está configurada.");
+    console.error("[getCourse] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_STORE_URL no está configurada.");
     return null;
   };
 

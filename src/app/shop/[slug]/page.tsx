@@ -27,11 +27,11 @@ interface Product {
 }
 
 async function getProduct(slug: string): Promise<Product | null> {
-  const apiUrl = process.env.WOOCOMMERCE_API_URL;
+  const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
   console.log('[getProduct] WOOCOMMERCE_API_URL:', apiUrl);
 
   if (!apiUrl) {
-    console.error("[getProduct] Error: La variable de entorno WOOCOMMERCE_API_URL no está configurada.");
+    console.error("[getProduct] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_STORE_URL no está configurada.");
     return null;
   }
   try {
