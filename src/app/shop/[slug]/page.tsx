@@ -11,8 +11,7 @@ import { ShareButton } from '@/components/ShareButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 
-// This enables ISR (Incremental Static Regeneration)
-export const revalidate = 3600;
+export const runtime = 'edge';
 
 interface Product {
   id: number;
@@ -30,27 +29,6 @@ interface Product {
 }
 
 const WP_API_URL = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
-
-// This function tells Next.js which slugs to pre-render at build time
-export async function generateStaticParams() {
-  if (!WP_API_URL) return [];
-  try {
-    const apiUrl = new URL(`${WP_API_URL}/wp-json/morty/v1/products`);
-    apiUrl.searchParams.set('category_exclude_slug', 'cursos');
-    apiUrl.searchParams.set('per_page', '100');
-
-    const response = await fetch(apiUrl.toString());
-    if (!response.ok) return [];
-
-    const products: Product[] = await response.json();
-    return products.map((product) => ({
-      slug: product.slug,
-    }));
-  } catch (error) {
-    console.error('Failed to generate static params for products:', error);
-    return [];
-  }
-}
 
 async function getProduct(slug: string): Promise<Product | null> {
   if (!WP_API_URL) return null;
