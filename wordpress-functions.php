@@ -41,6 +41,7 @@ add_action('rest_api_init', function () {
 
 /**
  * Función que maneja la petición para obtener productos de WooCommerce.
+ * Esta función ahora maneja correctamente la búsqueda por slug y la exclusión de categorías.
  */
 function morty_get_products(WP_REST_Request $request) {
     if (!class_exists('WooCommerce')) {
@@ -54,14 +55,13 @@ function morty_get_products(WP_REST_Request $request) {
         'paginate' => false,
     );
 
-    // ************ CORRECCIÓN CLAVE ************
-    // Si se pasa un 'slug', la búsqueda debe ser específica para ese producto.
+    // Prioridad 1: Si se pasa un 'slug', buscar ese producto específico.
     if (!empty($params['slug'])) {
         $args['slug'] = sanitize_text_field($params['slug']);
-        // Cuando se busca por slug, es bueno poner el límite a 1.
+        // Cuando se busca por slug, el límite es 1.
         $args['limit'] = 1; 
     } else {
-        // Los filtros de categoría solo deben aplicarse cuando NO se busca un slug específico.
+        // Prioridad 2: Aplicar filtros de categoría solo si no se busca un slug.
         if (!empty($params['category_slug'])) {
             $args['category'] = array(sanitize_text_field($params['category_slug']));
         }
@@ -69,12 +69,13 @@ function morty_get_products(WP_REST_Request $request) {
         if (!empty($params['category_exclude_slug'])) {
             $term = get_term_by('slug', sanitize_text_field($params['category_exclude_slug']), 'product_cat');
             if ($term) {
-                // 'category__not_in' espera un array de IDs.
+                // 'category__not_in' espera un array de IDs de términos.
                 $args['category__not_in'] = array($term->term_id);
             }
         }
     }
 
+    // Ordenación
     if (!empty($params['orderby'])) {
         $args['orderby'] = sanitize_text_field($params['orderby']);
     }
@@ -90,6 +91,7 @@ function morty_get_products(WP_REST_Request $request) {
         
         $image_gallery_ids = $product_obj->get_gallery_image_ids();
         $images = [];
+        // Añadir la imagen destacada primero
         if (has_post_thumbnail($product_obj->get_id())) {
              $main_image_id = get_post_thumbnail_id($product_obj->get_id());
              $main_image_url = wp_get_attachment_url($main_image_id);
@@ -101,6 +103,7 @@ function morty_get_products(WP_REST_Request $request) {
                 );
              }
         }
+        // Añadir las imágenes de la galería, evitando duplicados
         foreach ($image_gallery_ids as $image_id) {
             $image_url = wp_get_attachment_url($image_id);
             if ($image_url) {
@@ -144,6 +147,7 @@ function morty_get_category_by_slug(WP_REST_Request $request) {
         return new WP_Error('category_not_found', 'La categoría no se ha encontrado.', array('status' => 404));
     }
     
+    // Devolvemos el objeto del término completo, que incluye el ID.
     $term_data = (array) $term;
     $term_data['id'] = $term->term_id;
 
