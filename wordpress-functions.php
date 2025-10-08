@@ -11,7 +11,8 @@ add_action('rest_api_init', function () {
             'https://mortyscake-website.vercel.app',
             'https://mortyscake-website-git-main-mauricio-s-projects-bb335663.vercel.app',
             'http://localhost:3000',
-            'http://localhost:9002'
+            'http://localhost:9002',
+            'https://studiodev.page'
         ];
         $origin = get_http_origin();
         if ($origin && in_array($origin, $allowed_origins, true)) {
@@ -37,22 +38,15 @@ add_action('rest_api_init', function () {
                 return new WP_Error('woocommerce_not_active', 'WooCommerce no está activado.', ['status' => 500]);
             }
 
-            $products = wc_get_products(['status' => 'publish', 'limit' => 100]);
+            $products = wc_get_products(['status' => 'publish', 'limit' => 5]);
             $data = [];
 
             foreach ($products as $product) {
-                 $product_data = $product->get_data();
-        
-                $product_data['price'] = wc_format_decimal($product->get_price(), 2);
-                $product_data['category_names'] = morty_get_product_terms($product->get_id(), 'product_cat', 'name');
-                $product_data['tags'] = morty_get_product_terms($product->get_id(), 'product_tag');
-                $product_data['attributes'] = morty_get_product_attributes($product);
-                $product_data['images'] = morty_get_product_images($product);
-                $product_data['reviews'] = morty_get_product_reviews($product->get_id());
-                
-                unset($product_data['downloads'], $product_data['meta_data']);
-                
-                $data[] = $product_data;
+                $data[] = [
+                    'id' => $product->get_id(),
+                    'name' => $product->get_name(),
+                    'price' => wc_format_decimal($product->get_price(), 2),
+                ];
             }
 
             return new WP_REST_Response($data, 200);
@@ -60,74 +54,4 @@ add_action('rest_api_init', function () {
         'permission_callback' => '__return_true',
     ]);
 });
-
-function morty_get_product_terms($product_id, $taxonomy, $field = null) {
-    $terms = get_the_terms($product_id, $taxonomy);
-    if (empty($terms) || is_wp_error($terms)) return [];
-    if ($field === 'name') return wp_list_pluck($terms, 'name');
-    return array_map(function($term) {
-        return ['name' => $term->name, 'slug' => $term->slug];
-    }, $terms);
-}
-
-function morty_get_product_attributes($product) {
-    $attributes_data = [];
-    $attributes = $product->get_attributes();
-    if (empty($attributes)) return [];
-
-    foreach ($attributes as $attribute) {
-        if (!$attribute->get_visible()) {
-            continue;
-        }
-        $attributes_data[] = [
-            'name'    => wc_get_attribute_label($attribute->get_name()),
-            'options' => $attribute->get_options(),
-        ];
-    }
-    return $attributes_data;
-}
-
-
-function morty_get_product_images($product) {
-    $images = [];
-    $attachment_ids = array_filter([$product->get_image_id(), ...$product->get_gallery_image_ids()]);
-    
-    if (!empty($attachment_ids)) {
-        foreach (array_unique($attachment_ids) as $image_id) {
-            $image_url = wp_get_attachment_url($image_id);
-            if ($image_url) {
-                $images[] = [
-                    'id'  => intval($image_id),
-                    'src' => esc_url($image_url),
-                    'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true),
-                ];
-            }
-        }
-    }
-    
-    return $images;
-}
-
-function morty_get_product_reviews($product_id) {
-    if (!$product_id) return [];
-    $comments = get_comments(['post_id' => $product_id, 'status' => 'approve', 'type' => 'review', 'orderby' => 'comment_date_gmt', 'order' => 'DESC']);
-    $reviews = [];
-    if (empty($comments)) return $reviews;
-    foreach ($comments as $comment) {
-        $avatar_urls = [
-            '24' => get_avatar_url($comment, ['size' => 24]),
-            '48' => get_avatar_url($comment, ['size' => 48]),
-            '96' => get_avatar_url($comment, ['size' => 96])
-        ];
-        $reviews[] = [
-            'id'                     => $comment->comment_ID,
-            'date_created'           => $comment->comment_date_gmt,
-            'review'                 => $comment->comment_content,
-            'rating'                 => intval(get_comment_meta($comment->comment_ID, 'rating', true)),
-            'reviewer'               => $comment->comment_author,
-            'reviewer_avatar_urls'   => $avatar_urls,
-        ];
-    }
-    return $reviews;
-}
 ?>
