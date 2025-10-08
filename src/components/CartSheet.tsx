@@ -45,15 +45,19 @@ export function CartSheet() {
       return;
     }
 
-    const wooCheckoutUrl = new URL(`${storeUrl}/cart/`);
+    const wooCheckoutUrl = new URL(`${storeUrl}/finalizar-compra/`);
     
-    Object.values(cartDetails ?? {}).forEach(item => {
-        wooCheckoutUrl.searchParams.append('add-to-cart', item.id);
-        wooCheckoutUrl.searchParams.append('quantity', item.quantity.toString());
-    });
+    // Create a comma-separated list of product IDs to add to the cart
+    const productIds = Object.values(cartDetails ?? {}).map(item => item.id).join(',');
 
+    if (productIds) {
+      wooCheckoutUrl.searchParams.set('add-to-cart', productIds);
+    }
+    
+    // Clear the local cart after preparing the redirect URL
     clearCart();
 
+    // Redirect the user
     window.location.href = wooCheckoutUrl.toString();
   };
 
