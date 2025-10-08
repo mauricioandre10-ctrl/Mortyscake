@@ -21,7 +21,7 @@ const Footer = () => {
               </div>
             </div>
             <div className="flex flex-col items-center">
-               <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width={180} height={64} className="object-contain h-auto w-auto" data-ai-hint="logo" />
+               <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width={90} height={32} className="object-contain h-auto w-auto" data-ai-hint="logo" />
             </div>
             <div className="flex flex-col items-end">
               <h3 className="font-bold text-lg mb-4 font-headline">Síguenos</h3>
