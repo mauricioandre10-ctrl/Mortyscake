@@ -31,6 +31,9 @@ add_action('rest_api_init', function () {
 }, 15);
 
 function morty_get_product_details($product) {
+    if (!$product) {
+        return null;
+    }
     $product_id = $product->get_id();
     $product_data = [
         'id' => $product_id,
@@ -65,11 +68,7 @@ function morty_get_product_details($product) {
         }
     }
     $product_data['images'] = $images;
-    if (empty($images) && function_exists('wc_placeholder_img_src') && ($placeholder_url = wc_placeholder_img_src())) {
-        $product_data['images'][] = [ 'id' => 0, 'src' => $placeholder_url, 'alt' => 'Placeholder Image'];
-    }
-
-
+    
     // Categories
     $category_ids = $product->get_category_ids();
     $category_names = [];
@@ -132,11 +131,22 @@ add_action('rest_api_init', function () {
             }
             
             $params = $request->get_params();
-            $args = ['status' => 'publish', 'limit' => -1]; // Get all products
+            $args = ['status' => 'publish', 'limit' => -1];
 
             if (!empty($params['slug'])) {
-                $args['slug'] = $params['slug'];
+                // Use get_page_by_path to find the product with the exact slug.
+                $post = get_page_by_path($params['slug'], OBJECT, 'product');
+                if ($post) {
+                    $product = wc_get_product($post->ID);
+                    if ($product) {
+                        $data = morty_get_product_details($product);
+                        return new WP_REST_Response([$data], 200);
+                    }
+                }
+                // If no exact match is found, return an empty array.
+                return new WP_REST_Response([], 200);
             }
+
             if (!empty($params['category_slug'])) {
                 $args['category'] = [$params['category_slug']];
             }
@@ -162,7 +172,10 @@ add_action('rest_api_init', function () {
             $data = [];
 
             foreach ($products as $product) {
-                $data[] = morty_get_product_details($product);
+                $details = morty_get_product_details($product);
+                if ($details) {
+                    $data[] = $details;
+                }
             }
 
             return new WP_REST_Response($data, 200);
