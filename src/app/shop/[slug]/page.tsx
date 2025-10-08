@@ -6,7 +6,7 @@ import { ArrowLeft, Info, FileText, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { AddToCart } from '@/components/AddToCart';
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/componentsui/carousel';
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel';
 import { ShareButton } from '@/components/ShareButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';

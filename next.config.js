@@ -11,7 +11,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'tecnovacenter.shop',
+        hostname: 'cms.mortyscake.es',
         port: '',
         pathname: '/wp-content/uploads/**',
       },
@@ -20,12 +20,6 @@ const nextConfig = {
         hostname: 'picsum.photos',
         port: '',
         pathname: '/**',
-      },
-       {
-        protocol: 'https',
-        hostname: 'cms.mortyscake.com',
-        port: '',
-        pathname: '/wp-content/uploads/**',
       }
     ],
   },

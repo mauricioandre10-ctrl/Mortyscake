@@ -6,8 +6,8 @@
 /*
 import WooCommerceRestApi from "@woocommerce/woocommerce-rest-api";
 
-const consumerKey = 'ck_67b089d0427cd989adc74aae4f6ebfa518ca3612';
-const consumerSecret = 'cs_ffa2b6242d8ba6022d240036e801bc9b7f408c6f';
+const consumerKey = 'YOUR_WOOCOMMERCE_CONSUMER_KEY';
+const consumerSecret = 'YOUR_WOOCOMMERCE_CONSUMER_SECRET';
 
 if (!consumerKey) {
   throw new Error("WOOCOMMERCE_CONSUMER_KEY is not defined in .env.local");
@@ -18,7 +18,7 @@ if (!consumerSecret) {
 
 
 export const wooCommerce = new WooCommerceRestApi({
-  url: 'https://tecnovacenter.shop/',
+  url: 'https://cms.mortyscake.es/',
   consumerKey: consumerKey,
   consumerSecret: consumerSecret,
   version: "wc/v3"
@@ -36,7 +36,7 @@ header("Access-Control-Allow-Origin: *"); // Adjust for production
 header("Content-Type: application/json; charset=UTF-8");
 
 $woocommerce = new Client(
-    'https://tecnovacenter.shop',
+    'https://cms.mortyscake.es',
     'YOUR_WOOCOMMERCE_CONSUMER_KEY', // <-- IMPORTANT: Replace with your actual key
     'YOUR_WOOCOMMERCE_CONSUMER_SECRET', // <-- IMPORTANT: Replace with your actual secret
     [
