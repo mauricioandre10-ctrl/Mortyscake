@@ -37,15 +37,6 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '2mb',
     },
   },
-  async redirects() {
-    return [
-      {
-        source: '/icon.png',
-        destination: '/no-icon',
-        permanent: true,
-      },
-    ]
-  },
 };
 
 export default nextConfig;

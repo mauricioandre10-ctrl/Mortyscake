@@ -46,14 +46,13 @@ const blogPosts = [
   }
 ];
 
+// NOTE: This component remains a client component because the fetching logic was moved out.
+// The interactive carousels require client-side hooks.
+// Data fetching for courses/products now happens on their respective list pages.
 export default function Home() {
   const plugin = useRef(
     Autoplay({ delay: 10000, stopOnInteraction: true })
   )
-  const [courses, setCourses] = useState<Product[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loadingCourses, setLoadingCourses] = useState(true);
-  const [loadingProducts, setLoadingProducts] = useState(true);
   const [siteUrl, setSiteUrl] = useState('');
 
   useEffect(() => {
@@ -61,46 +60,6 @@ export default function Home() {
     if (typeof window !== 'undefined') {
       setSiteUrl(window.location.origin);
     }
-
-    const fetchProductsAndCourses = async () => {
-      setLoadingCourses(true);
-      setLoadingProducts(true);
-      try {
-        // Fetch Courses
-        const coursesResponse = await fetch('/api/courses?limit=4');
-        if (coursesResponse.ok) {
-            const coursesData = await coursesResponse.json();
-             // Final safety filter on the client
-            const filteredCourses = coursesData.filter((item: Product) => 
-                item.category_names && item.category_names.includes('Cursos')
-            );
-            setCourses(filteredCourses);
-        } else {
-            console.error("Failed to fetch courses");
-        }
-       
-        // Fetch Products
-        const productsResponse = await fetch('/api/products?limit=4');
-         if (productsResponse.ok) {
-            const productsData = await productsResponse.json();
-            // Final safety filter on the client
-            const filteredProducts = productsData.filter((item: Product) => 
-                !item.category_names || !item.category_names.includes('Cursos')
-            );
-            setProducts(filteredProducts);
-        } else {
-            console.error("Failed to fetch products");
-        }
-
-      } catch (error) {
-        console.error('Error fetching data for homepage:', error);
-      } finally {
-        setLoadingCourses(false);
-        setLoadingProducts(false);
-      }
-    };
-    
-    fetchProductsAndCourses();
   }, []);
 
 
@@ -170,89 +129,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Courses Section */}
-      <section id="featured-courses" className="py-16 md:py-24 bg-background">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center mb-12">
-            <h2 className="font-headline text-3xl md:text-4xl font-bold">Próximos Cursos</h2>
-            <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-              Da el siguiente paso en tu aventura repostera con nuestros cursos más populares.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {loadingCourses ? (
-              [...Array(4)].map((_, i) => (
-                <Card key={i}>
-                  <Skeleton className="aspect-[4/3] w-full" />
-                  <CardContent className="p-6 space-y-2">
-                    <Skeleton className="h-6 w-3/4" />
-                    <Skeleton className="h-4 w-full" />
-                  </CardContent>
-                  <CardFooter className="flex justify-between items-center bg-muted/30 p-4">
-                    <Skeleton className="h-8 w-1/4" />
-                    <Skeleton className="h-10 w-1/2" />
-                  </CardFooter>
-                </Card>
-              ))
-            ) : (
-              courses.map((course: Product) => (
-                 <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
-                  <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow">
-                    <CardHeader className="p-0 relative">
-                      <ShareButton 
-                        title={course.name} 
-                        text={`Echa un vistazo a este curso: ${course.name}`} 
-                        url={`${siteUrl}/courses/${course.slug}`}
-                        className="absolute top-2 right-2 z-10 h-8 w-8"
-                        size="icon"
-                      />
-                      <div className="aspect-[4/3] w-full bg-muted relative overflow-hidden">
-                       {course.images?.[0]?.src ? (
-                          <Image
-                            src={course.images[0].src}
-                            alt={course.name}
-                            fill
-                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                            unoptimized
-                          />
-                        ) : (
-                           <div className="w-full h-full bg-muted"></div>
-                        )}
-                        </div>
-                    </CardHeader>
-                    <CardContent className="flex flex-col flex-grow p-6">
-                      <CardTitle className="font-headline text-xl mb-2">{course.name}</CardTitle>
-                      <div className="flex items-center gap-2 mb-2">
-                          <div className="flex text-yellow-400">
-                            {[...Array(5)].map((_, i) => (
-                              <Star key={i} className={`w-4 h-4 ${i < course.average_rating ? 'fill-current' : 'text-muted-foreground fill-muted'}`} />
-                            ))}
-                          </div>
-                          <span className="text-xs text-muted-foreground">({course.rating_count} reseñas)</span>
-                        </div>
-                      <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: course.short_description || '' }} />
-                    </CardContent>
-                    <CardFooter className="flex justify-between items-center bg-muted/30 p-4 mt-auto">
-                      <span className="text-2xl font-bold text-primary">
-                        {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
-                      </span>
-                       <Button variant="secondary" size="sm">Ver Detalles</Button>
-                    </CardFooter>
-                  </Link>
-                </Card>
-              ))
-            )}
-          </div>
-           <div className="text-center mt-12">
-              <Button asChild>
-                  <Link href="/courses">
-                      Ver todos los cursos
-                  </Link>
-              </Button>
-          </div>
-        </div>
-      </section>
-
       {/* About Us Section */}
       <section id="about" className="py-16 md:py-24 bg-muted/30">
         <div className="container mx-auto px-4 md:px-6">
@@ -284,84 +160,9 @@ export default function Home() {
           </div>
         </div>
       </section>
-      
-      {/* Featured Products Section */}
-      <section id="featured-products" className="py-16 md:py-24 bg-background">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center mb-12">
-            <h2 className="font-headline text-3xl md:text-4xl font-bold">Nuestros Productos</h2>
-            <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-              Herramientas e ingredientes seleccionados para llevar tus creaciones al siguiente nivel.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {loadingProducts ? (
-              [...Array(4)].map((_, i) => (
-                <Card key={i}>
-                  <Skeleton className="aspect-square w-full" />
-                  <CardContent className="p-6 space-y-2">
-                    <Skeleton className="h-6 w-3/4" />
-                    <Skeleton className="h-4 w-1/2" />
-                  </CardContent>
-                  <CardFooter className="flex justify-between items-center bg-muted/30 p-4">
-                    <Skeleton className="h-8 w-1/4" />
-                    <Skeleton className="h-10 w-1/2" />
-                  </CardFooter>
-                </Card>
-              ))
-            ) : (
-              products.map((product: Product) => (
-                <Card key={product.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
-                  <Link href={`/shop/${product.slug}`} className="flex flex-col flex-grow">
-                    <CardHeader className="p-0 relative">
-                      <ShareButton 
-                          title={product.name} 
-                          text={`Echa un vistazo a este producto: ${product.name}`} 
-                          url={`${siteUrl}/shop/${product.slug}`}
-                          className="absolute top-2 right-2 z-10 h-8 w-8"
-                          size="icon"
-                        />
-                      <div className="aspect-square w-full bg-muted relative overflow-hidden">
-                       {product.images?.[0]?.src ? (
-                          <Image
-                            src={product.images[0].src}
-                            alt={product.name}
-                            fill
-                            className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                            unoptimized
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-muted"></div>
-                        )}
-                        </div>
-                    </CardHeader>
-                    <CardContent className="flex flex-col flex-grow p-6">
-                      <CardTitle className="font-headline text-xl mb-2">{product.name}</CardTitle>
-                      <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
-                    </CardContent>
-                    <CardFooter className="flex justify-between items-center bg-muted/30 p-4 mt-auto">
-                      <span className="text-2xl font-bold text-primary">
-                        €{product.price}
-                      </span>
-                      <Button variant="secondary" size="sm">Ver Detalles</Button>
-                    </CardFooter>
-                  </Link>
-                </Card>
-              ))
-            )}
-          </div>
-           <div className="text-center mt-12">
-              <Button asChild>
-                  <Link href="/shop">
-                      Ver toda la tienda
-                  </Link>
-              </Button>
-          </div>
-        </div>
-      </section>
 
       {/* Testimonials Section */}
-      <section id="testimonials" className="py-16 md:py-24 bg-muted/30">
+      <section id="testimonials" className="py-16 md:py-24 bg-background">
           <div className="container mx-auto px-4 md:px-6 text-center">
               <h2 className="font-headline text-3xl md:text-4xl font-bold">Lo que dicen nuestros clientes</h2>
               <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
@@ -424,7 +225,7 @@ export default function Home() {
       </section>
 
       {/* Gallery Section */}
-      <section id="gallery" className="py-16 md:py-24 bg-background">
+      <section id="gallery" className="py-16 md:py-24 bg-muted/30">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center mb-12">
             <h2 className="font-headline text-3xl md:text-4xl font-bold">Nuestra Galería</h2>
@@ -476,7 +277,7 @@ export default function Home() {
 
 
       {/* Blog Section */}
-      <section id="blog" className="py-16 md:py-24 bg-muted/30">
+      <section id="blog" className="py-16 md:py-24 bg-background">
           <div className="container mx-auto px-4 md:px-6">
               <div className="text-center mb-12">
                   <h2 className="font-headline text-3xl md:text-4xl font-bold">Desde nuestra cocina</h2>
