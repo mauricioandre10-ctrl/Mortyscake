@@ -5,10 +5,18 @@ import React from 'react';
 
 export const metadata: Metadata = {
   title: 'Política de Cookies',
-  description: 'Descubre cómo Morty\'s Cake utiliza cookies para mejorar tu experiencia de usuario, analizar el tráfico del sitio y ofrecer contenido personalizado en nuestros cursos de repostería.',
+  description: 'Descubre cómo Morty\'s Cake utiliza cookies para mejorar tu experiencia de usuario, analizar el tráfico del sitio y ofrecer contenido personalizado.',
   robots: { 
     index: true, 
     follow: true 
+  },
+  openGraph: {
+    title: 'Política de Cookies | Morty\'s Cake',
+    description: 'Información detallada sobre el uso de cookies en nuestro sitio web.',
+  },
+  twitter: {
+    title: 'Política de Cookies | Morty\'s Cake',
+    description: 'Información detallada sobre el uso de cookies en nuestro sitio web.',
   },
 };
 

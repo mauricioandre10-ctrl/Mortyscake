@@ -10,6 +10,14 @@ export const metadata: Metadata = {
     index: true, 
     follow: true 
   },
+  openGraph: {
+    title: 'Política de Privacidad | Morty\'s Cake',
+    description: 'Detalles sobre cómo protegemos y gestionamos tus datos personales.',
+  },
+  twitter: {
+    title: 'Política de Privacidad | Morty\'s Cake',
+    description: 'Detalles sobre cómo protegemos y gestionamos tus datos personales.',
+  },
 };
 
 const PrivacyPolicyPage = () => {

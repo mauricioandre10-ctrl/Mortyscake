@@ -28,7 +28,7 @@ const fontHeadline = FontHeadline({
   weight: '400',
 });
 
-const fontCardTitle = FontCardTitle({
+const fontCardTitle = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-card-title',
   display: 'swap',
@@ -37,22 +37,22 @@ const fontCardTitle = FontCardTitle({
 export const metadata: Metadata = {
   metadataBase: new URL('https://mortyscake.com'),
   title: {
-    default: 'Cursos de Repostería Online y en Vivo | Transforma tu Pasión en Arte',
-    template: '%s | Cursos de Repostería',
+    default: 'Morty\'s Cake | Cursos de Repostería y Pastelería Gourmet',
+    template: '%s | Morty\'s Cake',
   },
-  description: 'Aprende repostería desde cero hasta un nivel experto con nuestros cursos online y en vivo. Únete a nuestra comunidad y convierte tu pasión en arte.',
-  keywords: ['cursos de repostería', 'repostería online', 'repostería en vivo', 'aprender repostería', 'tartas', 'pasteles', 'diseño de pasteles', 'repostería gourmet'],
+  description: 'Aprende repostería desde cero hasta un nivel experto con nuestros cursos online. Descubre tartas y postres personalizados para tus eventos. ¡Transforma tu pasión en arte!',
+  keywords: ['cursos de repostería', 'repostería online', 'tartas personalizadas', 'pastelería gourmet', 'repostería creativa', 'tartas de boda', 'Ourense'],
   openGraph: {
-    title: 'Cursos de Repostería Online y en Vivo | Pastelería de Morty',
-    description: 'Transforma tu pasión por la repostería en un arte. Cursos para todos los niveles, impartidos por expertos y con acceso a una comunidad vibrante.',
+    title: 'Morty\'s Cake | Cursos de Repostería y Pastelería Gourmet',
+    description: 'Transforma tu pasión por la repostería en un arte. Cursos para todos los niveles, tartas personalizadas y mucho más.',
     url: 'https://mortyscake.com',
-    siteName: 'Cursos de Repostería de Morty',
+    siteName: 'Morty\'s Cake',
     images: [
       {
-        url: '/og-image.jpg',
+        url: '/og-image.jpg', // URL absoluta
         width: 1200,
         height: 630,
-        alt: 'Alumna sonriendo mientras decora un pastel en un curso de repostería online.',
+        alt: 'Alumna sonriendo mientras decora una tarta de flores en un curso de repostería.',
       },
     ],
     locale: 'es_ES',
@@ -60,9 +60,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Cursos de Repostería Online y en Vivo | Pastelería de Morty',
-    description: 'De cero a experto en repostería con nuestros cursos prácticos. Aprende, crea y comparte tu pasión.',
-    images: ['/twitter-image.jpg'],
+    title: 'Morty\'s Cake | Cursos de Repostería y Pastelería Gourmet',
+    description: 'De cero a experto en repostería con nuestros cursos prácticos. Descubre también nuestras tartas personalizadas para eventos.',
+    images: ['/twitter-image.jpg'], // URL absoluta
   },
   robots: {
     index: true,
@@ -75,7 +75,11 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  icons: null,
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon-16x16.png',
+    apple: '/apple-touch-icon.png',
+  }
 };
 
 export const viewport: Viewport = {

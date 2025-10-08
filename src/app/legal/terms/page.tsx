@@ -5,10 +5,18 @@ import React from 'react';
 
 export const metadata: Metadata = {
   title: 'Términos y Condiciones',
-  description: 'Consulta los términos y condiciones que rigen el uso de nuestros servicios y el acceso a nuestros cursos de repostería en Morty\'s Cake.',
+  description: 'Consulta los términos y condiciones que rigen el uso de nuestros servicios y el acceso a nuestros cursos de repostería y productos en Morty\'s Cake.',
   robots: { 
     index: true, 
-    follow: true
+    follow: true 
+  },
+  openGraph: {
+    title: 'Términos y Condiciones | Morty\'s Cake',
+    description: 'Condiciones de uso de nuestro sitio web, cursos y tienda online.',
+  },
+  twitter: {
+    title: 'Términos y Condiciones | Morty\'s Cake',
+    description: 'Condiciones de uso de nuestro sitio web, cursos y tienda online.',
   },
 };
 
