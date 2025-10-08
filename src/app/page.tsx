@@ -46,13 +46,128 @@ const blogPosts = [
   }
 ];
 
+function FeaturedCourses() {
+  const [courses, setCourses] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [siteUrl, setSiteUrl] = useState('');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setSiteUrl(window.location.origin);
+    }
+    
+    async function fetchCourses() {
+      const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+      if (!apiUrl) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const coursesApiUrl = new URL(`${apiUrl}/wp-json/morty/v1/products`);
+        coursesApiUrl.searchParams.set('category_slug', 'cursos');
+        coursesApiUrl.searchParams.set('per_page', '3'); 
+
+        const response = await fetch(coursesApiUrl.toString(), { cache: 'no-store' });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch courses: ${response.statusText}`);
+        }
+        const data = await response.json();
+        setCourses(data);
+      } catch (err) {
+        console.error('[CLIENT] An unexpected error occurred fetching featured courses:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchCourses();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {[...Array(3)].map((_, i) => (
+           <Card key={i}>
+            <Skeleton className="aspect-[4/3] w-full" />
+            <CardContent className="p-6 space-y-2">
+              <Skeleton className="h-6 w-3/4" />
+              <Skeleton className="h-4 w-1/2" />
+               <Skeleton className="h-10 w-full" />
+            </CardContent>
+             <CardFooter className="flex justify-between items-center bg-muted/30 p-4">
+               <Skeleton className="h-8 w-1/4" />
+               <Skeleton className="h-10 w-1/2" />
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+  
+  if (!courses.length) {
+    return null;
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {courses.map(course => (
+         <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
+          <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow">
+              <CardHeader className="p-0 relative">
+                <ShareButton 
+                    title={course.name} 
+                    text={`Echa un vistazo a este curso: ${course.name}`} 
+                    url={`${siteUrl}/courses/${course.slug}`}
+                    className="absolute top-2 right-2 z-10 h-8 w-8"
+                    size="icon"
+                  />
+                <div className="aspect-[4/3] w-full bg-muted relative overflow-hidden">
+                  {course.images?.[0]?.src ? (
+                      <Image
+                        src={course.images[0].src}
+                        alt={course.name}
+                        fill
+                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-muted"></div>
+                    )}
+                  </div>
+              </CardHeader>
+              <CardContent className="flex flex-col flex-grow p-6">
+                <CardTitle className="font-headline text-xl mb-2">{course.name}</CardTitle>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="flex text-yellow-400">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className={`w-4 h-4 ${i < course.average_rating ? 'fill-current' : 'text-muted-foreground fill-muted'}`} />
+                        ))}
+                      </div>
+                      <span className="text-xs text-muted-foreground">({course.rating_count} reseñas)</span>
+                    </div>
+                <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: course.short_description || '' }} />
+              </CardContent>
+              <CardFooter className="flex justify-between items-center bg-muted/30 p-4 mt-auto">
+                <span className="text-2xl font-bold text-primary">
+                  {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
+                </span>
+                <Button variant="secondary">Ver Detalles</Button>
+              </CardFooter>
+            </Link>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+
 function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [siteUrl, setSiteUrl] = useState('');
 
   useEffect(() => {
-    // Ensure we are on the client side before accessing window
     if (typeof window !== 'undefined') {
       setSiteUrl(window.location.origin);
     }
@@ -60,7 +175,6 @@ function FeaturedProducts() {
     async function fetchProducts() {
       const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
       if (!apiUrl) {
-        console.error("[CLIENT] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_STORE_URL no está configurada.");
         setLoading(false);
         return;
       }
@@ -109,7 +223,7 @@ function FeaturedProducts() {
   }
   
   if (!products.length) {
-    return null; // Don't render the section if there are no products
+    return null; 
   }
 
   return (
@@ -171,7 +285,6 @@ export default function Home() {
   const [siteUrl, setSiteUrl] = useState('');
 
   useEffect(() => {
-    // Ensure we are on the client side before accessing window
     if (typeof window !== 'undefined') {
       setSiteUrl(window.location.origin);
     }
@@ -199,13 +312,33 @@ export default function Home() {
               Aprende desde cero con nuestros cursos online y en vivo, y crea postres que cuenten una historia.
             </p>
             <Button asChild size="lg" className="mt-8">
-              <Link href="/courses">Ver Próximos Cursos</Link>
+              <Link href="/courses">Ver Todos los Cursos</Link>
             </Button>
          </div>
       </section>
 
-      {/* 2. Featured Products Section */}
-      <section id="featured-products" className="py-16 md:py-24 bg-background">
+      {/* 2. Featured Courses Section */}
+      <section id="featured-courses" className="py-16 md:py-24 bg-background">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="text-center mb-12">
+            <h2 className="font-headline text-3xl md:text-4xl font-bold">Cursos Destacados</h2>
+            <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
+              Empieza tu viaje en el mundo de la repostería con nuestros cursos más populares.
+            </p>
+          </div>
+          <FeaturedCourses />
+           <div className="text-center mt-12">
+              <Button asChild>
+                  <Link href="/courses">
+                      Ver todos los cursos
+                  </Link>
+              </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. Featured Products Section */}
+      <section id="featured-products" className="py-16 md:py-24 bg-muted/30">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center mb-12">
             <h2 className="font-headline text-3xl md:text-4xl font-bold">Nuestros Productos</h2>
@@ -224,8 +357,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* About Us Section */}
-      <section id="about" className="py-16 md:py-24 bg-muted/30">
+      {/* 4. About Us Section */}
+      <section id="about" className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
             <div className="relative w-full aspect-square md:aspect-[4/5] rounded-lg overflow-hidden shadow-lg">
@@ -256,8 +389,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section id="testimonials" className="py-16 md:py-24 bg-background">
+      {/* 5. Testimonials Section */}
+      <section id="testimonials" className="py-16 md:py-24 bg-muted/30">
           <div className="container mx-auto px-4 md:px-6 text-center">
               <h2 className="font-headline text-3xl md:text-4xl font-bold">Lo que dicen nuestros alumnos</h2>
               <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
@@ -319,8 +452,8 @@ export default function Home() {
           </div>
       </section>
 
-      {/* Gallery Section */}
-      <section id="gallery" className="py-16 md:py-24 bg-muted/30">
+      {/* 6. Gallery Section */}
+      <section id="gallery" className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center mb-12">
             <h2 className="font-headline text-3xl md:text-4xl font-bold">Nuestra Galería</h2>
@@ -371,8 +504,8 @@ export default function Home() {
       </section>
 
 
-      {/* Blog Section */}
-      <section id="blog" className="py-16 md:py-24 bg-background">
+      {/* 7. Blog Section */}
+      <section id="blog" className="py-16 md:py-24 bg-muted/30">
           <div className="container mx-auto px-4 md:px-6">
               <div className="text-center mb-12">
                   <h2 className="font-headline text-3xl md:text-4xl font-bold">Desde nuestra cocina</h2>
@@ -411,7 +544,7 @@ export default function Home() {
           </div>
       </section>
       
-       {/* CTA Section */}
+       {/* 8. CTA Section */}
         <section id="cta" className="w-full py-16 md:py-24 bg-primary/20">
             <div className="container px-4 md:px-6 mx-auto text-center">
                  <h2 className="font-headline text-3xl md:text-4xl font-bold text-primary-foreground/90">¿Listo para empezar a crear?</h2>
@@ -432,4 +565,3 @@ export default function Home() {
     </div>
   );
 }
-
