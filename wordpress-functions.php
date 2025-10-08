@@ -202,7 +202,6 @@ function morty_get_product_reviews($product_id) {
     $reviews = [];
     foreach ($reviews_query->comments as $comment) {
         $rating = get_comment_meta($comment->comment_ID, 'rating', true);
-        $avatar = get_avatar_url($comment->comment_author_email);
         
         // La API REST de WP devuelve múltiples tamaños. Simulamos esto.
         $avatar_urls = [
@@ -235,48 +234,32 @@ function morty_get_products_with_details(WP_REST_Request $request) {
     }
 
     $params = $request->get_params();
-    $products = [];
+    
+    $args = array(
+        'status' => 'publish',
+        'limit' => isset($params['per_page']) ? intval($params['per_page']) : -1, // -1 para obtener todos
+        'paginate' => false,
+    );
 
-    // Prioridad 1: Si se pasa un 'slug', buscar ese producto específico.
+    // Búsqueda por slug para páginas de detalle
     if (!empty($params['slug'])) {
-        $product_query = new WP_Query(array(
-            'post_type' => 'product',
-            'name' => sanitize_text_field($params['slug']),
-            'posts_per_page' => 1
-        ));
-        if ($product_query->have_posts()) {
-            while ($product_query->have_posts()) {
-                $product_query->the_post();
-                $product_obj = wc_get_product(get_the_ID());
-                if ($product_obj) {
-                    $products[] = $product_obj;
-                }
-            }
-        }
-        wp_reset_postdata();
-    } 
-    // Prioridad 2: Si no hay slug, aplicar filtros de categoría para listas.
-    else {
-        $args = array(
-            'status' => 'publish',
-            'limit' => isset($params['per_page']) ? intval($params['per_page']) : 100,
-            'paginate' => false,
-        );
-
-        // Para obtener solo productos de una categoría específica (ej: 'cursos')
-        if (!empty($params['category_slug'])) {
-            $args['category'] = array(sanitize_text_field($params['category_slug']));
-        }
-        
-        // Para excluir una categoría (ej: 'cursos' de la tienda principal)
-        if (!empty($params['category_exclude_slug'])) {
-            $term = get_term_by('slug', sanitize_text_field($params['category_exclude_slug']), 'product_cat');
-            if ($term) {
-                $args['category__not_in'] = array($term->term_id);
-            }
-        }
-        $products = wc_get_products($args);
+        $args['slug'] = sanitize_text_field($params['slug']);
     }
+    
+    // Filtro por slug de categoría (para página de Cursos)
+    if (!empty($params['category_slug'])) {
+        $args['category'] = array(sanitize_text_field($params['category_slug']));
+    }
+    
+    // Excluir una categoría por slug (para página de Tienda)
+    if (!empty($params['category_exclude_slug'])) {
+        $term = get_term_by('slug', sanitize_text_field($params['category_exclude_slug']), 'product_cat');
+        if ($term) {
+            $args['category__not_in'] = array($term->term_id);
+        }
+    }
+    
+    $products = wc_get_products($args);
     
     $data = array();
     foreach ($products as $product_obj) {
