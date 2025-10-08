@@ -11,8 +11,6 @@ import { ShareButton } from '@/components/ShareButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 
-export const runtime = 'edge';
-
 // This enables ISR (Incremental Static Regeneration)
 export const revalidate = 3600;
 
