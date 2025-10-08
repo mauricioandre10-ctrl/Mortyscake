@@ -158,7 +158,6 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
                   price={parseFloat(product.price)}
                   currency="EUR"
                   image={product.images?.[0]?.src}
-                  className="w-full"
                   size="lg"
               />
           </div>

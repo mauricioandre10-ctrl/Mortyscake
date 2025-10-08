@@ -167,7 +167,6 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
                   price={parseFloat(course.price)}
                   currency="EUR"
                   image={course.images?.[0]?.src}
-                  className="w-full"
                   size="lg"
               >
                   {course.price === "0.00" ? "Inscribirse Gratis" : "Añadir al carrito"}
