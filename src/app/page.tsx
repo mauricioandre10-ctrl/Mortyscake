@@ -182,7 +182,7 @@ function FeaturedProducts() {
       try {
         const productsApiUrl = new URL(`${apiUrl}/wp-json/morty/v1/products`);
         productsApiUrl.searchParams.set('category_exclude_slug', 'cursos');
-        productsApiUrl.searchParams.set('per_page', '3'); 
+        productsApiUrl.searchParams.set('per_page', '10'); // Fetch a few more to ensure we get 3 non-courses
 
         const response = await fetch(productsApiUrl.toString(), { cache: 'no-store' });
         
@@ -190,7 +190,12 @@ function FeaturedProducts() {
           throw new Error(`Failed to fetch products: ${response.statusText}`);
         }
         const data = await response.json();
-        setProducts(data);
+        // Explicitly filter out any product that might still have 'Cursos' category
+        const filteredProducts = data.filter((product: Product) => 
+            !product.category_names.includes('Cursos')
+        ).slice(0, 3); // Take the first 3 products after filtering
+
+        setProducts(filteredProducts);
       } catch (err) {
         console.error('[CLIENT] An unexpected error occurred fetching featured products:', err);
       } finally {
@@ -566,4 +571,5 @@ export default function Home() {
   );
 }
 
+    
     
