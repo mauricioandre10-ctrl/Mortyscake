@@ -77,6 +77,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 
   const cleanDescription = product.short_description.replace(/<[^>]*>?/gm, '');
+  const imageUrl = product.images?.[0]?.src;
 
   return {
     title: product.name,
@@ -84,13 +85,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     openGraph: {
       title: product.name,
       description: cleanDescription,
-      images: product.images.length > 0 ? [product.images[0].src] : [],
+      images: imageUrl ? [imageUrl] : [],
     },
     twitter: {
       card: 'summary_large_image',
       title: product.name,
       description: cleanDescription,
-      images: product.images.length > 0 ? [product.images[0].src] : [],
+      images: imageUrl ? [imageUrl] : [],
     },
   };
 }

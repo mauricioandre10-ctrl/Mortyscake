@@ -77,6 +77,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 
   const cleanDescription = course.short_description.replace(/<[^>]*>?/gm, '');
+  const imageUrl = course.images?.[0]?.src;
 
   return {
     title: course.name,
@@ -84,13 +85,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     openGraph: {
       title: course.name,
       description: cleanDescription,
-      images: course.images.length > 0 ? [course.images[0].src] : [],
+      images: imageUrl ? [imageUrl] : [],
     },
     twitter: {
       card: 'summary_large_image',
       title: course.name,
       description: cleanDescription,
-      images: course.images.length > 0 ? [course.images[0].src] : [],
+      images: imageUrl ? [imageUrl] : [],
     },
   };
 }

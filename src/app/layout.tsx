@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     siteName: 'Morty\'s Cake',
     images: [
       {
-        url: '/og-image.jpg', // URL absoluta
+        url: '/image/fondo_heder.webp', // URL relativa a metadataBase
         width: 1200,
         height: 630,
         alt: 'Alumna sonriendo mientras decora una tarta de flores en un curso de repostería.',
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Morty\'s Cake | Cursos de Repostería y Pastelería Gourmet',
     description: 'De cero a experto en repostería con nuestros cursos prácticos. Descubre también nuestras tartas personalizadas para eventos.',
-    images: ['/twitter-image.jpg'], // URL absoluta
+    images: ['/image/fondo_heder.webp'], // URL relativa a metadataBase
   },
   robots: {
     index: true,

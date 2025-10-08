@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Cursos de Repostería Online | Morty\'s Cake',
     description: 'Encuentra el curso perfecto para ti, ya seas principiante o busques perfeccionar tu técnica. ¡Inscríbete hoy!',
-    images: ['/og-image-courses.jpg'],
+    images: ['/image/og-image-courses.webp'],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Cursos de Repostería Online | Morty\'s Cake',
     description: 'Explora nuestra completa gama de cursos de repostería. Aprende desde técnicas fundamentales hasta decoración avanzada.',
-    images: ['/twitter-image-courses.jpg'],
+    images: ['/image/og-image-courses.webp'],
   },
   robots: {
     index: true,

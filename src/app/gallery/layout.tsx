@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Galería de Creaciones | Morty\'s Cake',
     description: 'Un vistazo a las dulces obras de arte de nuestros cursos y encargos. Cada imagen cuenta una historia de sabor.',
-    images: ['/og-image-gallery.jpg'],
+    images: ['/image/og-image-gallery.webp'],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Galería de Creaciones | Morty\'s Cake',
     description: 'Inspírate con nuestra galería de tartas y postres únicos.',
-    images: ['/twitter-image-gallery.jpg'],
+    images: ['/image/og-image-gallery.webp'],
   },
   robots: {
     index: true,
