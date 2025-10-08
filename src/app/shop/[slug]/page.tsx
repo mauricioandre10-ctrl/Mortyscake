@@ -27,7 +27,7 @@ interface Product {
 
 // This function tells Next.js which slugs to pre-render at build time
 export async function generateStaticParams() {
-  if (!WP_APIURL) return [];
+  if (!WP_API_URL) return [];
   try {
     const apiUrl = new URL(`${WP_API_URL}/wp-json/morty/v1/products`);
     apiUrl.searchParams.set('category_exclude_slug', 'cursos');
