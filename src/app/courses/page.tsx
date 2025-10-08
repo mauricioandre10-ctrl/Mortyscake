@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { ShareButton } from '@/components/ShareButton';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { WOOCOMMERCE_STORE_URL } from '@/lib/env';
 
 interface Course {
   id: number;
@@ -23,16 +24,14 @@ interface Course {
   category_names: string[];
 }
 
-const WP_API_URL = process.env.WOOCOMMERCE_STORE_URL || process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
-
 async function getCourses(): Promise<Course[]> {
-  if (!WP_API_URL) {
+  if (!WOOCOMMERCE_STORE_URL) {
     console.error('WooCommerce API URL not configured');
     return [];
   }
   
   try {
-    const coursesApiUrl = new URL(`${WP_API_URL}/wp-json/morty/v1/products`);
+    const coursesApiUrl = new URL(`${WOOCOMMERCE_STORE_URL}/wp-json/morty/v1/products`);
     coursesApiUrl.searchParams.set('category_slug', 'cursos');
     coursesApiUrl.searchParams.set('per_page', '100');
 

@@ -10,6 +10,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext
 import { ShareButton } from '@/components/ShareButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
+import { WOOCOMMERCE_STORE_URL } from '@/lib/env';
 
 interface Product {
   id: number;
@@ -26,15 +27,13 @@ interface Product {
   attributes: { name: string; options: string[] }[] | Record<string, { name: string; options: string[] }>;
 }
 
-const WP_API_URL = process.env.WOOCOMMERCE_STORE_URL || process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
-
 async function getProduct(slug: string): Promise<Product | null> {
-  if (!WP_API_URL) {
+  if (!WOOCOMMERCE_STORE_URL) {
     console.error("WooCommerce API URL is not configured.");
     return null;
   }
   try {
-    const apiUrl = new URL(`${WP_API_URL}/wp-json/morty/v1/products`);
+    const apiUrl = new URL(`${WOOCOMMERCE_STORE_URL}/wp-json/morty/v1/products`);
     apiUrl.searchParams.set('slug', slug);
     apiUrl.searchParams.set('per_page', '1');
     
