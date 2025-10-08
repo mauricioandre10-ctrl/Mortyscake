@@ -38,9 +38,14 @@ export function ShareButton({ title, text, url: propUrl, className, size = 'icon
         url,
       });
     } catch (error) {
-        // We can ignore AbortError which happens if the user cancels the share dialog
-      if (error instanceof Error && error.name !== 'AbortError') {
+      // Ignora los errores comunes cuando el usuario cancela o el entorno no lo permite.
+      // NotAllowedError: The user or the browser denied the request.
+      // AbortError: The user canceled the share operation.
+      if (error instanceof Error && (error.name === 'AbortError' || error.name === 'NotAllowedError')) {
+        // No hacer nada, es una acción esperada.
+      } else {
         console.error('Error sharing:', error);
+        // Opcional: Mostrar un toast solo para errores inesperados.
         toast({
             variant: 'destructive',
             title: 'Error al compartir',
