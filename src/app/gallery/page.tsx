@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/dialog"
 import { useState } from 'react';
 
-// Genera una lista de 59 imágenes con nombres consecutivos y alturas variables
-const localGalleryImages = Array.from({ length: 59 }, (_, i) => ({
+// Genera una lista de 60 imágenes con nombres consecutivos y alturas variables
+const localGalleryImages = Array.from({ length: 60 }, (_, i) => ({
   src: `/image/galeria/foto${i + 1}.webp`,
   alt: `Imagen de la galería de repostería ${i + 1}`,
   width: 800, // Ancho base constante
