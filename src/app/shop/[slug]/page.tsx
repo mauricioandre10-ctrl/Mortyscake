@@ -177,7 +177,7 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
 
         <div className="flex flex-col lg:col-span-2">
            <div className="flex justify-between items-start">
-            <h1 className="font-headline text-4xl md:text-5xl font-bold mb-4">{product.name}</h1>
+            <h1 className="font-headline text-4xl md:text-5xl mb-4">{product.name}</h1>
             <ShareButton title={product.name} text={`Echa un vistazo a este producto: ${product.name}`} />
           </div>
           
@@ -318,3 +318,5 @@ function LoadingSkeleton() {
       </div>
     );
 }
+
+    

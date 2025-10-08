@@ -31,7 +31,7 @@ export default function GalleryPage() {
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
       <header className="text-center mb-12">
-        <h1 className="font-headline text-4xl md:text-5xl font-bold">Nuestra Galería</h1>
+        <h1 className="font-headline text-4xl md:text-5xl">Nuestra Galería</h1>
         <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
           Un vistazo a las dulces creaciones de nuestros cursos y encargos. Cada imagen cuenta una historia de pasión, sabor y arte.
         </p>
@@ -72,3 +72,5 @@ export default function GalleryPage() {
     </div>
   );
 }
+
+    

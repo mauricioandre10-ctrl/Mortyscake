@@ -313,7 +313,7 @@ export default function Home() {
             priority
          />
          <div className="relative z-10 text-center container mx-auto px-4">
-            <h1 className="font-headline text-4xl md:text-6xl font-bold leading-tight">
+            <h1 className="font-headline text-4xl md:text-6xl leading-tight">
               Transforma tu Pasión por la Repostería en Arte
             </h1>
             <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-white/90">
@@ -329,7 +329,7 @@ export default function Home() {
       <section id="featured-courses" className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center mb-12">
-            <h2 className="font-headline text-3xl md:text-4xl font-bold">Cursos Destacados</h2>
+            <h2 className="font-headline text-3xl md:text-4xl">Cursos Destacados</h2>
             <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
               Empieza tu viaje en el mundo de la repostería con nuestros cursos más populares.
             </p>
@@ -349,7 +349,7 @@ export default function Home() {
       <section id="featured-products" className="py-16 md:py-24 bg-muted/30">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center mb-12">
-            <h2 className="font-headline text-3xl md:text-4xl font-bold">Nuestros Productos</h2>
+            <h2 className="font-headline text-3xl md:text-4xl">Nuestros Productos</h2>
             <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
               Descubre nuestros productos estrella, perfectos para empezar a crear.
             </p>
@@ -380,7 +380,7 @@ export default function Home() {
                 />
             </div>
             <div className="text-center md:text-left">
-              <h2 className="font-headline text-3xl md:text-4xl font-bold">La Magia detrás de Morty's Cake</h2>
+              <h2 className="font-headline text-3xl md:text-4xl">La Magia detrás de Morty's Cake</h2>
               <p className="mt-4 text-muted-foreground text-lg">
                 Hola, soy Morty. Mi viaje en la repostería comenzó como una forma de expresión, un lienzo en blanco donde azúcar, harina y pasión se encuentran.
               </p>
@@ -400,7 +400,7 @@ export default function Home() {
       {/* 5. Testimonials Section */}
       <section id="testimonials" className="py-16 md:py-24 bg-muted/30">
           <div className="container mx-auto px-4 md:px-6 text-center">
-              <h2 className="font-headline text-3xl md:text-4xl font-bold">Lo que dicen nuestros clientes</h2>
+              <h2 className="font-headline text-3xl md:text-4xl">Lo que dicen nuestros clientes</h2>
               <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
                   La mayor satisfacción es ver la alegría en quienes prueban nuestras creaciones.
               </p>
@@ -464,7 +464,7 @@ export default function Home() {
       <section id="gallery" className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center mb-12">
-            <h2 className="font-headline text-3xl md:text-4xl font-bold">Nuestra Galería</h2>
+            <h2 className="font-headline text-3xl md:text-4xl">Nuestra Galería</h2>
             <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
               Un vistazo a las dulces creaciones de nuestros cursos y encargos.
             </p>
@@ -514,7 +514,7 @@ export default function Home() {
       <section id="blog" className="py-16 md:py-24 bg-muted/30">
           <div className="container mx-auto px-4 md:px-6">
               <div className="text-center mb-12">
-                  <h2 className="font-headline text-3xl md:text-4xl font-bold">Desde nuestra cocina</h2>
+                  <h2 className="font-headline text-3xl md:text-4xl">Desde nuestra cocina</h2>
                   <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
                       Consejos, recetas e inspiración para tu viaje en la repostería.
                   </p>
@@ -553,7 +553,7 @@ export default function Home() {
        {/* 8. CTA Section */}
         <section id="cta" className="w-full py-16 md:py-24 bg-primary/20">
             <div className="container px-4 md:px-6 mx-auto text-center">
-                 <h2 className="font-headline text-3xl md:text-4xl font-bold text-primary-foreground/90">¿Listo para empezar a crear?</h2>
+                 <h2 className="font-headline text-3xl md:text-4xl text-primary-foreground/90">¿Listo para empezar a crear?</h2>
                  <p className="text-primary-foreground/70 mt-2 max-w-2xl mx-auto">
                      Explora nuestros cursos y encuentra el perfecto para ti, o visita nuestra tienda para conseguir los mejores ingredientes.
                  </p>
@@ -573,6 +573,8 @@ export default function Home() {
 }
 
     
+    
+
     
 
     

@@ -158,7 +158,7 @@ export default function CoursesPage() {
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
       <header className="text-center mb-12">
-        <h1 className="font-headline text-4xl md:text-5xl font-bold">Nuestros Cursos</h1>
+        <h1 className="font-headline text-4xl md:text-5xl">Nuestros Cursos</h1>
         <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
           Desde técnicas fundamentales hasta decoración avanzada, encuentra el curso perfecto para elevar tu repostería.
         </p>
@@ -188,3 +188,5 @@ function LoadingSkeleton() {
       </div>
     );
 }
+
+    

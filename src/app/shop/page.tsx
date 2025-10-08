@@ -140,7 +140,7 @@ export default function ShopPage() {
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
       <header className="text-center mb-12">
-        <h1 className="font-headline text-4xl md:text-5xl font-bold">Nuestra Tienda</h1>
+        <h1 className="font-headline text-4xl md:text-5xl">Nuestra Tienda</h1>
         <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
           Ingredientes, herramientas y todo lo que necesitas para que tus creaciones de repostería cobren vida.
         </p>
@@ -172,3 +172,5 @@ function LoadingSkeleton() {
       </div>
     );
 }
+
+    
