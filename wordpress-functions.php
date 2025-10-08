@@ -16,9 +16,32 @@
 add_action( 'rest_api_init', function() {
     remove_filter( 'rest_pre_serve_request', 'rest_send_cors_headers' );
     add_filter( 'rest_pre_serve_request', function( $value ) {
-        header( 'Access-Control-Allow-Origin: *' );
-        header( 'Access-Control-Allow-Methods: GET' );
+        // Lista de dominios permitidos
+        $allowed_origins = [
+            'https://mortyscake-website-abkn0i9ut-mauricio-s-projects-bb335663.vercel.app',
+            'https://mortyscake.com', // Tu dominio final
+            'http://localhost:9002', // Para desarrollo local
+        ];
+        
+        $origin = get_http_origin();
+        if ( $origin && in_array( $origin, $allowed_origins ) ) {
+            header( 'Access-Control-Allow-Origin: ' . esc_url_raw( $origin ) );
+        } else {
+            // Como fallback, podemos mantener el comodín o un dominio por defecto.
+            // Para producción, es más seguro especificar dominios.
+            header( 'Access-control-allow-origin: *' );
+        }
+
+        header( 'Access-Control-Allow-Methods: GET, OPTIONS' );
         header( 'Access-Control-Allow-Headers: Content-Type, Authorization, X-WP-Nonce' );
+        header( 'Access-Control-Allow-Credentials: true' );
+
+        // Responder a solicitudes OPTIONS pre-vuelo
+        if ( 'OPTIONS' === $_SERVER['REQUEST_METHOD'] ) {
+            status_header( 200 );
+            exit();
+        }
+
         return $value;
     });
 }, 15 );
