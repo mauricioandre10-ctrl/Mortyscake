@@ -1,7 +1,8 @@
 
 'use client';
 
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { useToast } from './use-toast';
 
 // Define las interfaces para la estructura de datos del carrito
 interface CartItem {
@@ -40,7 +41,6 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-// Hook para usar el contexto del carrito
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {
@@ -52,14 +52,18 @@ export const useCart = () => {
 const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
 
 // Proveedor del contexto del carrito
-export const CartProvider = ({ children }: { children: React.ReactNode }) => {
+export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<Cart | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const { toast } = useToast();
 
-  // Función para obtener el carrito de la API
   const fetchCart = useCallback(async () => {
-    if (!apiUrl) return;
+    if (!apiUrl) {
+      console.error("WooCommerce Store URL no está configurado.");
+      setIsLoading(false);
+      return;
+    };
     setIsLoading(true);
     try {
       const response = await fetch(`${apiUrl}/wp-json/morty/v1/cart`, { cache: 'no-store' });
@@ -68,12 +72,16 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       setCart(data);
     } catch (error) {
       console.error(error);
+       toast({
+        variant: 'destructive',
+        title: 'Error de Carrito',
+        description: 'No se pudo cargar el contenido del carrito.',
+      });
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [toast]);
 
-  // Cargar el carrito al iniciar
   useEffect(() => {
     fetchCart();
   }, [fetchCart]);
@@ -81,7 +89,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);
 
-  // Funciones para manipular el carrito
   const addItem = async (productId: number, quantity: number) => {
     if (!apiUrl) return;
     setIsLoading(true);
@@ -94,6 +101,13 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       if (!response.ok) throw new Error('Error al añadir producto');
       const data = await response.json();
       setCart(data);
+    } catch (error) {
+       console.error(error);
+       toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'No se pudo añadir el producto al carrito.',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -111,6 +125,13 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       if (!response.ok) throw new Error('Error al eliminar producto');
       const data = await response.json();
       setCart(data);
+    } catch (error) {
+       console.error(error);
+       toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'No se pudo eliminar el producto del carrito.',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -128,6 +149,13 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       if (!response.ok) throw new Error('Error al actualizar producto');
       const data = await response.json();
       setCart(data);
+    } catch (error) {
+       console.error(error);
+       toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'No se pudo actualizar el carrito.',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -144,12 +172,20 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       if (!response.ok) throw new Error('Error al vaciar el carrito');
       const data = await response.json();
       setCart(data);
+      toast({ title: 'Carrito vaciado' });
+    } catch (error) {
+       console.error(error);
+       toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'No se pudo vaciar el carrito.',
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const value = {
+  const value: CartContextType = {
     cart,
     isLoading,
     isCartOpen,
@@ -161,5 +197,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     clearCart,
   };
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  return (
+    <CartContext.Provider value={value}>
+      {children}
+    </CartContext.Provider>
+  );
 };
