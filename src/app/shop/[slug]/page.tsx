@@ -29,7 +29,7 @@ interface Product {
   sku: string;
   tags: { name: string; slug: string }[];
   rating_count: number;
-  attributes: { name: string; options: string[] }[];
+  attributes: { name: string; options: string[] }[] | Record<string, { name: string; options: string[] }>;
 }
 
 // This function tells Next.js which slugs to pre-render at build time
@@ -89,6 +89,8 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
   }
   
   const fullDescription = product.description || product.short_description || 'No hay descripción disponible.';
+  const productAttributes = Array.isArray(product.attributes) ? product.attributes : Object.values(product.attributes);
+
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -137,7 +139,10 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
         </div>
 
         <div className="flex flex-col lg:col-span-2">
-          <h1 className="font-headline text-4xl md:text-5xl font-bold mb-4">{product.name}</h1>
+           <div className="flex justify-between items-start">
+            <h1 className="font-headline text-4xl md:text-5xl font-bold mb-4">{product.name}</h1>
+            <ShareButton title={product.name} text={`Echa un vistazo a este producto: ${product.name}`} />
+          </div>
           
           <div 
             className="prose dark:prose-invert max-w-none text-muted-foreground mb-6"
@@ -145,11 +150,10 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
           />
 
           <div className="mt-auto">
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center mb-6">
                    <span className="text-4xl font-bold text-primary">
                       €{product.price}
                     </span>
-                  <ShareButton title={product.name} text={`Echa un vistazo a este producto: ${product.name}`} />
               </div>
             
               <AddToCart 
@@ -187,11 +191,13 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
                         <td className="py-3">{product.sku}</td>
                     </tr>
                   )}
-                   {product.attributes && product.attributes.map((attr, index) => (
-                    <tr key={index} className="border-b">
-                      <td className="py-3 font-semibold pr-4">{attr.name}</td>
-                      <td className="py-3">{attr.options.join(', ')}</td>
-                    </tr>
+                   {productAttributes && productAttributes.map((attr, index) => (
+                     attr.name && attr.options.length > 0 && (
+                        <tr key={index} className="border-b">
+                        <td className="py-3 font-semibold pr-4">{attr.name}</td>
+                        <td className="py-3">{attr.options.join(', ')}</td>
+                        </tr>
+                     )
                   ))}
                   {product.tags?.length > 0 && (
                     <tr className="border-b">

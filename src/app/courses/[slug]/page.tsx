@@ -29,7 +29,7 @@ interface Course {
   category_names: string[];
   sku: string;
   tags: { name: string; slug: string }[];
-  attributes: { name: string; options: string[] }[];
+  attributes: { name: string; options: string[] }[] | Record<string, { name: string; options: string[] }>;
 }
 
 // This function tells Next.js which slugs to pre-render at build time
@@ -89,6 +89,7 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
   }
   
   const fullDescription = course.description || course.short_description || 'No hay descripción disponible.';
+  const courseAttributes = Array.isArray(course.attributes) ? course.attributes : Object.values(course.attributes);
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -137,7 +138,10 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
         </div>
 
         <div className="flex flex-col lg:col-span-2">
-          <h1 className="font-headline text-4xl md:text-5xl font-bold mb-2">{course.name}</h1>
+           <div className="flex justify-between items-start">
+             <h1 className="font-headline text-4xl md:text-5xl font-bold mb-2">{course.name}</h1>
+             <ShareButton title={course.name} text={`Echa un vistazo a este curso: ${course.name}`} />
+           </div>
           
           <div className="flex items-center gap-2 mb-4">
             <div className="flex text-yellow-400">
@@ -154,11 +158,10 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
           />
 
           <div className="mt-auto">
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center mb-6">
                   <span className="text-4xl font-bold text-primary">
                       {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
                   </span>
-                  <ShareButton title={course.name} text={`Echa un vistazo a este curso: ${course.name}`} />
               </div>
             
               <AddToCart 
@@ -198,11 +201,13 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
                         <td className="py-3">{course.sku}</td>
                     </tr>
                   )}
-                  {course.attributes && course.attributes.map((attr, index) => (
-                    <tr key={index} className="border-b">
-                      <td className="py-3 font-semibold pr-4">{attr.name}</td>
-                      <td className="py-3">{attr.options.join(', ')}</td>
-                    </tr>
+                  {courseAttributes && courseAttributes.map((attr, index) => (
+                    attr.name && attr.options.length > 0 && (
+                        <tr key={index} className="border-b">
+                        <td className="py-3 font-semibold pr-4">{attr.name}</td>
+                        <td className="py-3">{attr.options.join(', ')}</td>
+                        </tr>
+                    )
                   ))}
                   {course.tags?.length > 0 && (
                     <tr className="border-b">
