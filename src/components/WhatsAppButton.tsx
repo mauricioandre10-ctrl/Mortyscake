@@ -3,6 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { trackSocialLink } from '@/lib/events';
 
 const WhatsAppIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 48 48">
@@ -25,6 +26,7 @@ const WhatsAppButton = () => {
       size="icon"
       className="fixed bottom-6 left-6 h-[52px] w-[52px] rounded-full shadow-lg bg-[#25D366] hover:bg-[#1EBE57] transition-opacity text-white"
       aria-label="Chat en WhatsApp"
+      onClick={() => trackSocialLink('WhatsApp')}
     >
       <Link href={whatsappUrl} target="_blank" rel="noopener noreferrer">
         <WhatsAppIcon />

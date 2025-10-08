@@ -1,6 +1,9 @@
 
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { trackSocialLink } from '@/lib/events';
 
 const InstagramIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 50 50" role="img" aria-labelledby="instagramIconTitle">
@@ -18,6 +21,7 @@ const InstagramButton = () => {
       size="icon"
       className="fixed bottom-6 right-6 h-[52px] w-[52px] rounded-full shadow-lg bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 hover:opacity-90 transition-opacity text-white"
       aria-label="Ir al perfil de Instagram"
+      onClick={() => trackSocialLink('Instagram')}
     >
       <Link href={instagramUrl} target="_blank" rel="noopener noreferrer">
         <InstagramIcon />

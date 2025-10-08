@@ -19,6 +19,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { AddToCart } from './AddToCart';
 import { ShareButton } from './ShareButton';
+import { trackAddToCart } from '@/lib/events';
 
 interface Review {
   id: number;
@@ -49,6 +50,10 @@ interface Course {
 export function CourseDetails({ course }: { course: Course }) {
   const fullDescription = course.description || course.short_description || 'No hay descripción disponible.';
   const courseAttributes = Array.isArray(course.attributes) ? course.attributes : Object.values(course.attributes);
+
+  const handleAddToCartClick = () => {
+    trackAddToCart(course.name, 'Curso', course.price);
+  };
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -122,13 +127,14 @@ export function CourseDetails({ course }: { course: Course }) {
                 {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
               </span>
             </div>
-
-            <AddToCart
-              id={String(course.id)}
-              size="lg"
-            >
-              {course.price === "0.00" ? "Inscribirse Gratis" : "Añadir al carrito"}
-            </AddToCart>
+            <div onClick={handleAddToCartClick}>
+                <AddToCart
+                id={String(course.id)}
+                size="lg"
+                >
+                {course.price === "0.00" ? "Inscribirse Gratis" : "Añadir al carrito"}
+                </AddToCart>
+            </div>
           </div>
         </div>
       </div>
@@ -215,5 +221,3 @@ export function CourseDetails({ course }: { course: Course }) {
     </div>
   )
 }
-
-    

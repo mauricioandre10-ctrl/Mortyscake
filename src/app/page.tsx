@@ -12,6 +12,7 @@ import { useEffect, useState, useRef } from 'react';
 import Autoplay from "embla-carousel-autoplay"
 import { Skeleton } from '@/components/ui/skeleton';
 import { ShareButton } from '@/components/ShareButton';
+import { trackViewDetails } from '@/lib/events';
 
 interface Product {
   id: number;
@@ -158,7 +159,7 @@ function FeaturedCourses() {
                 <span className="text-2xl font-bold text-primary">
                   {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
                 </span>
-                <Button variant="secondary">Ver Detalles</Button>
+                <Button variant="secondary" onClick={(e) => { e.preventDefault(); e.stopPropagation(); trackViewDetails(course.name, 'Curso'); window.location.href=`/courses/${course.slug}`; }}>Ver Detalles</Button>
               </CardFooter>
             </Link>
         </Card>
@@ -280,7 +281,7 @@ function FeaturedProducts() {
                 <span className="text-2xl font-bold text-primary">
                   {product.price === "0.00" ? 'Gratis' : `€${product.price}`}
                 </span>
-                <Button variant="secondary">Ver Detalles</Button>
+                <Button variant="secondary" onClick={(e) => { e.preventDefault(); e.stopPropagation(); trackViewDetails(product.name, 'Producto'); window.location.href=`/shop/${product.slug}`; }}>Ver Detalles</Button>
               </CardFooter>
             </Link>
         </Card>
@@ -574,5 +575,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

@@ -9,7 +9,7 @@ import { pageview } from '@/lib/gtag';
 
 export const Analytics = () => {
   const { hasAnalyticsConsent, isConsentLoading } = useCookieConsent();
-  const gaId = process.env.NEXT_PUBLIC_GA_ID;
+  const gaId = 'G-R937YQ5ZGP';
 
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -18,9 +18,9 @@ export const Analytics = () => {
     if (!gaId || !hasAnalyticsConsent) {
       return;
     }
-    const url = pathname + (searchParams?.toString() ?? '');
+    const url = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '');
     pageview(gaId, url);
-  }, [pathname, searchParams, gaId, hasAnalyticsConsent]);
+  }, [pathname, searchParams, hasAnalyticsConsent]);
   
 
   // Wait until consent status has been determined on the client

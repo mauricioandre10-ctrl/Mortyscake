@@ -2,6 +2,23 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Facebook, Instagram, Phone, MapPin } from 'lucide-react';
+import { trackSocialLink } from '@/lib/events';
+
+// Componente de Cliente para los enlaces sociales interactivos
+function SocialLinks() {
+  'use client';
+  return (
+    <div className="flex gap-4">
+      <Link href="https://www.facebook.com/MortysCake/" target="_blank" rel="noopener noreferrer" className="text-white hover:opacity-80" onClick={() => trackSocialLink('Facebook')}>
+        <Facebook className="h-7 w-7" />
+      </Link>
+      <Link href="https://www.instagram.com/mortyscake.ourense/" target="_blank" rel="noopener noreferrer" className="text-white hover:opacity-80" onClick={() => trackSocialLink('Instagram')}>
+        <Instagram className="h-7 w-7" />
+      </Link>
+    </div>
+  );
+}
+
 
 const Footer = () => {
   return (
@@ -25,14 +42,7 @@ const Footer = () => {
             </div>
             <div className="flex flex-col items-end">
               <h3 className="font-bold text-lg mb-4 font-headline">Síguenos</h3>
-              <div className="flex gap-4">
-                <Link href="https://www.facebook.com/MortysCake/" target="_blank" rel="noopener noreferrer" className="text-white hover:opacity-80">
-                  <Facebook className="h-7 w-7" />
-                </Link>
-                <Link href="https://www.instagram.com/mortyscake.ourense/" target="_blank" rel="noopener noreferrer" className="text-white hover:opacity-80">
-                  <Instagram className="h-7 w-7" />
-                </Link>
-              </div>
+              <SocialLinks />
             </div>
           </div>
         </div>

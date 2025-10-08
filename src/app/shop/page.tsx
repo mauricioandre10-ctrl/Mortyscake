@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { ShareButton } from '@/components/ShareButton';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { trackViewDetails } from '@/lib/events';
 
 interface Product {
   id: number;
@@ -57,7 +58,7 @@ function ProductCard({ product, siteUrl }: { product: Product, siteUrl: string |
             <span className="text-2xl font-bold text-primary">
             €{product.price}
             </span>
-            <Button variant="secondary">Ver Detalles</Button>
+            <Button variant="secondary" onClick={() => trackViewDetails(product.name, 'Producto')}>Ver Detalles</Button>
         </CardFooter>
         </Link>
     </Card>

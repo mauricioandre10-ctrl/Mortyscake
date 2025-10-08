@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { ShareButton } from '@/components/ShareButton';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { trackViewDetails } from '@/lib/events';
 
 interface Course {
   id: number;
@@ -67,7 +68,7 @@ function CourseCard({ course, siteUrl }: { course: Course, siteUrl: string | und
             <span className="text-2xl font-bold text-primary">
                {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
             </span>
-            <Button variant="secondary">Ver Detalles</Button>
+            <Button variant="secondary" onClick={() => trackViewDetails(course.name, 'Curso')}>Ver Detalles</Button>
           </CardFooter>
         </Link>
     </Card>
@@ -189,5 +190,3 @@ function LoadingSkeleton() {
       </div>
     );
 }
-
-    
