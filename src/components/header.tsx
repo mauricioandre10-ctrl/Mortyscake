@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -8,11 +7,13 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription, SheetH
 import { Menu, ShoppingCart, User } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from './ui/separator';
+import { useCart } from '@/hooks/useCart';
+import { CartSheet } from './CartSheet';
 
 const Header = () => {
   const storeUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
-  const cartUrl = storeUrl ? `${storeUrl}/cart` : '#';
   const accountUrl = storeUrl ? `${storeUrl}/mi-cuenta` : '#';
+  const { cart } = useCart();
 
   const navLinks = [
     { href: '/', label: 'Inicio' },
@@ -22,6 +23,8 @@ const Header = () => {
     { href: '/#about', label: 'Sobre Nosotros' },
     { href: '/#footer', 'label': 'Contacto' },
   ];
+
+  const totalItems = cart?.item_count || 0;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -49,12 +52,20 @@ const Header = () => {
                 </Link>
            </Button>
 
-           <Button asChild variant="ghost" size="icon" className="relative" disabled={!storeUrl}>
-             <Link href={cartUrl} rel="noopener noreferrer">
-                <ShoppingCart className="h-6 w-6" />
-                <span className="sr-only">Ver carrito</span>
-             </Link>
-            </Button>
+           <Sheet>
+             <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative">
+                    <ShoppingCart className="h-6 w-6" />
+                    {totalItems > 0 && (
+                        <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-primary rounded-full">
+                            {totalItems}
+                        </span>
+                    )}
+                    <span className="sr-only">Ver carrito</span>
+                </Button>
+             </SheetTrigger>
+             <CartSheet />
+           </Sheet>
 
 
           <div className="md:hidden">

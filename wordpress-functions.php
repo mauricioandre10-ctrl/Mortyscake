@@ -33,9 +33,11 @@ add_action( 'rest_api_init', function() {
             header( 'Access-control-allow-origin: *' );
         }
 
-        header( 'Access-Control-Allow-Methods: GET, OPTIONS' );
-        header( 'Access-Control-Allow-Headers: Content-Type, Authorization, X-WP-Nonce' );
+        header( 'Access-Control-Allow-Methods: GET, POST, OPTIONS' ); // Añadido POST
+        header( 'Access-Control-Allow-Headers: Content-Type, Authorization, X-WP-Nonce, X-WC-Session' ); // Añadido X-WC-Session
         header( 'Access-Control-Allow-Credentials: true' );
+        header( 'Access-Control-Expose-Headers: X-WC-Session' );
+
 
         // Responder a solicitudes OPTIONS pre-vuelo
         if ( 'OPTIONS' === $_SERVER['REQUEST_METHOD'] ) {
@@ -46,6 +48,132 @@ add_action( 'rest_api_init', function() {
         return $value;
     });
 }, 15 );
+
+
+// Inicializa la sesión de WooCommerce para las llamadas a la API
+add_action( 'init', 'morty_init_wc_session_for_api' );
+function morty_init_wc_session_for_api() {
+    if ( strpos( $_SERVER['REQUEST_URI'], '/wp-json/morty/v1/' ) !== false && !is_user_logged_in() ) {
+        if ( ! WC()->session ) {
+            WC()->session = new WC_Session_Handler();
+            WC()->session->init();
+        }
+    }
+}
+
+
+// Función para formatear el carrito para la respuesta JSON
+function morty_format_cart_data() {
+    if (!isset(WC()->cart) || WC()->cart->is_empty()) {
+        return [
+            'items' => [],
+            'item_count' => 0,
+            'totals' => [
+                'total_price' => '0.00'
+            ],
+            'checkout_url' => wc_get_checkout_url()
+        ];
+    }
+    
+    $cart_data = [];
+    foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
+        $product = $cart_item['data'];
+        $image_id = $product->get_image_id();
+        $image_url = wp_get_attachment_image_url($image_id, 'thumbnail');
+
+        $cart_data[] = [
+            'key' => $cart_item_key,
+            'id' => $product->get_id(),
+            'name' => $product->get_name(),
+            'quantity' => $cart_item['quantity'],
+            'price' => $product->get_price(),
+            'line_subtotal' => $cart_item['line_subtotal'],
+            'image' => [
+                'src' => $image_url,
+                'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true)
+            ]
+        ];
+    }
+    
+    return [
+        'items' => $cart_data,
+        'item_count' => WC()->cart->get_cart_contents_count(),
+        'totals' => [
+            'total_price' => WC()->cart->get_total('edit')
+        ],
+        'checkout_url' => wc_get_checkout_url()
+    ];
+}
+
+
+// Registra los endpoints del carrito
+add_action('rest_api_init', function () {
+    // GET /cart - Obtener el carrito
+    register_rest_route('morty/v1', '/cart', [
+        'methods' => 'GET',
+        'callback' => function () {
+            return new WP_REST_Response(morty_format_cart_data(), 200);
+        },
+        'permission_callback' => '__return_true'
+    ]);
+
+    // POST /cart/add - Añadir al carrito
+    register_rest_route('morty/v1', '/cart/add', [
+        'methods' => 'POST',
+        'callback' => function (WP_REST_Request $request) {
+            $product_id = $request->get_param('product_id');
+            $quantity = $request->get_param('quantity') ? intval($request->get_param('quantity')) : 1;
+            
+            if (!$product_id) {
+                return new WP_Error('bad_request', 'Product ID is required.', ['status' => 400]);
+            }
+            
+            WC()->cart->add_to_cart($product_id, $quantity);
+            
+            return new WP_REST_Response(morty_format_cart_data(), 200);
+        },
+        'permission_callback' => '__return_true'
+    ]);
+
+    // POST /cart/remove - Eliminar del carrito
+    register_rest_route('morty/v1', '/cart/remove', [
+        'methods' => 'POST',
+        'callback' => function (WP_REST_Request $request) {
+            $item_key = $request->get_param('item_key');
+            if (!$item_key) {
+                return new WP_Error('bad_request', 'Item key is required.', ['status' => 400]);
+            }
+            WC()->cart->remove_cart_item($item_key);
+            return new WP_REST_Response(morty_format_cart_data(), 200);
+        },
+        'permission_callback' => '__return_true'
+    ]);
+    
+    // POST /cart/update - Actualizar cantidad
+    register_rest_route('morty/v1', '/cart/update', [
+        'methods' => 'POST',
+        'callback' => function (WP_REST_Request $request) {
+            $item_key = $request->get_param('item_key');
+            $quantity = $request->get_param('quantity');
+            if (!$item_key || $quantity === null) {
+                return new WP_Error('bad_request', 'Item key and quantity are required.', ['status' => 400]);
+            }
+            WC()->cart->set_quantity($item_key, intval($quantity));
+            return new WP_REST_Response(morty_format_cart_data(), 200);
+        },
+        'permission_callback' => '__return_true'
+    ]);
+    
+    // POST /cart/clear - Vaciar carrito
+    register_rest_route('morty/v1', '/cart/clear', [
+        'methods' => 'POST',
+        'callback' => function () {
+            WC()->cart->empty_cart();
+            return new WP_REST_Response(morty_format_cart_data(), 200);
+        },
+        'permission_callback' => '__return_true'
+    ]);
+});
 
 
 // Registra el endpoint personalizado en la API de WordPress

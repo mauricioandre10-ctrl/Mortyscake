@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -13,7 +12,6 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { trackAddToCart } from '@/lib/events';
 
 interface Review {
   id: number;
@@ -44,10 +42,6 @@ interface Product {
 export function ProductDetails({ product }: { product: Product }) {
   const fullDescription = product.description || product.short_description || 'No hay descripción disponible.';
   const productAttributes = Array.isArray(product.attributes) ? product.attributes : Object.values(product.attributes);
-
-  const handleAddToCartClick = () => {
-    trackAddToCart(product.name, 'Producto', product.price);
-  };
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -121,12 +115,12 @@ export function ProductDetails({ product }: { product: Product }) {
                 €{product.price}
               </span>
             </div>
-            <div onClick={handleAddToCartClick}>
-                <AddToCart
-                id={String(product.id)}
-                size="lg"
-                />
-            </div>
+            <AddToCart
+              productId={product.id}
+              productName={product.name}
+              price={product.price}
+              size="lg"
+            />
           </div>
         </div>
       </div>

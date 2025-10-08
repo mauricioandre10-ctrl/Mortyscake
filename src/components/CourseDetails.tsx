@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -50,10 +49,6 @@ interface Course {
 export function CourseDetails({ course }: { course: Course }) {
   const fullDescription = course.description || course.short_description || 'No hay descripción disponible.';
   const courseAttributes = Array.isArray(course.attributes) ? course.attributes : Object.values(course.attributes);
-
-  const handleAddToCartClick = () => {
-    trackAddToCart(course.name, 'Curso', course.price);
-  };
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -127,14 +122,14 @@ export function CourseDetails({ course }: { course: Course }) {
                 {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
               </span>
             </div>
-            <div onClick={handleAddToCartClick}>
-                <AddToCart
-                id={String(course.id)}
-                size="lg"
-                >
-                {course.price === "0.00" ? "Inscribirse Gratis" : "Añadir al carrito"}
-                </AddToCart>
-            </div>
+            <AddToCart
+              productId={course.id}
+              productName={course.name}
+              price={course.price}
+              size="lg"
+            >
+              {course.price === "0.00" ? "Inscribirse Gratis" : "Añadir al carrito"}
+            </AddToCart>
           </div>
         </div>
       </div>

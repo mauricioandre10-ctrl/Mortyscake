@@ -1,34 +1,62 @@
-
 'use client';
 
+import { useState } from 'react';
 import { Button, ButtonProps } from '@/components/ui/button';
-import { ShoppingCart } from 'lucide-react';
-import Link from 'next/link';
+import { ShoppingCart, Loader2 } from 'lucide-react';
+import { useCart } from '@/hooks/useCart';
+import { useToast } from '@/hooks/use-toast';
+import { trackAddToCart } from '@/lib/events';
 
 interface AddToCartProps extends ButtonProps {
-  id: string;
+  productId: number;
+  productName: string;
+  price: string;
   children?: React.ReactNode;
 }
 
-export const AddToCart = ({ id, className, size = 'default', children }: AddToCartProps) => {
-  const storeUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
-  if (!storeUrl) {
-    console.error('La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_STORE_URL no está definida.');
-    return (
-      <Button className={className} size={size} disabled>
-        {children || 'Añadir al carrito'}
-      </Button>
-    );
-  }
-  
-  const addToCartUrl = `${storeUrl}/cart/?add-to-cart=${id}`;
+export const AddToCart = ({
+  productId,
+  productName,
+  price,
+  className,
+  size = 'default',
+  children,
+  ...props
+}: AddToCartProps) => {
+  const { addItem, openCart } = useCart();
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const handleAddToCart = async () => {
+    setIsLoading(true);
+    try {
+      await addItem(productId, 1);
+      trackAddToCart(productName, 'Producto', price); // Asume que esto es un producto general, se puede ajustar
+      toast({
+        title: '¡Añadido al carrito!',
+        description: `${productName} se ha añadido a tu carrito.`,
+      });
+      openCart();
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'No se pudo añadir el producto al carrito.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <Button asChild className={className} size={size}>
-      <Link href={addToCartUrl} rel="noopener noreferrer">
+    <Button onClick={handleAddToCart} className={className} size={size} disabled={isLoading} {...props}>
+      {isLoading ? (
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      ) : (
         <ShoppingCart className="mr-2" />
-        {children || 'Añadir al carrito'}
-      </Link>
+      )}
+      {children || 'Añadir al carrito'}
     </Button>
   );
 };
