@@ -81,7 +81,12 @@ export default function CoursesPage() {
         return courses.sort((a, b) => a.menu_order - b.menu_order);
       case 'date-desc':
       default:
-        return sorted.sort((a, b) => new Date(b.date_created).getTime() - new Date(a.date_created).getTime());
+        // Make sure date_created is a valid date string before comparing
+        return sorted.sort((a, b) => {
+            const dateA = a.date_created ? new Date(a.date_created).getTime() : 0;
+            const dateB = b.date_created ? new Date(b.date_created).getTime() : 0;
+            return dateB - dateA;
+        });
     }
   }, [courses, sortOrder]);
   

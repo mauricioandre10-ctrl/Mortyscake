@@ -23,8 +23,9 @@ add_action( 'rest_api_init', function() {
     });
 }, 15 );
 
+
+// Registra el endpoint personalizado en la API de WordPress
 add_action('rest_api_init', function () {
-    // Endpoint para obtener productos con varios filtros
     register_rest_route('morty/v1', '/products', array(
         'methods' => 'GET',
         'callback' => 'morty_get_products',
@@ -33,8 +34,9 @@ add_action('rest_api_init', function () {
 });
 
 /**
- * Función robusta para obtener productos de WooCommerce.
- * Prioriza la búsqueda por slug y maneja correctamente la inclusión/exclusión de categorías.
+ * Función robusta y simplificada para obtener productos de WooCommerce.
+ * - Prioriza la búsqueda por slug para las páginas de detalle.
+ * - Maneja correctamente la inclusión/exclusión de categorías por slug.
  */
 function morty_get_products(WP_REST_Request $request) {
     if (!class_exists('WooCommerce')) {
@@ -52,22 +54,25 @@ function morty_get_products(WP_REST_Request $request) {
     if (!empty($params['slug'])) {
         $args['slug'] = sanitize_text_field($params['slug']);
         $args['limit'] = 1; // Un slug debe devolver un único producto.
-    } else {
-        // Prioridad 2: Aplicar filtros de categoría solo si no se busca por slug.
+    } 
+    // Prioridad 2: Si no hay slug, aplicar filtros de categoría.
+    else {
+        // Para obtener solo productos de una categoría específica (ej: 'cursos')
         if (!empty($params['category_slug'])) {
             $args['category'] = array(sanitize_text_field($params['category_slug']));
         }
-
+        
+        // Para excluir una categoría (ej: 'cursos' de la tienda principal)
         if (!empty($params['category_exclude_slug'])) {
             $term = get_term_by('slug', sanitize_text_field($params['category_exclude_slug']), 'product_cat');
+            // Si la categoría existe, usamos su ID para excluirla.
             if ($term) {
-                // 'category__not_in' espera un array de IDs de términos.
                 $args['category__not_in'] = array($term->term_id);
             }
         }
     }
 
-    // Ordenación
+    // Ordenación (opcional, se puede añadir si es necesario)
     if (!empty($params['orderby'])) {
         $args['orderby'] = sanitize_text_field($params['orderby']);
     }
@@ -75,12 +80,15 @@ function morty_get_products(WP_REST_Request $request) {
         $args['order'] = sanitize_text_field($params['order']);
     }
 
+    // Obtener los productos usando los argumentos construidos
     $products = wc_get_products($args);
 
+    // Formatear los datos para la respuesta JSON
     $data = array();
     foreach ($products as $product_obj) {
         $product_data = $product_obj->get_data();
         
+        // Obtener todas las imágenes (destacada + galería)
         $image_gallery_ids = $product_obj->get_gallery_image_ids();
         $images = [];
         
@@ -118,7 +126,20 @@ function morty_get_products(WP_REST_Request $request) {
                 }
             }
         }
+        
+        // Sobrescribir el campo de imágenes con nuestra lista completa
         $product_data['images'] = $images;
+
+        // Añadir los nombres de las categorías a la respuesta para facilitar el debugging
+        $category_objects = get_the_terms($product_obj->get_id(), 'product_cat');
+        $category_names = [];
+        if (!empty($category_objects)) {
+            foreach ($category_objects as $cat) {
+                $category_names[] = $cat->name;
+            }
+        }
+        $product_data['category_names'] = $category_names;
+
 
         $data[] = $product_data;
     }
