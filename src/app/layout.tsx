@@ -28,7 +28,7 @@ const fontHeadline = FontHeadline({
   weight: '400',
 });
 
-const fontCardTitle = Playfair_Display({
+const fontCardTitle = FontCardTitle({
   subsets: ['latin'],
   variable: '--font-card-title',
   display: 'swap',
