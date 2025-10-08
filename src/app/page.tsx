@@ -182,7 +182,7 @@ function FeaturedProducts() {
       try {
         const productsApiUrl = new URL(`${apiUrl}/wp-json/morty/v1/products`);
         productsApiUrl.searchParams.set('category_exclude_slug', 'cursos');
-        productsApiUrl.searchParams.set('per_page', '10'); // Fetch a few more to ensure we get 3 non-courses
+        productsApiUrl.searchParams.set('per_page', '10');
 
         const response = await fetch(productsApiUrl.toString(), { cache: 'no-store' });
         
@@ -190,10 +190,10 @@ function FeaturedProducts() {
           throw new Error(`Failed to fetch products: ${response.statusText}`);
         }
         const data = await response.json();
-        // Explicitly filter out any product that might still have 'Cursos' category
+        
         const filteredProducts = data.filter((product: Product) => 
             !product.category_names.includes('Cursos')
-        ).slice(0, 3); // Take the first 3 products after filtering
+        ).slice(0, 3); 
 
         setProducts(filteredProducts);
       } catch (err) {
@@ -301,13 +301,11 @@ export default function Home() {
       {/* 1. Hero Section */}
       <section className="relative w-full h-[60vh] min-h-[400px] bg-black text-white flex items-center justify-center">
          <Image 
-            src="https://picsum.photos/seed/hero/1920/1080" 
+            src="/image/fondo_heder.webp" 
             alt="Mujer decorando una tarta con flores frescas"
             fill
             className="object-cover opacity-40"
             priority
-            data-ai-hint="woman decorating cake"
-            unoptimized
          />
          <div className="relative z-10 text-center container mx-auto px-4">
             <h1 className="font-headline text-4xl md:text-6xl font-bold leading-tight">
@@ -572,4 +570,6 @@ export default function Home() {
 }
 
     
+    
+
     
