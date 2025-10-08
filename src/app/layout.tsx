@@ -1,7 +1,7 @@
 
 import { Suspense } from 'react';
 import type { Metadata, Viewport } from 'next';
-import { Alegreya as FontSans, Alegreya as FontHeadline } from 'next/font/google';
+import { Lato as FontSans, Lora as FontHeadline } from 'next/font/google';
 import { Analytics } from '@/components/Analytics';
 import { cn } from '@/lib/utils';
 import Header from '@/components/header';
@@ -18,12 +18,14 @@ const fontSans = FontSans({
   subsets: ['latin'], 
   variable: '--font-sans',
   display: 'swap',
+  weight: ['400', '700'],
 });
 
 const fontHeadline = FontHeadline({
   subsets: ['latin'],
   variable: '--font-headline',
   display: 'swap',
+  weight: ['400', '700'],
 });
 
 export const metadata: Metadata = {
