@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Star } from 'lucide-react';
 import Link from 'next/link';
+import { ShareButton } from '@/components/ShareButton';
 
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'alpha-asc' | 'alpha-desc' | 'date-desc';
 
@@ -39,8 +40,13 @@ export default function CoursesPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortOrder, setSortOrder] = useState<SortOption>('default');
+  const [siteUrl, setSiteUrl] = useState('');
 
   useEffect(() => {
+    // Ensure we are on the client side before accessing window
+    if (typeof window !== 'undefined') {
+      setSiteUrl(window.location.origin);
+    }
     const fetchCourses = async () => {
       setLoading(true);
       try {
@@ -126,7 +132,14 @@ export default function CoursesPage() {
           {sortedCourses.map((course: Course) => (
              <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
                 <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow">
-                    <CardHeader className="p-0">
+                    <CardHeader className="p-0 relative">
+                       <ShareButton 
+                          title={course.name} 
+                          text={`Echa un vistazo a este curso: ${course.name}`} 
+                          url={`${siteUrl}/courses/${course.slug}`}
+                          className="absolute top-2 right-2 z-10 h-8 w-8"
+                          size="icon"
+                        />
                       <div className="aspect-[4/3] w-full bg-muted relative overflow-hidden">
                         {course.images?.[0]?.src ? (
                             <Image
@@ -167,5 +180,3 @@ export default function CoursesPage() {
     </div>
   );
 }
-
-    

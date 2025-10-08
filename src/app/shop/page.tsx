@@ -7,6 +7,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { ShareButton } from '@/components/ShareButton';
 
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'alpha-asc' | 'alpha-desc';
 
@@ -33,8 +34,13 @@ export default function ShopPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortOrder, setSortOrder] = useState<SortOption>('default');
+  const [siteUrl, setSiteUrl] = useState('');
 
   useEffect(() => {
+     // Ensure we are on the client side before accessing window
+    if (typeof window !== 'undefined') {
+      setSiteUrl(window.location.origin);
+    }
     const fetchProducts = async () => {
       setLoading(true);
       try {
@@ -118,7 +124,14 @@ export default function ShopPage() {
           {sortedProducts.map((product) => (
             <Card key={product.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
               <Link href={`/shop/${product.slug}`} className="flex flex-col flex-grow">
-                <CardHeader className="p-0">
+                <CardHeader className="p-0 relative">
+                   <ShareButton 
+                      title={product.name} 
+                      text={`Echa un vistazo a este producto: ${product.name}`} 
+                      url={`${siteUrl}/shop/${product.slug}`}
+                      className="absolute top-2 right-2 z-10 h-8 w-8"
+                      size="icon"
+                    />
                   <div className="aspect-square w-full bg-muted relative overflow-hidden">
                     {product.images?.[0]?.src ? (
                         <Image
@@ -153,5 +166,3 @@ export default function ShopPage() {
     </div>
   );
 }
-
-    

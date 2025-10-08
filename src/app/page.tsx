@@ -12,6 +12,7 @@ import { galleryImages } from '@/lib/gallery-images';
 import { useEffect, useState, useRef } from 'react';
 import Autoplay from "embla-carousel-autoplay"
 import { Skeleton } from '@/components/ui/skeleton';
+import { ShareButton } from '@/components/ShareButton';
 
 interface Product {
   id: number;
@@ -52,8 +53,14 @@ export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingCourses, setLoadingCourses] = useState(true);
   const [loadingProducts, setLoadingProducts] = useState(true);
+  const [siteUrl, setSiteUrl] = useState('');
 
   useEffect(() => {
+    // Ensure we are on the client side before accessing window
+    if (typeof window !== 'undefined') {
+      setSiteUrl(window.location.origin);
+    }
+
     const fetchProductsAndCourses = async () => {
       setLoadingCourses(true);
       setLoadingProducts(true);
@@ -182,7 +189,14 @@ export default function Home() {
               courses.map((course: Product) => (
                  <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
                   <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow">
-                    <CardHeader className="p-0">
+                    <CardHeader className="p-0 relative">
+                      <ShareButton 
+                        title={course.name} 
+                        text={`Echa un vistazo a este curso: ${course.name}`} 
+                        url={`${siteUrl}/courses/${course.slug}`}
+                        className="absolute top-2 right-2 z-10 h-8 w-8"
+                        size="icon"
+                      />
                       <div className="aspect-[4/3] w-full bg-muted relative overflow-hidden">
                        {course.images?.[0]?.src ? (
                           <Image
@@ -290,7 +304,14 @@ export default function Home() {
               products.map((product: Product) => (
                 <Card key={product.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
                   <Link href={`/shop/${product.slug}`} className="flex flex-col flex-grow">
-                    <CardHeader className="p-0">
+                    <CardHeader className="p-0 relative">
+                      <ShareButton 
+                          title={product.name} 
+                          text={`Echa un vistazo a este producto: ${product.name}`} 
+                          url={`${siteUrl}/shop/${product.slug}`}
+                          className="absolute top-2 right-2 z-10 h-8 w-8"
+                          size="icon"
+                        />
                       <div className="aspect-square w-full bg-muted relative overflow-hidden">
                        {product.images?.[0]?.src ? (
                           <Image
@@ -488,5 +509,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

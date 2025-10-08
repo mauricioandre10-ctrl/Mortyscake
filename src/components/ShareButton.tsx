@@ -5,13 +5,17 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Share2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 interface ShareButtonProps {
   title: string;
   text: string;
+  url?: string;
+  className?: string;
+  size?: 'default' | 'sm' | 'lg' | 'icon';
 }
 
-export function ShareButton({ title, text }: ShareButtonProps) {
+export function ShareButton({ title, text, url: propUrl, className, size = 'icon' }: ShareButtonProps) {
   const [isSupported, setIsSupported] = useState(false);
   const [url, setUrl] = useState('');
   const { toast } = useToast();
@@ -20,11 +24,13 @@ export function ShareButton({ title, text }: ShareButtonProps) {
     // navigator.share is only available in secure contexts (HTTPS) and on client-side
     if (typeof window !== 'undefined' && typeof navigator.share === 'function') {
       setIsSupported(true);
-      setUrl(window.location.href);
+      setUrl(propUrl || window.location.href);
     }
-  }, []);
+  }, [propUrl]);
 
-  const handleShare = async () => {
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Evita que se active el link de la tarjeta
+    e.preventDefault();   // Evita que se active el link de la tarjeta
     try {
       await navigator.share({
         title,
@@ -49,8 +55,8 @@ export function ShareButton({ title, text }: ShareButtonProps) {
   }
 
   return (
-    <Button variant="outline" size="icon" onClick={handleShare} aria-label="Compartir curso">
-      <Share2 className="h-5 w-5" />
+    <Button variant="secondary" size={size} onClick={handleShare} aria-label="Compartir" className={cn("rounded-full", className)}>
+      <Share2 className="h-4 w-4" />
     </Button>
   );
 }
