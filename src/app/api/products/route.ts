@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   try {
     // We just need to tell the API to exclude the 'cursos' category slug
     const productsApiUrl = new URL(`${WP_API_URL}/wp-json/morty/v1/products`);
-    productsApiUrl.searchParams.set('category_exclude', 'cursos'); // Pass slug directly
+    productsApiUrl.searchParams.set('category_exclude_slug', 'cursos'); // Pass slug directly for exclusion
     productsApiUrl.searchParams.set('per_page', limit);
 
     const productsResponse = await fetch(productsApiUrl.toString(), { next: { revalidate: 3600 } }); // Revalidate every hour
@@ -31,5 +31,3 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
-
-    

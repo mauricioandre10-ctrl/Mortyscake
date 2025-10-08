@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   try {
     // Fetch Courses from the 'cursos' category slug directly
     const coursesApiUrl = new URL(`${WP_API_URL}/wp-json/morty/v1/products`);
-    coursesApiUrl.searchParams.set('category', 'cursos');
+    coursesApiUrl.searchParams.set('category_slug', 'cursos');
     coursesApiUrl.searchParams.set('per_page', limit);
     
     const coursesResponse = await fetch(coursesApiUrl.toString(), { next: { revalidate: 3600 } }); // Revalidate every hour
@@ -31,5 +31,3 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
-
-    

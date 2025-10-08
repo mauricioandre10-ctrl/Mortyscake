@@ -17,12 +17,11 @@ add_action( 'rest_api_init', function() {
     remove_filter( 'rest_pre_serve_request', 'rest_send_cors_headers' );
     add_filter( 'rest_pre_serve_request', function( $value ) {
         header( 'Access-Control-Allow-Origin: *' );
-        header( 'Access-Control-Allow-Methods: GET' );
-        header( 'Access-Control-Allow-Headers: Content-Type, Authorization' );
+        header( 'Access-Control-Allow-Methods: GET, POST, OPTIONS' );
+        header( 'Access-Control-Allow-Headers: Content-Type, Authorization, X-WP-Nonce' );
         return $value;
     });
 }, 15 );
-
 
 add_action('rest_api_init', function () {
     // Endpoint para obtener productos con varios filtros
@@ -59,38 +58,19 @@ function morty_get_products(WP_REST_Request $request) {
         $args['slug'] = sanitize_text_field($params['slug']);
     }
 
-    if (!empty($params['category'])) {
-        $args['category'] = array(sanitize_text_field($params['category']));
+    // Filtrar por slug de categoría (para obtener solo los cursos)
+    if (!empty($params['category_slug'])) {
+        $args['category'] = array(sanitize_text_field($params['category_slug']));
     }
 
-    if (!empty($params['exclude'])) {
-       $exclude_ids = explode(',', sanitize_text_field($params['exclude']));
-       $args['exclude'] = array_map('intval', $exclude_ids);
-    }
-    
-    if (!empty($params['category_exclude'])) {
-        $category_slugs_to_exclude = explode(',', sanitize_text_field($params['category_exclude']));
-        $category_ids_to_exclude = [];
-        foreach($category_slugs_to_exclude as $slug) {
-            $term = get_term_by('slug', $slug, 'product_cat');
-            if ($term) {
-                $category_ids_to_exclude[] = $term->term_id;
-            }
+    // Excluir por slug de categoría (para obtener todo menos los cursos)
+    if (!empty($params['category_exclude_slug'])) {
+        $term = get_term_by('slug', sanitize_text_field($params['category_exclude_slug']), 'product_cat');
+        if ($term) {
+            $args['category__not_in'] = array($term->term_id);
         }
-        
-        if (!empty($category_ids_to_exclude)) {
-            $products_to_exclude = wc_get_products(array(
-                'category' => $category_ids_to_exclude,
-                'limit' => -1,
-                'return' => 'ids',
-            ));
+    }
 
-            if (!empty($products_to_exclude)) {
-                $args['exclude'] = array_merge(isset($args['exclude']) ? $args['exclude'] : array(), $products_to_exclude);
-            }
-        }
-    }
-    
     if (!empty($params['orderby'])) {
         $args['orderby'] = sanitize_text_field($params['orderby']);
     }
