@@ -1,7 +1,5 @@
 <?php
-// =============================================================================
-// CORS Configuration
-// =============================================================================
+
 function morty_cors_headers() {
     $allowed_origins = [
         'https://mortyscake-website.vercel.app',
@@ -30,9 +28,6 @@ add_action('rest_api_init', function () {
 }, 15);
 
 
-// =============================================================================
-// API Route Registration
-// =============================================================================
 function morty_register_rest_routes() {
     $namespace = 'morty/v1';
 
@@ -41,133 +36,26 @@ function morty_register_rest_routes() {
         'callback' => 'morty_get_products_with_details',
         'permission_callback' => '__return_true',
         'args' => [
-            'per_page' => [ 'type' => 'integer', 'sanitize_callback' => 'absint' ],
-            'slug' => [ 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ],
-            'category_slug' => [ 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ],
-            'category_exclude_slug' => [ 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ],
+            'per_page' => [
+                'type' => 'integer',
+                'sanitize_callback' => 'absint',
+            ],
+            'slug' => [
+                'type' => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+            ],
+            'category_slug' => [
+                'type' => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+            ],
+            'category_exclude_slug' => [
+                'type' => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+            ],
         ],
-    ]);
-
-    register_rest_route($namespace, '/cart', [
-        'methods' => WP_REST_Server::READABLE,
-        'callback' => 'morty_handle_get_cart',
-        'permission_callback' => '__return_true',
-    ]);
-    register_rest_route($namespace, '/cart/add', [
-        'methods' => WP_REST_Server::CREATABLE,
-        'callback' => 'morty_handle_cart_add',
-        'permission_callback' => '__return_true',
-    ]);
-    register_rest_route($namespace, '/cart/remove', [
-        'methods' => WP_REST_Server::CREATABLE,
-        'callback' => 'morty_handle_cart_remove',
-        'permission_callback' => '__return_true',
-    ]);
-    register_rest_route($namespace, '/cart/update', [
-        'methods' => WP_REST_Server::CREATABLE,
-        'callback' => 'morty_handle_cart_update',
-        'permission_callback' => '__return_true',
-    ]);
-    register_rest_route($namespace, '/cart/clear', [
-        'methods' => WP_REST_Server::CREATABLE,
-        'callback' => 'morty_handle_cart_clear',
-        'permission_callback' => '__return_true',
     ]);
 }
 add_action('rest_api_init', 'morty_register_rest_routes');
-
-
-// =============================================================================
-// WC Session Initialization
-// =============================================================================
-function morty_init_wc_session_for_api() {
-    if (strpos($_SERVER['REQUEST_URI'], '/wp-json/morty/v1/cart') !== false && !is_user_logged_in()) {
-        if (isset(WC()->session) && !WC()->session->has_session()) {
-            WC()->session->set_customer_session_cookie(true);
-        }
-    }
-}
-add_action('init', 'morty_init_wc_session_for_api');
-
-
-// =============================================================================
-// Cart Handling Callbacks
-// =============================================================================
-function morty_handle_get_cart() {
-    return new WP_REST_Response(morty_format_cart_data(), 200);
-}
-function morty_handle_cart_clear() {
-    if (function_exists('WC') && WC()->cart) {
-        WC()->cart->empty_cart();
-    }
-    return new WP_REST_Response(morty_format_cart_data(), 200);
-}
-function morty_handle_cart_add(WP_REST_Request $request) {
-    $product_id = $request->get_param('product_id');
-    $quantity = $request->get_param('quantity') ? intval($request->get_param('quantity')) : 1;
-    if (!$product_id || !function_exists('WC') || !WC()->cart) {
-        return new WP_Error('bad_request', 'Product ID is required.', ['status' => 400]);
-    }
-    WC()->cart->add_to_cart($product_id, $quantity);
-    return new WP_REST_Response(morty_format_cart_data(), 200);
-}
-function morty_handle_cart_remove(WP_REST_Request $request) {
-    $item_key = $request->get_param('item_key');
-    if (!$item_key || !function_exists('WC') || !WC()->cart) {
-        return new WP_Error('bad_request', 'Item key is required.', ['status' => 400]);
-    }
-    WC()->cart->remove_cart_item($item_key);
-    return new WP_REST_Response(morty_format_cart_data(), 200);
-}
-function morty_handle_cart_update(WP_REST_Request $request) {
-    $item_key = $request->get_param('item_key');
-    $quantity = $request->get_param('quantity');
-    if (!$item_key || $quantity === null || !function_exists('WC') || !WC()->cart) {
-        return new WP_Error('bad_request', 'Item key and quantity are required.', ['status' => 400]);
-    }
-    WC()->cart->set_quantity($item_key, intval($quantity));
-    return new WP_REST_Response(morty_format_cart_data(), 200);
-}
-
-
-// =============================================================================
-// Data Formatting Helpers
-// =============================================================================
-function morty_format_cart_data() {
-    if (!function_exists('WC') || !isset(WC()->cart) || WC()->cart->is_empty()) {
-        return [
-            'items' => [],
-            'item_count' => 0,
-            'totals' => ['total_price' => '0.00'],
-            'checkout_url' => function_exists('wc_get_checkout_url') ? wc_get_checkout_url() : '',
-        ];
-    }
-    $cart_items = [];
-    foreach (WC()->cart->get_cart() as $cart_item_key => $cart_item) {
-        $product = $cart_item['data'];
-        if (!$product) continue;
-        $image_id = $product->get_image_id();
-        $image_url = wp_get_attachment_image_url($image_id, 'thumbnail');
-        $cart_items[] = [
-            'key' => $cart_item_key,
-            'id' => $product->get_id(),
-            'name' => $product->get_name(),
-            'quantity' => $cart_item['quantity'],
-            'price' => wc_format_decimal($product->get_price(), 2),
-            'line_subtotal' => wc_format_decimal($cart_item['line_subtotal'], 2),
-            'image' => [
-                'src' => $image_url ?: wc_placeholder_img_src(),
-                'alt' => get_post_meta($image_id, '_wp_attachment_image_alt', true),
-            ],
-        ];
-    }
-    return [
-        'items' => $cart_items,
-        'item_count' => WC()->cart->get_cart_contents_count(),
-        'totals' => ['total_price' => wc_format_decimal(WC()->cart->get_total('edit'), 2)],
-        'checkout_url' => wc_get_checkout_url(),
-    ];
-}
 
 function morty_get_products_with_details(WP_REST_Request $request) {
     if (!class_exists('WooCommerce')) {
@@ -272,4 +160,5 @@ function morty_get_product_reviews($product_id) {
     return $reviews;
 }
 ?>
+
     

@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { ArrowLeft, FileText, Info, MessageSquare, Star } from 'lucide-react';
+import { ArrowLeft, FileText, Info, MessageSquare, Star, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -16,7 +16,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { AddToCart } from './AddToCart';
 import { ShareButton } from './ShareButton';
 import { trackAddToCart } from '@/lib/events';
 
@@ -49,6 +48,10 @@ interface Course {
 export function CourseDetails({ course }: { course: Course }) {
   const fullDescription = course.description || course.short_description || 'No hay descripción disponible.';
   const courseAttributes = Array.isArray(course.attributes) ? course.attributes : Object.values(course.attributes);
+
+  const phoneNumber = "34616284463";
+  const message = `¡Hola! Estoy interesado en el curso "${course.name}". ¿Podrías darme más información?`;
+  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -122,14 +125,12 @@ export function CourseDetails({ course }: { course: Course }) {
                 {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
               </span>
             </div>
-            <AddToCart
-              productId={course.id}
-              productName={course.name}
-              price={course.price}
-              size="lg"
-            >
-              {course.price === "0.00" ? "Inscribirse Gratis" : "Añadir al carrito"}
-            </AddToCart>
+            <Button asChild size="lg" onClick={() => trackAddToCart(course.name, 'Curso', course.price)}>
+              <Link href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+                <ShoppingCart className="mr-2" />
+                {course.price === "0.00" ? "Inscribirse Gratis" : "Inscribirse por WhatsApp"}
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
