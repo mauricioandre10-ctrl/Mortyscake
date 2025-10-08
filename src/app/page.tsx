@@ -280,7 +280,7 @@ export default function Home() {
       <section id="featured-products" className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center mb-12">
-            <h2 className="font-headline text-3xl md:text-4xl font-bold">Productos Destacados</h2>
+            <h2 className="font-headline text-3xl md:text-4xl font-bold">Nuestros Productos</h2>
             <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
               Herramientas e ingredientes seleccionados para llevar tus creaciones al siguiente nivel.
             </p>
