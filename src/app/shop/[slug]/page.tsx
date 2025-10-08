@@ -1,8 +1,10 @@
 
+'use client';
+
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, Info, FileText, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Info, FileText, MessageSquare, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { AddToCart } from '@/components/AddToCart';
@@ -10,6 +12,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext
 import { ShareButton } from '@/components/ShareButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Product {
   id: number;
@@ -26,59 +29,92 @@ interface Product {
   attributes: { name: string; options: string[] }[] | Record<string, { name: string; options: string[] }>;
 }
 
-async function getProduct(slug: string): Promise<Product | null> {
-  const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
-  console.log('[getProduct] WOOCOMMERCE_API_URL:', apiUrl);
+export default function ProductDetailPage({ params }: { params: { slug: string }}) {
+    const [product, setProduct] = useState<Product | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-  if (!apiUrl) {
-    console.error("[getProduct] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_STORE_URL no está configurada.");
-    return null;
-  }
-  try {
-    const url = new URL(`${apiUrl}/wp-json/morty/v1/products`);
-    url.searchParams.set('slug', slug);
-    url.searchParams.set('per_page', '1');
-    
-    console.log(`[getProduct] Fetching URL: ${url.toString()}`);
-    const response = await fetch(url.toString(), { cache: 'no-store' });
-    
-    console.log(`[getProduct] Response status for slug ${slug}: ${response.status}`);
-    if (!response.ok) {
-      console.error(`[getProduct] Failed to fetch course. Status: ${response.status}, StatusText: ${response.statusText}`);
-      return null;
+    useEffect(() => {
+        async function getProduct(slug: string) {
+            const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+            console.log('[CLIENT] WOOCOMMERCE_API_URL:', apiUrl);
+
+            if (!apiUrl) {
+                console.error("[CLIENT] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_STORE_URL no está configurada.");
+                setError("La configuración del sitio no es correcta.");
+                setLoading(false);
+                return;
+            }
+
+            try {
+                setLoading(true);
+                const url = new URL(`${apiUrl}/wp-json/morty/v1/products`);
+                url.searchParams.set('slug', slug);
+                url.searchParams.set('per_page', '1');
+                
+                console.log(`[CLIENT] Fetching URL: ${url.toString()}`);
+                const response = await fetch(url.toString(), { cache: 'no-store' });
+                
+                console.log(`[CLIENT] Response status for slug ${slug}: ${response.status}`);
+                if (!response.ok) {
+                    console.error(`[CLIENT] Failed to fetch product. Status: ${response.status}, StatusText: ${response.statusText}`);
+                    throw new Error(`No se pudo cargar la información del producto (Estatus: ${response.status}).`);
+                }
+                
+                const products = await response.json();
+                if (products.length === 0) {
+                    console.log(`[CLIENT] No product found for slug: ${slug}`);
+                    throw new Error("El producto que buscas no existe o no está disponible.");
+                }
+
+                const fetchedProduct = products[0];
+
+                if (fetchedProduct && fetchedProduct.category_names && fetchedProduct.category_names.includes('Cursos')) {
+                    console.log(`[CLIENT] Product found for slug ${slug}, but it IS a course. Skipping.`);
+                    throw new Error("Este producto es un curso, no un artículo de la tienda.");
+                } else {
+                    console.log(`[CLIENT] Successfully found product: ${fetchedProduct.name}`);
+                    setProduct(fetchedProduct);
+                }
+            } catch (err) {
+                console.error('[CLIENT] An unexpected error occurred:', err);
+                setError(err instanceof Error ? err.message : 'Ocurrió un error inesperado.');
+            } finally {
+                setLoading(false);
+            }
+        }
+        
+        if (params.slug) {
+            getProduct(params.slug);
+        }
+    }, [params.slug]);
+
+
+    if (loading) {
+        return <LoadingSkeleton />;
     }
-    const products = await response.json();
-    if (products.length === 0) {
-      console.log(`[getProduct] No product found for slug: ${slug}`);
-      return null;
+
+    if (error) {
+        return (
+            <div className="container mx-auto py-12 px-4 md:px-6 text-center">
+                <h2 className="text-2xl font-bold text-destructive mb-4">No se pudo cargar el producto</h2>
+                <p className="text-muted-foreground mb-6">{error}</p>
+                <Button asChild variant="outline">
+                  <Link href="/shop">
+                    <ArrowLeft className="mr-2" />
+                    Volver a la Tienda
+                  </Link>
+                </Button>
+            </div>
+        );
     }
-
-    const product = products[0];
-
-    // After fetching the specific slug, ensure it's NOT a course.
-    if (product && product.category_names && product.category_names.includes('Cursos')) {
-        console.log(`[getProduct] Product found for slug ${slug}, but it IS a course. Skipping.`);
+    
+    if (!product) {
         return null;
     }
-    
-    console.log(`[getProduct] Successfully found product: ${product.name}`);
-    return product;
-  } catch (error) {
-    console.error('[getProduct] An unexpected error occurred:', error);
-    return null;
-  }
-}
-
-export default async function ProductDetailPage({ params }: { params: { slug: string }}) {
-  const product = await getProduct(params.slug);
-
-  if (!product) {
-    notFound();
-  }
   
   const fullDescription = product.description || product.short_description || 'No hay descripción disponible.';
   const productAttributes = Array.isArray(product.attributes) ? product.attributes : Object.values(product.attributes);
-
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -206,3 +242,31 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
     </div>
   );
 }
+
+function LoadingSkeleton() {
+    return (
+      <div className="container mx-auto py-12 px-4 md:px-6">
+        <div className="mb-8">
+            <Skeleton className="h-10 w-48" />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+            <div className="lg:col-span-1">
+                <Skeleton className="w-full aspect-square" />
+            </div>
+            <div className="flex flex-col lg:col-span-2 space-y-4">
+                <Skeleton className="h-12 w-3/4" />
+                <Skeleton className="h-20 w-full" />
+                <div className="mt-auto pt-4 space-y-4">
+                    <Skeleton className="h-10 w-1/3" />
+                    <Skeleton className="h-12 w-full" />
+                </div>
+            </div>
+        </div>
+        <div className="mt-12">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-48 w-full mt-2" />
+        </div>
+      </div>
+    );
+}
+

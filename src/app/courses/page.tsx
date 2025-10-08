@@ -1,11 +1,13 @@
 
+'use client';
+
 import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Star } from 'lucide-react';
 import Link from 'next/link';
 import { ShareButton } from '@/components/ShareButton';
-import { Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface Course {
@@ -21,46 +23,6 @@ interface Course {
   date_created: string | { date: string };
   menu_order: number;
   category_names: string[];
-}
-
-async function getCourses(): Promise<Course[]> {
-  const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
-  console.log('[getCourses] WOOCOMMERCE_API_URL:', apiUrl);
-
-  if (!apiUrl) {
-    console.error('[getCourses] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_STORE_URL no está configurada.');
-    return [];
-  }
-  
-  try {
-    const coursesApiUrl = new URL(`${apiUrl}/wp-json/morty/v1/products`);
-    coursesApiUrl.searchParams.set('category_slug', 'cursos');
-    coursesApiUrl.searchParams.set('per_page', '100');
-
-    console.log(`[getCourses] Fetching URL: ${coursesApiUrl.toString()}`);
-    
-    const response = await fetch(coursesApiUrl.toString(), { cache: 'no-store' });
-    
-    console.log(`[getCourses] Response status: ${response.status}`);
-
-    if (!response.ok) {
-        console.error(`[getCourses] Failed to fetch courses. Status: ${response.status}, StatusText: ${response.statusText}`);
-        throw new Error(`Failed to fetch courses: ${response.statusText}`);
-    }
-    const data = await response.json();
-    console.log(`[getCourses] Received ${data.length} items from API.`);
-    
-    // Final safety filter
-    const filteredData = data.filter((item: Course) => 
-        item.category_names && item.category_names.includes('Cursos')
-    );
-    console.log(`[getCourses] Filtered to ${filteredData.length} courses.`);
-    return filteredData;
-
-  } catch (error) {
-    console.error('[getCourses] An unexpected error occurred:', error);
-    return [];
-  }
 }
 
 function CourseCard({ course, siteUrl }: { course: Course, siteUrl: string | undefined}) {
@@ -111,24 +73,81 @@ function CourseCard({ course, siteUrl }: { course: Course, siteUrl: string | und
   );
 }
 
-async function CoursesList() {
-    const courses = await getCourses();
+function CoursesList() {
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
-    if (!courses || courses.length === 0) {
+    useEffect(() => {
+        async function fetchCourses() {
+            const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+            console.log('[CLIENT] WOOCOMMERCE_API_URL:', apiUrl);
+
+            if (!apiUrl) {
+                console.error('[CLIENT] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_STORE_URL no está configurada.');
+                setError('La configuración del sitio no es correcta.');
+                setLoading(false);
+                return;
+            }
+        
+            try {
+                const coursesApiUrl = new URL(`${apiUrl}/wp-json/morty/v1/products`);
+                coursesApiUrl.searchParams.set('category_slug', 'cursos');
+                coursesApiUrl.searchParams.set('per_page', '100');
+
+                console.log(`[CLIENT] Fetching URL: ${coursesApiUrl.toString()}`);
+                
+                const response = await fetch(coursesApiUrl.toString(), { cache: 'no-store' });
+                
+                console.log(`[CLIENT] Response status: ${response.status}`);
+
+                if (!response.ok) {
+                    console.error(`[CLIENT] Failed to fetch courses. Status: ${response.status}, StatusText: ${response.statusText}`);
+                    throw new Error(`Failed to fetch courses: ${response.statusText}`);
+                }
+                const data = await response.json();
+                console.log(`[CLIENT] Received ${data.length} items from API.`);
+                
+                const filteredData = data.filter((item: Course) => 
+                    item.category_names && item.category_names.includes('Cursos')
+                );
+                console.log(`[CLIENT] Filtered to ${filteredData.length} courses.`);
+                
+                const sortedCourses = filteredData.sort((a: Course, b: Course) => {
+                    const dateA = new Date(typeof a.date_created === 'object' ? a.date_created.date : a.date_created).getTime();
+                    const dateB = new Date(typeof b.date_created === 'object' ? b.date_created.date : b.date_created).getTime();
+                    return dateB - dateA;
+                });
+
+                setCourses(sortedCourses);
+
+            } catch (err) {
+                console.error('[CLIENT] An unexpected error occurred:', err);
+                setError(err instanceof Error ? err.message : 'Ocurrió un error inesperado.');
+            } finally {
+                setLoading(false);
+            }
+        }
+        
+        fetchCourses();
+    }, []);
+
+    if (loading) {
+        return <LoadingSkeleton />;
+    }
+
+    if (error) {
+        return <p className="text-center text-destructive col-span-full">Error al cargar los cursos: {error}</p>
+    }
+
+    if (courses.length === 0) {
         return <p className="text-center text-muted-foreground col-span-full">No se encontraron cursos en este momento. Por favor, inténtalo de nuevo más tarde.</p>
     }
 
-    // Simple sort by date, can be expanded later
-    const sortedCourses = courses.sort((a, b) => {
-        const dateA = new Date(typeof a.date_created === 'object' ? a.date_created.date : a.date_created).getTime();
-        const dateB = new Date(typeof b.date_created === 'object' ? b.date_created.date : b.date_created).getTime();
-        return dateB - dateA;
-    });
-
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {sortedCourses.map((course: Course) => (
+          {courses.map((course: Course) => (
              <CourseCard key={course.id} course={course} siteUrl={siteUrl} />
           ))}
         </div>
@@ -145,11 +164,7 @@ export default function CoursesPage() {
         </p>
       </header>
       
-      {/* Sorting UI can be re-added here if needed, but would require client component */}
-
-      <Suspense fallback={<LoadingSkeleton />}>
-        <CoursesList />
-      </Suspense>
+      <CoursesList />
     </div>
   );
 }

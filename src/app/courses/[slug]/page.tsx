@@ -1,8 +1,10 @@
 
+'use client';
+
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Star, ArrowLeft, Info, FileText, MessageSquare } from 'lucide-react';
+import { Star, ArrowLeft, Info, FileText, MessageSquare, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { AddToCart } from '@/components/AddToCart';
@@ -10,6 +12,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext
 import { ShareButton } from '@/components/ShareButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Course {
   id: number;
@@ -27,59 +30,90 @@ interface Course {
   attributes: { name: string; options: string[] }[] | Record<string, { name: string; options: string[] }>;
 }
 
-async function getCourse(slug: string): Promise<Course | null> {
-  const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
-  console.log('[getCourse] WOOCOMMERCE_API_URL:', apiUrl);
+export default function CourseDetailPage({ params }: { params: { slug: string } }) {
+  const [course, setCourse] = useState<Course | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!apiUrl) {
-    console.error("[getCourse] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_STORE_URL no está configurada.");
-    return null;
-  };
+  useEffect(() => {
+    async function getCourse(slug: string) {
+        const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+        console.log('[CLIENT] WOOCOMMERCE_API_URL:', apiUrl);
 
-  try {
-    const url = new URL(`${apiUrl}/wp-json/morty/v1/products`);
-    url.searchParams.set('slug', slug);
-    url.searchParams.set('per_page', '1');
-    
-    console.log(`[getCourse] Fetching URL: ${url.toString()}`);
+        if (!apiUrl) {
+            console.error("[CLIENT] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_STORE_URL no está configurada.");
+            setError("La configuración del sitio no es correcta.");
+            setLoading(false);
+            return;
+        }
 
-    const response = await fetch(url.toString(), { cache: 'no-store' });
-    
-    console.log(`[getCourse] Response status for slug ${slug}: ${response.status}`);
+        try {
+            setLoading(true);
+            const url = new URL(`${apiUrl}/wp-json/morty/v1/products`);
+            url.searchParams.set('slug', slug);
+            url.searchParams.set('per_page', '1');
+            
+            console.log(`[CLIENT] Fetching URL: ${url.toString()}`);
 
-    if (!response.ok) {
-        console.error(`[getCourse] Failed to fetch course. Status: ${response.status}, StatusText: ${response.statusText}`);
-        return null;
+            const response = await fetch(url.toString(), { cache: 'no-store' });
+            
+            console.log(`[CLIENT] Response status for slug ${slug}: ${response.status}`);
+
+            if (!response.ok) {
+                console.error(`[CLIENT] Failed to fetch course. Status: ${response.status}, StatusText: ${response.statusText}`);
+                throw new Error(`No se pudo cargar la información del curso (Estatus: ${response.status}).`);
+            }
+            
+            const courses = await response.json();
+            if (courses.length === 0) {
+                console.log(`[CLIENT] No course found for slug: ${slug}`);
+                throw new Error("El curso que buscas no existe o no está disponible.");
+            }
+            
+            const fetchedCourse = courses[0];
+
+            if (fetchedCourse && fetchedCourse.category_names && fetchedCourse.category_names.includes('Cursos')) {
+                console.log(`[CLIENT] Successfully found course: ${fetchedCourse.name}`);
+                setCourse(fetchedCourse);
+            } else {
+                 console.log(`[CLIENT] Product found for slug ${slug}, but it's not in 'Cursos' category.`);
+                 throw new Error("Este producto no es un curso válido.");
+            }
+        } catch (err) {
+            console.error('[CLIENT] An unexpected error occurred:', err);
+            setError(err instanceof Error ? err.message : 'Ocurrió un error inesperado.');
+        } finally {
+            setLoading(false);
+        }
     }
     
-    const courses = await response.json();
-    if (courses.length === 0) {
-        console.log(`[getCourse] No course found for slug: ${slug}`);
-        return null;
+    if (params.slug) {
+        getCourse(params.slug);
     }
-    
-    const course = courses[0];
+  }, [params.slug]);
 
-    // After fetching the specific slug, ensure it's actually a course.
-    if (course && course.category_names && course.category_names.includes('Cursos')) {
-        console.log(`[getCourse] Successfully found course: ${course.name}`);
-        return course;
-    }
 
-    // If no product is found, or it's not in the 'Cursos' category, return null.
-    console.log(`[getCourse] Product found for slug ${slug}, but it's not in 'Cursos' category.`);
-    return null;
-  } catch (error) {
-    console.error('[getCourse] An unexpected error occurred:', error);
-    return null;
+  if (loading) {
+    return <LoadingSkeleton />;
   }
-}
 
-export default async function CourseDetailPage({ params }: { params: { slug: string } }) {
-  const course = await getCourse(params.slug);
+  if (error) {
+    return (
+        <div className="container mx-auto py-12 px-4 md:px-6 text-center">
+            <h2 className="text-2xl font-bold text-destructive mb-4">No se pudo cargar el curso</h2>
+            <p className="text-muted-foreground mb-6">{error}</p>
+            <Button asChild variant="outline">
+              <Link href="/courses">
+                <ArrowLeft className="mr-2" />
+                Volver a Cursos
+              </Link>
+            </Button>
+        </div>
+    );
+  }
 
   if (!course) {
-    notFound();
+    return null; // or a not found component
   }
   
   const fullDescription = course.description || course.short_description || 'No hay descripción disponible.';
@@ -223,3 +257,33 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
     </div>
   );
 }
+
+
+function LoadingSkeleton() {
+    return (
+      <div className="container mx-auto py-12 px-4 md:px-6">
+        <div className="mb-8">
+            <Skeleton className="h-10 w-48" />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+            <div className="lg:col-span-1">
+                <Skeleton className="w-full aspect-square" />
+            </div>
+            <div className="flex flex-col lg:col-span-2 space-y-4">
+                <Skeleton className="h-12 w-3/4" />
+                <Skeleton className="h-6 w-1/4" />
+                <Skeleton className="h-20 w-full" />
+                <div className="mt-auto pt-4 space-y-4">
+                    <Skeleton className="h-10 w-1/3" />
+                    <Skeleton className="h-12 w-full" />
+                </div>
+            </div>
+        </div>
+        <div className="mt-12">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-48 w-full mt-2" />
+        </div>
+      </div>
+    );
+}
+

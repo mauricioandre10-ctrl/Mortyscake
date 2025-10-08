@@ -1,10 +1,12 @@
 
+'use client';
+
 import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ShareButton } from '@/components/ShareButton';
-import { Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface Product {
@@ -18,44 +20,6 @@ interface Product {
   menu_order: number;
   category_names: string[];
 }
-
-async function getProducts(): Promise<Product[]> {
-    const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
-    console.log('[getProducts] WOOCOMMERCE_API_URL:', apiUrl);
-
-    if (!apiUrl) {
-        console.error('[getProducts] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_STORE_URL no está configurada.');
-        return [];
-    }
-
-    try {
-        const productsApiUrl = new URL(`${apiUrl}/wp-json/morty/v1/products`);
-        productsApiUrl.searchParams.set('category_exclude_slug', 'cursos');
-        productsApiUrl.searchParams.set('per_page', '100');
-
-        console.log(`[getProducts] Fetching URL: ${productsApiUrl.toString()}`);
-        const response = await fetch(productsApiUrl.toString(), { cache: 'no-store' });
-        
-        console.log(`[getProducts] Response status: ${response.status}`);
-        if (!response.ok) {
-            console.error(`[getProducts] Failed to fetch products. Status: ${response.status}, StatusText: ${response.statusText}`);
-            throw new Error(`Failed to fetch products: ${response.statusText}`);
-        }
-        const data = await response.json();
-        console.log(`[getProducts] Received ${data.length} items from API.`);
-
-        // Final safety filter
-        const filteredData = data.filter((item: Product) => 
-            !item.category_names || !item.category_names.includes('Cursos')
-        );
-        console.log(`[getProducts] Filtered to ${filteredData.length} products.`);
-        return filteredData;
-    } catch (error) {
-        console.error('[getProducts] An unexpected error occurred:', error);
-        return [];
-    }
-}
-
 
 function ProductCard({ product, siteUrl }: { product: Product, siteUrl: string | undefined }) {
   return (
@@ -99,25 +63,78 @@ function ProductCard({ product, siteUrl }: { product: Product, siteUrl: string |
   )
 }
 
-async function ProductsList() {
-    const products = await getProducts();
-    const siteUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+function ProductsList() {
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
-    if (!products || products.length === 0) {
+    useEffect(() => {
+        async function getProducts() {
+            const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+            console.log('[CLIENT] WOOCOMMERCE_API_URL:', apiUrl);
+
+            if (!apiUrl) {
+                console.error('[CLIENT] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_STORE_URL no está configurada.');
+                setError('La configuración del sitio no es correcta.');
+                setLoading(false);
+                return;
+            }
+
+            try {
+                const productsApiUrl = new URL(`${apiUrl}/wp-json/morty/v1/products`);
+                productsApiUrl.searchParams.set('category_exclude_slug', 'cursos');
+                productsApiUrl.searchParams.set('per_page', '100');
+
+                console.log(`[CLIENT] Fetching URL: ${productsApiUrl.toString()}`);
+                const response = await fetch(productsApiUrl.toString(), { cache: 'no-store' });
+                
+                console.log(`[CLIENT] Response status: ${response.status}`);
+                if (!response.ok) {
+                    console.error(`[CLIENT] Failed to fetch products. Status: ${response.status}, StatusText: ${response.statusText}`);
+                    throw new Error(`Failed to fetch products: ${response.statusText}`);
+                }
+                const data = await response.json();
+                console.log(`[CLIENT] Received ${data.length} items from API.`);
+
+                const filteredData = data.filter((item: Product) => 
+                    !item.category_names || !item.category_names.includes('Cursos')
+                );
+                console.log(`[CLIENT] Filtered to ${filteredData.length} products.`);
+                
+                const sortedProducts = filteredData.sort((a, b) => a.menu_order - b.menu_order);
+                setProducts(sortedProducts);
+            } catch (err) {
+                console.error('[CLIENT] An unexpected error occurred:', err);
+                setError(err instanceof Error ? err.message : 'Ocurrió un error inesperado.');
+            } finally {
+                setLoading(false);
+            }
+        }
+        
+        getProducts();
+    }, []);
+
+    if (loading) {
+        return <LoadingSkeleton />;
+    }
+
+    if (error) {
+        return <p className="text-center text-destructive col-span-full">Error al cargar los productos: {error}</p>
+    }
+
+    if (products.length === 0) {
         return <p className="text-center text-muted-foreground col-span-full">No se encontraron productos en este momento. Por favor, inténtalo de nuevo más tarde.</p>
     }
 
-    const sortedProducts = products.sort((a, b) => a.menu_order - b.menu_order);
-
     return (
          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {sortedProducts.map((product) => (
+          {products.map((product) => (
             <ProductCard key={product.id} product={product} siteUrl={siteUrl} />
           ))}
         </div>
     )
 }
-
 
 export default function ShopPage() {
   return (
@@ -129,11 +146,7 @@ export default function ShopPage() {
         </p>
       </header>
 
-      {/* Sorting UI can be re-added here if needed, but would require client component */}
-
-      <Suspense fallback={<LoadingSkeleton />}>
-        <ProductsList />
-      </Suspense>
+      <ProductsList />
       
     </div>
   );
