@@ -159,7 +159,7 @@ function FeaturedCourses() {
                 <span className="text-2xl font-bold text-primary">
                   {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
                 </span>
-                <Button variant="secondary" onClick={(e) => { e.preventDefault(); e.stopPropagation(); trackViewDetails(course.name, 'Curso'); window.location.href=`/courses/${course.slug}`; }}>Ver Detalles</Button>
+                <Button variant="secondary" onClick={(e) => { e.preventDefault(); trackViewDetails(course.name, 'Curso'); }}>Ver Detalles</Button>
               </CardFooter>
             </Link>
         </Card>
@@ -281,7 +281,7 @@ function FeaturedProducts() {
                 <span className="text-2xl font-bold text-primary">
                   {product.price === "0.00" ? 'Gratis' : `€${product.price}`}
                 </span>
-                <Button variant="secondary" onClick={(e) => { e.preventDefault(); e.stopPropagation(); trackViewDetails(product.name, 'Producto'); window.location.href=`/shop/${product.slug}`; }}>Ver Detalles</Button>
+                <Button variant="secondary" onClick={(e) => { e.preventDefault(); e.stopPropagation(); trackViewDetails(product.name, 'Producto'); }}>Ver Detalles</Button>
               </CardFooter>
             </Link>
         </Card>
@@ -575,3 +575,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
