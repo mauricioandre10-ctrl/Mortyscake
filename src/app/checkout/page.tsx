@@ -6,9 +6,9 @@ import { useShoppingCart } from 'use-shopping-cart';
 
 export default function CheckoutPage() {
   const { cartCount } = useShoppingCart();
+  const stripePublicKey = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY;
 
   if (cartCount === 0) {
-    // Esto es opcional, pero es buena idea manejar el caso del carrito vacío
     return (
         <div className="container mx-auto py-12 px-4 md:px-6 text-center">
              <h1 className="font-headline text-4xl md:text-5xl">Finalizar Compra</h1>
@@ -16,6 +16,17 @@ export default function CheckoutPage() {
                 Tu carrito está vacío. Añade algunos productos antes de finalizar la compra.
             </p>
         </div>
+    )
+  }
+
+  if (!stripePublicKey) {
+    return (
+      <div className="container mx-auto py-12 px-4 md:px-6 text-center">
+        <h1 className="font-headline text-4xl md:text-5xl text-destructive">Error de Configuración</h1>
+        <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+          La pasarela de pago no se puede cargar. Por favor, asegúrate de que la variable de entorno <code>NEXT_PUBLIC_STRIPE_PUBLIC_KEY</code> está configurada correctamente.
+        </p>
+      </div>
     )
   }
 
