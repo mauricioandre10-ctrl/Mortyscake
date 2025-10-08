@@ -11,8 +11,6 @@ import { ShareButton } from '@/components/ShareButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 
-const WP_API_URL = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
-
 // This enables ISR (Incremental Static Regeneration)
 export const revalidate = 3600;
 
@@ -31,6 +29,8 @@ interface Course {
   tags: { name: string; slug: string }[];
   attributes: { name: string; options: string[] }[] | Record<string, { name: string; options: string[] }>;
 }
+
+const WP_API_URL = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
 
 // This function tells Next.js which slugs to pre-render at build time
 export async function generateStaticParams() {
