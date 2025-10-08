@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -11,9 +10,10 @@ import {
 } from '@/components/ui/sheet';
 import { useShoppingCart, CartEntry } from 'use-shopping-cart';
 import { Button } from './ui/button';
-import { Minus, Plus, Trash2, X } from 'lucide-react';
+import { Minus, Plus, Trash2 } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
 import { Separator } from './ui/separator';
+import { useToast } from '@/hooks/use-toast';
 
 export function CartSheet() {
   const {
@@ -25,47 +25,35 @@ export function CartSheet() {
     incrementItem,
     decrementItem,
     totalPrice,
-    redirectToCheckout,
+    clearCart,
   } = useShoppingCart();
+  const { toast } = useToast();
 
   const handleCheckout = async () => {
-    if (!process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL) {
-      console.error('La URL de la tienda no está configurada.');
+    const wooCommerceUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+    if (!wooCommerceUrl) {
+      console.error('La URL de la tienda WooCommerce no está configurada.');
+      toast({
+        variant: 'destructive',
+        title: 'Error de configuración',
+        description: 'No se puede proceder al pago en este momento.',
+      });
       return;
     }
-    
-    // Crear un array de line_items para el checkout de WooCommerce
-    const lineItems = Object.values(cartDetails ?? {}).map((item: CartEntry) => ({
-      product_id: item.id,
-      quantity: item.quantity,
-    }));
-    
-    // Construir la URL de checkout.
-    const checkoutUrl = new URL(`${process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL}/carrito/`);
-    
-    // Limpiar carrito antes de redirigir
-    Object.values(cartDetails ?? {}).forEach((item: CartEntry) => {
-        checkoutUrl.searchParams.append(`add-to-cart`, item.id);
-        checkoutUrl.searchParams.append(`quantity[${item.id}]`, item.quantity.toString());
-    });
 
-    const finalUrl = `${process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL}/carrito/?` + Object.entries(cartDetails ?? {}).map(([_, item]) => `add-to-cart=${item.id}&quantity[${item.id}]=${item.quantity}`).join('&');
+    if (cartCount === 0) return;
 
-    let wooCheckoutUrl = `${process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL}/carrito/?clear-cart=true`;
+    // Construir la URL para añadir múltiples productos al carrito de WooCommerce
+    let checkoutUrl = `${wooCommerceUrl}/carrito/?clear-cart=true`;
     Object.values(cartDetails ?? {}).forEach(item => {
-        wooCheckoutUrl += `&add-to-cart=${item.id}&quantity=${item.quantity}`;
+        checkoutUrl += `&add-to-cart=${item.id}&quantity=${item.quantity}`;
     });
     
-    // window.location.href = wooCheckoutUrl;
-     try {
-        const result = await redirectToCheckout();
-        if (result?.error) {
-            console.error(result.error.message);
-        }
-    } catch(e) {
-        console.error(e)
-    }
+    // Limpiar el carrito local antes de redirigir
+    clearCart();
 
+    // Redirigir al usuario
+    window.location.href = checkoutUrl;
   };
 
   return (
@@ -77,7 +65,7 @@ export function CartSheet() {
         <Separator />
         {cartCount === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-4">
-            <ShoppingCart className="h-20 w-20 text-muted-foreground/30" />
+            <Trash2 className="h-20 w-20 text-muted-foreground/30" />
             <p className="text-muted-foreground">Tu carrito está vacío</p>
           </div>
         ) : (
@@ -107,6 +95,7 @@ export function CartSheet() {
                           size="icon"
                           className="h-6 w-6"
                           onClick={() => decrementItem(item.id)}
+                          disabled={item.quantity === 1}
                         >
                           <Minus className="h-4 w-4" />
                         </Button>

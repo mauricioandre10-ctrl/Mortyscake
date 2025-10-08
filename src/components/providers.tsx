@@ -4,20 +4,18 @@ import { CartProvider as USCProvider } from 'use-shopping-cart';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const stripePublicKey = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY;
-  const wooCommerceUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
-  if (!stripePublicKey || !wooCommerceUrl || !siteUrl) {
-    console.warn("Faltan variables de entorno para el carrito de compras. La funcionalidad del carrito estará deshabilitada.");
-    return <>{children}</>;
+  if (!stripePublicKey) {
+    console.warn("Falta la clave pública de Stripe. La funcionalidad del carrito puede no funcionar como se espera para el checkout directo.");
+    // Aún así renderizamos el proveedor para que la gestión del carrito local funcione
   }
 
   return (
     <USCProvider
       mode="client-only"
-      stripe={stripePublicKey}
-      successUrl={`${siteUrl}/?success=true`}
-      cancelUrl={`${siteUrl}/?canceled=true`}
+      stripe={stripePublicKey || ''}
+      successUrl={`${process.env.NEXT_PUBLIC_SITE_URL || ''}/?success=true`}
+      cancelUrl={`${process.env.NEXT_PUBLIC_SITE_URL || ''}/?canceled=true`}
       currency="EUR"
       allowedCountries={['ES']}
       billingAddressCollection={true}
