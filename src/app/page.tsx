@@ -8,7 +8,6 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { ArrowRight, Star } from 'lucide-react';
 import Link from 'next/link';
 import { testimonials } from '@/lib/testimonials';
-import { galleryImages } from '@/lib/gallery-images';
 import { useEffect, useState, useRef } from 'react';
 import Autoplay from "embla-carousel-autoplay"
 import { Skeleton } from '@/components/ui/skeleton';
@@ -27,6 +26,12 @@ interface Product {
   rating_count: number;
   category_names: string[];
 }
+
+const localGalleryImages = Array.from({ length: 9 }, (_, i) => ({
+  src: `/image/galeria/galeria_${i + 1}.webp`,
+  alt: `Imagen de la galería de repostería ${i + 1}`,
+}));
+
 
 // Datos simulados para el blog
 const blogPosts = [
@@ -472,7 +477,7 @@ export default function Home() {
             className="w-full max-w-4xl mx-auto"
           >
             <CarouselContent>
-              {galleryImages.slice(0, 9).map((image, index) => ( // Show first 9 images
+              {localGalleryImages.map((image, index) => ( // Show first 9 images
                 <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                   <div className="p-1">
                     <Card className="overflow-hidden">
@@ -483,8 +488,6 @@ export default function Home() {
                               alt={image.alt}
                               fill
                               className="object-cover"
-                              data-ai-hint={image.hint}
-                              unoptimized
                             />
                          </div>
                       </CardContent>

@@ -2,8 +2,6 @@
 'use client';
 
 import Image from 'next/image';
-import { galleryImages } from '@/lib/gallery-images';
-import { Card, CardContent } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -11,8 +9,24 @@ import {
 } from "@/components/ui/dialog"
 import { useState } from 'react';
 
+// Se reemplazan las imágenes de marcador de posición por imágenes locales.
+const localGalleryImages = Array.from({ length: 12 }, (_, i) => ({
+  src: `/image/galeria/galeria_${i + 1}.webp`,
+  alt: `Imagen de la galería de repostería ${i + 1}`,
+  width: 800,
+  height: 600 + (i % 3 - 1) * 100, // Variar ligeramente la altura para el efecto masonry
+}));
+
+interface GalleryImage {
+    src: string;
+    alt: string;
+    width: number;
+    height: number;
+}
+
+
 export default function GalleryPage() {
-    const [selectedImage, setSelectedImage] = useState<typeof galleryImages[0] | null>(null);
+    const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -25,7 +39,7 @@ export default function GalleryPage() {
 
       <Dialog>
         <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
-          {galleryImages.map((image, index) => (
+          {localGalleryImages.map((image, index) => (
              <DialogTrigger asChild key={index} onClick={() => setSelectedImage(image)}>
                 <div className="overflow-hidden rounded-lg break-inside-avoid shadow-md hover:shadow-primary/20 hover:shadow-xl transition-all duration-300 cursor-pointer group">
                     <Image
@@ -35,8 +49,6 @@ export default function GalleryPage() {
                         height={image.height}
                         className="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105"
                         sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                        data-ai-hint={image.hint}
-                        unoptimized
                     />
                 </div>
             </DialogTrigger>
@@ -45,14 +57,13 @@ export default function GalleryPage() {
         
         {selectedImage && (
              <DialogContent className="max-w-4xl p-0 border-0">
-                <div className="relative aspect-video">
+                <div className="relative aspect-[4/3]">
                     <Image 
-                        src={selectedImage.src.replace(/\d+\/\d+$/, `${selectedImage.width*2}/${selectedImage.height*2}`)} // Fetch higher res for dialog
+                        src={selectedImage.src}
                         alt={selectedImage.alt}
                         fill
                         className="object-contain"
                         sizes="100vw"
-                        unoptimized
                     />
                 </div>
             </DialogContent>
