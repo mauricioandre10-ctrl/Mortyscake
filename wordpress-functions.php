@@ -1,23 +1,15 @@
 <?php
 
-// Aumenta el límite de tiempo para evitar timeouts en Vercel
 if (function_exists('set_time_limit')) {
     set_time_limit(30);
 }
 
-// 1. Hook para registrar los encabezados CORS
-// Se ejecuta en 'rest_api_init' para asegurar que se aplique a todas las peticiones de la API.
 add_action('rest_api_init', function () {
-    // Elimina el filtro CORS por defecto de WordPress para usar el nuestro.
     remove_filter('rest_pre_serve_request', 'rest_send_cors_headers');
-    
-    // Añade nuestro filtro personalizado con una prioridad alta.
     add_filter('rest_pre_serve_request', 'morty_cors_headers', 15);
 }, 15);
 
-// 2. Función para manejar los encabezados CORS
 function morty_cors_headers($value) {
-    // Lista de dominios permitidos para hacer peticiones.
     $allowed_origins = [
         'https://mortyscake-website.vercel.app',
         'https://mortyscake-website-git-main-mauricio-s-projects-bb335663.vercel.app',
@@ -25,10 +17,8 @@ function morty_cors_headers($value) {
         'http://localhost:9002'
     ];
     
-    // Obtiene el origen de la petición actual.
     $origin = get_http_origin();
 
-    // Si el origen está en nuestra lista de permitidos, enviamos los encabezados.
     if ($origin && in_array($origin, $allowed_origins, true)) {
         header('Access-Control-Allow-Origin: ' . esc_url_raw($origin));
         header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
@@ -36,7 +26,6 @@ function morty_cors_headers($value) {
         header('Access-Control-Allow-Credentials: true');
     }
 
-    // Si es una petición 'OPTIONS' (pre-vuelo), respondemos con éxito y terminamos.
     if ('OPTIONS' === $_SERVER['REQUEST_METHOD']) {
         status_header(200);
         exit();
@@ -45,20 +34,16 @@ function morty_cors_headers($value) {
     return $value;
 }
 
-
-// 3. Hook para registrar nuestras rutas personalizadas de la API.
 add_action('rest_api_init', 'morty_register_rest_routes');
 
-// 4. Función para registrar los endpoints.
 function morty_register_rest_routes() {
     $namespace = 'morty/v1';
 
-    // Registra la ruta /products
     register_rest_route($namespace, '/products', [
-        'methods'             => WP_REST_Server::READABLE, // Solo peticiones GET
+        'methods'             => WP_REST_Server::READABLE,
         'callback'            => 'morty_get_products_with_details',
-        'permission_callback' => '__return_true', // Acceso público
-        'args'                => [ // Argumentos que acepta la petición
+        'permission_callback' => '__return_true',
+        'args'                => [
             'per_page' => [ 'type' => 'integer', 'sanitize_callback' => 'absint' ],
             'slug' => [ 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ],
             'category_slug' => [ 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ],
@@ -67,14 +52,11 @@ function morty_register_rest_routes() {
     ]);
 }
 
-// 5. Función que se ejecuta cuando se llama a /products (el callback).
 function morty_get_products_with_details(WP_REST_Request $request) {
-    // Si WooCommerce no está activo, devuelve un error.
     if (!class_exists('WooCommerce')) {
         return new WP_Error('woocommerce_not_active', 'WooCommerce no está activado.', ['status' => 500]);
     }
 
-    // Recoge los parámetros de la URL.
     $params = $request->get_params();
     $args = [
         'status'   => 'publish',
@@ -89,19 +71,15 @@ function morty_get_products_with_details(WP_REST_Request $request) {
         if ($term) { $args['category__not_in'] = [$term->term_id]; }
     }
 
-    // Obtiene los productos usando la función de WooCommerce.
     $products = wc_get_products($args);
     $data = [];
 
-    // Formatea cada producto.
     foreach ($products as $product) {
         if (!$product) continue;
         $product_data = $product->get_data();
         
-        // Limpia datos innecesarios.
         unset($product_data['downloads'], $product_data['meta_data']);
         
-        // Añade datos enriquecidos.
         $product_data['price'] = wc_format_decimal($product->get_price(), 2);
         $product_data['category_names'] = morty_get_product_terms($product->get_id(), 'product_cat', 'name');
         $product_data['tags'] = morty_get_product_terms($product->get_id(), 'product_tag');
@@ -112,11 +90,8 @@ function morty_get_products_with_details(WP_REST_Request $request) {
         $data[] = $product_data;
     }
 
-    // Devuelve los datos como una respuesta JSON.
     return new WP_REST_Response($data, 200);
 }
-
-// 6. Funciones auxiliares para enriquecer los datos del producto.
 
 function morty_get_product_terms($product_id, $taxonomy, $field = null) {
     $terms = get_the_terms($product_id, $taxonomy);
