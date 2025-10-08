@@ -24,6 +24,7 @@ const fontHeadline = FontHeadline({
   subsets: ['latin'],
   variable: '--font-headline',
   display: 'swap',
+  weight: '400'
 });
 
 export const metadata: Metadata = {
