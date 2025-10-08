@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -19,8 +20,12 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import Image from 'next/image';
 import { Separator } from './ui/separator';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
-import { Label } from './ui/label';
-import { CreditCard, Landmark } from 'lucide-react';
+import { CreditCard, Landmark, Loader2 } from 'lucide-react';
+import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
+
 
 const formSchema = z.object({
   firstName: z.string().min(2, { message: 'El nombre debe tener al menos 2 caracteres.' }),
@@ -33,8 +38,31 @@ const formSchema = z.object({
   paymentMethod: z.enum(['card', 'paypal'], { required_error: 'Debes seleccionar un método de pago.' }),
 });
 
+const cardElementOptions = {
+    style: {
+        base: {
+            fontSize: '16px',
+            color: '#32325d',
+            '::placeholder': {
+                color: '#aab7c4',
+            },
+        },
+        invalid: {
+            color: '#fa755a',
+            iconColor: '#fa755a',
+        },
+    },
+};
+
 export function CheckoutForm() {
-  const { cartDetails, totalPrice, cartCount, formattedTotalPrice } = useShoppingCart();
+  const { cartDetails, totalPrice, cartCount, formattedTotalPrice, clearCart } = useShoppingCart();
+  const stripe = useStripe();
+  const elements = useElements();
+  const { toast } = useToast();
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -50,10 +78,111 @@ export function CheckoutForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Aquí procesaríamos el pago
-    console.log(values);
-    alert('Funcionalidad de pago aún no implementada.');
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoading(true);
+    setErrorMessage(null);
+
+    if (!stripe || !elements || !totalPrice) {
+        setErrorMessage('La pasarela de pago no está lista.');
+        setLoading(false);
+        return;
+    }
+
+    const cardElement = elements.getElement(CardElement);
+    if (!cardElement) {
+        setErrorMessage('El componente de tarjeta no se ha cargado.');
+        setLoading(false);
+        return;
+    }
+
+    const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+     if (!apiUrl) {
+        setErrorMessage('La URL de la API no está configurada.');
+        setLoading(false);
+        return;
+    }
+
+    try {
+        // 1. Crear Payment Intent en el backend
+        const intentResponse = await fetch(`${apiUrl}/wp-json/morty/v1/create-payment-intent`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                amount: Math.round(totalPrice * 100), // En céntimos
+                currency: 'eur',
+            }),
+        });
+
+        const intentData = await intentResponse.json();
+
+        if (!intentResponse.ok || !intentData.client_secret) {
+            throw new Error(intentData.message || 'Error al crear la intención de pago.');
+        }
+
+        // 2. Confirmar el pago en el frontend con Stripe
+        const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(
+            intentData.client_secret,
+            {
+                payment_method: {
+                    card: cardElement,
+                    billing_details: {
+                        name: `${values.firstName} ${values.lastName}`,
+                        email: values.email,
+                        phone: values.phone,
+                        address: {
+                            line1: values.address,
+                            city: values.city,
+                            postal_code: values.zip,
+                            country: 'ES',
+                        }
+                    },
+                },
+            }
+        );
+
+        if (stripeError) {
+            throw new Error(stripeError.message);
+        }
+
+        if (paymentIntent?.status !== 'succeeded') {
+            throw new Error('El pago no se ha completado.');
+        }
+
+        // 3. Crear el pedido en WooCommerce
+        const orderResponse = await fetch(`${apiUrl}/wp-json/morty/v1/create-order`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                billingDetails: values,
+                cartItems: Object.values(cartDetails ?? {}).map(item => ({ id: item.id, quantity: item.quantity })),
+                paymentIntentId: paymentIntent.id
+            })
+        });
+
+        const orderData = await orderResponse.json();
+
+        if (!orderResponse.ok) {
+            throw new Error(orderData.message || 'Error al crear el pedido en WooCommerce.');
+        }
+
+        toast({
+            title: "¡Pedido completado!",
+            description: `Tu pedido #${orderData.orderId} se ha realizado con éxito.`,
+        });
+
+        clearCart();
+        router.push('/?success=true');
+        
+    } catch (error: any) {
+        setErrorMessage(error.message || 'Ha ocurrido un error inesperado.');
+        toast({
+            variant: "destructive",
+            title: "Error en el pago",
+            description: error.message || 'No se pudo procesar el pago.',
+        });
+    } finally {
+        setLoading(false);
+    }
   }
 
   return (
@@ -179,22 +308,22 @@ export function CheckoutForm() {
                                 defaultValue={field.value}
                                 className="flex flex-col space-y-1"
                                 >
-                                <FormItem className="flex items-center space-x-3 space-y-0 rounded-md border p-4">
+                                <FormItem className="flex items-center space-x-3 space-y-0 rounded-md border p-4 data-[state=checked]:border-primary">
                                     <FormControl>
-                                    <RadioGroupItem value="card" />
+                                    <RadioGroupItem value="card" id="card" />
                                     </FormControl>
                                     <div className="flex items-center gap-2">
                                         <CreditCard className="w-5 h-5"/>
-                                        <FormLabel className="font-normal">Tarjeta de Crédito / Débito</FormLabel>
+                                        <FormLabel htmlFor="card" className="font-normal cursor-pointer">Tarjeta de Crédito / Débito</FormLabel>
                                     </div>
                                 </FormItem>
-                                <FormItem className="flex items-center space-x-3 space-y-0 rounded-md border p-4">
+                                <FormItem className="flex items-center space-x-3 space-y-0 rounded-md border p-4 data-[state=checked]:border-primary" onClick={() => form.setValue('paymentMethod', 'paypal')} >
                                     <FormControl>
-                                    <RadioGroupItem value="paypal" />
+                                    <RadioGroupItem value="paypal" id="paypal" disabled />
                                     </FormControl>
                                      <div className="flex items-center gap-2">
-                                        <Landmark className="w-5 h-5"/>
-                                        <FormLabel className="font-normal">PayPal</FormLabel>
+                                        <Landmark className="w-5 h-5 text-muted-foreground"/>
+                                        <FormLabel htmlFor="paypal" className="font-normal text-muted-foreground cursor-not-allowed">PayPal (Próximamente)</FormLabel>
                                     </div>
                                 </FormItem>
                                 </RadioGroup>
@@ -204,14 +333,23 @@ export function CheckoutForm() {
                         )}
                         />
                          <Card className="mt-4 p-4 bg-muted/50">
-                            <p className="text-muted-foreground text-sm">
-                                El proceso de pago real se integrará en el siguiente paso. Por ahora, esta es una demostración visual.
-                            </p>
-                        </Card>
+                            {form.getValues('paymentMethod') === 'card' && (
+                                <div>
+                                    <Label className="mb-2 block">Datos de la tarjeta</Label>
+                                    <div className="p-3 border rounded-md bg-background">
+                                        <CardElement options={cardElementOptions} />
+                                    </div>
+                                </div>
+                            )}
+                         </Card>
+                         {errorMessage && <p className="text-sm font-medium text-destructive mt-4">{errorMessage}</p>}
                 </div>
 
 
-                <Button type="submit" className="w-full" size="lg">Realizar el pedido</Button>
+                <Button type="submit" className="w-full" size="lg" disabled={loading || cartCount === 0}>
+                    {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                    {loading ? 'Procesando...' : `Pagar ${formattedTotalPrice}`}
+                </Button>
                 </form>
             </Form>
         </div>
@@ -221,50 +359,54 @@ export function CheckoutForm() {
                     <CardTitle>Tu Pedido</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="space-y-4">
-                        {Object.values(cartDetails ?? {}).map((item) => (
-                            <div key={item.id} className="flex justify-between items-center">
-                                <div className="flex items-center gap-4">
-                                     <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border">
-                                        {item.image && (
-                                            <Image
-                                                src={item.image}
-                                                alt={item.name}
-                                                fill
-                                                className="object-cover"
-                                            />
-                                        )}
+                     {cartCount === 0 ? (
+                        <p className="text-muted-foreground">Tu carrito está vacío.</p>
+                    ) : (
+                        <>
+                            <div className="space-y-4">
+                                {Object.values(cartDetails ?? {}).map((item) => (
+                                    <div key={item.id} className="flex justify-between items-center">
+                                        <div className="flex items-center gap-4">
+                                            <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border">
+                                                {item.image && (
+                                                    <Image
+                                                        src={item.image}
+                                                        alt={item.name}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                )}
+                                            </div>
+                                            <div>
+                                                <p className="font-medium">{item.name}</p>
+                                                <p className="text-sm text-muted-foreground">Cantidad: {item.quantity}</p>
+                                            </div>
+                                        </div>
+                                        <p className="font-medium">{item.formattedValue}</p>
                                     </div>
-                                    <div>
-                                        <p className="font-medium">{item.name}</p>
-                                        <p className="text-sm text-muted-foreground">Cantidad: {item.quantity}</p>
-                                    </div>
-                                </div>
-                                <p className="font-medium">{item.formattedValue}</p>
+                                ))}
                             </div>
-                        ))}
-                    </div>
-                    <Separator className="my-6" />
-                    <div className="space-y-2">
-                        <div className="flex justify-between">
-                            <p>Subtotal</p>
-                            <p>{formattedTotalPrice}</p>
-                        </div>
-                         <div className="flex justify-between">
-                            <p>Envío</p>
-                            <p>Gratis</p>
-                        </div>
-                    </div>
-                    <Separator className="my-6" />
-                    <div className="flex justify-between font-bold text-lg">
-                        <p>Total</p>
-                        <p>{formattedTotalPrice}</p>
-                    </div>
+                            <Separator className="my-6" />
+                            <div className="space-y-2">
+                                <div className="flex justify-between">
+                                    <p>Subtotal</p>
+                                    <p>{formattedTotalPrice}</p>
+                                </div>
+                                <div className="flex justify-between">
+                                    <p>Envío</p>
+                                    <p>Gratis</p>
+                                </div>
+                            </div>
+                            <Separator className="my-6" />
+                            <div className="flex justify-between font-bold text-lg">
+                                <p>Total</p>
+                                <p>{formattedTotalPrice}</p>
+                            </div>
+                        </>
+                    )}
                 </CardContent>
             </Card>
         </div>
     </div>
   );
 }
-
-    
