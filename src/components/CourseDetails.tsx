@@ -74,6 +74,7 @@ export function CourseDetails({ course }: { course: Course }) {
                         alt={image.alt || course.name}
                         fill
                         className="object-cover"
+                        sizes="(max-width: 1024px) 100vw, 33vw"
                       />
                     </div>
                   </CarouselItem>
@@ -214,3 +215,5 @@ export function CourseDetails({ course }: { course: Course }) {
     </div>
   )
 }
+
+    

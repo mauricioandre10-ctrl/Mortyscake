@@ -135,6 +135,7 @@ function FeaturedCourses() {
                         alt={course.name}
                         fill
                         className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                     ) : (
                       <div className="w-full h-full bg-muted"></div>
@@ -256,6 +257,7 @@ function FeaturedProducts() {
                         alt={product.name}
                         fill
                         className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                     ) : (
                       <div className="w-full h-full bg-muted"></div>
@@ -572,3 +574,5 @@ export default function Home() {
     </div>
   );
 }
+
+    

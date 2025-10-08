@@ -68,6 +68,7 @@ export function ProductDetails({ product }: { product: Product }) {
                         alt={image.alt || product.name}
                         fill
                         className="object-cover"
+                        sizes="(max-width: 1024px) 100vw, 33vw"
                       />
                     </div>
                   </CarouselItem>
@@ -205,3 +206,5 @@ export function ProductDetails({ product }: { product: Product }) {
     </div>
   );
 }
+
+    
