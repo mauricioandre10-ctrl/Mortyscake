@@ -26,6 +26,7 @@ export function CartSheet() {
     decrementItem,
     totalPrice,
     clearCart,
+    formattedTotalPrice,
   } = useShoppingCart();
   const { toast } = useToast();
 
@@ -126,7 +127,7 @@ export function CartSheet() {
               <div className="flex w-full flex-col gap-2">
                 <div className="flex justify-between font-semibold">
                   <span>Subtotal</span>
-                  <span>€{totalPrice?.toFixed(2) ?? '0.00'}</span>
+                  <span>{formattedTotalPrice}</span>
                 </div>
                 <Button
                   className="w-full"

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -26,7 +25,7 @@ export function AddToCart({ name, id, price, currency, image, description, isCou
     const item = {
       name,
       id,
-      price,
+      price: Math.round(price * 100), // Convert to smallest currency unit (cents)
       currency,
       image,
       description,
