@@ -26,6 +26,7 @@ export function CartSheet() {
     incrementItem,
     decrementItem,
     formattedTotalPrice,
+    redirectToCheckout
   } = useShoppingCart();
   const { toast } = useToast();
 
