@@ -14,6 +14,7 @@ import { Minus, Plus, Trash2 } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
 import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
 export function CartSheet() {
   const {
@@ -24,37 +25,12 @@ export function CartSheet() {
     removeItem,
     incrementItem,
     decrementItem,
-    totalPrice,
-    clearCart,
     formattedTotalPrice,
   } = useShoppingCart();
   const { toast } = useToast();
 
-  const handleCheckout = async () => {
-    const wooCommerceUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
-    if (!wooCommerceUrl) {
-      console.error('La URL de la tienda WooCommerce no está configurada.');
-      toast({
-        variant: 'destructive',
-        title: 'Error de configuración',
-        description: 'No se puede proceder al pago en este momento.',
-      });
-      return;
-    }
-
-    if (cartCount === 0) return;
-
-    // Construir la URL para añadir múltiples productos al carrito de WooCommerce
-    let checkoutUrl = `${wooCommerceUrl}/carrito/?clear-cart=true`;
-    Object.values(cartDetails ?? {}).forEach(item => {
-        checkoutUrl += `&add-to-cart=${item.id}&quantity=${item.quantity}`;
-    });
-    
-    // Limpiar el carrito local antes de redirigir
-    clearCart();
-
-    // Redirigir al usuario
-    window.location.href = checkoutUrl;
+  const handleCheckout = () => {
+    handleCartClick(); // Cierra el sheet antes de navegar
   };
 
   return (
@@ -130,11 +106,12 @@ export function CartSheet() {
                   <span>{formattedTotalPrice}</span>
                 </div>
                 <Button
+                  asChild
                   className="w-full"
                   onClick={handleCheckout}
                   disabled={cartCount === 0}
                 >
-                  Finalizar Compra
+                  <Link href="/checkout">Finalizar Compra</Link>
                 </Button>
               </div>
             </SheetFooter>
