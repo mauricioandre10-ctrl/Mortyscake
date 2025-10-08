@@ -121,66 +121,166 @@ function morty_get_product_details($product) {
     return $product_data;
 }
 
-// Registrar endpoint completo
+// Registrar endpoints
 add_action('rest_api_init', function () {
+    // Endpoint para obtener productos
     register_rest_route('morty/v1', '/products', [
         'methods' => WP_REST_Server::READABLE,
-        'callback' => function (WP_REST_Request $request) {
-            if (!class_exists('WooCommerce')) {
-                return new WP_Error('woocommerce_not_active', 'WooCommerce no está activado.', ['status' => 500]);
-            }
-            
-            $params = $request->get_params();
-            $args = ['status' => 'publish', 'limit' => -1];
-
-            if (!empty($params['slug'])) {
-                // Use get_page_by_path to find the product with the exact slug.
-                $post = get_page_by_path($params['slug'], OBJECT, 'product');
-                if ($post) {
-                    $product = wc_get_product($post->ID);
-                    if ($product) {
-                        $data = morty_get_product_details($product);
-                        return new WP_REST_Response([$data], 200);
-                    }
-                }
-                // If no exact match is found, return an empty array.
-                return new WP_REST_Response([], 200);
-            }
-
-            if (!empty($params['category_slug'])) {
-                $args['category'] = [$params['category_slug']];
-            }
-            if (!empty($params['per_page'])) {
-                $args['limit'] = (int) $params['per_page'];
-            }
-             if (!empty($params['category_exclude_slug'])) {
-                $excluded_cat_term = get_term_by('slug', $params['category_exclude_slug'], 'product_cat');
-                if ($excluded_cat_term) {
-                    $args['tax_query'] = [
-                        [
-                            'taxonomy' => 'product_cat',
-                            'field' => 'term_id',
-                            'terms' => $excluded_cat_term->term_id,
-                            'operator' => 'NOT IN',
-                        ],
-                    ];
-                }
-            }
-
-
-            $products = wc_get_products($args);
-            $data = [];
-
-            foreach ($products as $product) {
-                $details = morty_get_product_details($product);
-                if ($details) {
-                    $data[] = $details;
-                }
-            }
-
-            return new WP_REST_Response($data, 200);
-        },
+        'callback' => 'morty_get_products_callback',
         'permission_callback' => '__return_true',
     ]);
+    
+    // Endpoint para crear intención de pago
+    register_rest_route('morty/v1', '/create-payment-intent', [
+        'methods' => 'POST',
+        'callback' => 'morty_create_payment_intent',
+        'permission_callback' => '__return_true'
+    ]);
+
+    // Endpoint para crear el pedido
+    register_rest_route('morty/v1', '/create-order', [
+        'methods' => 'POST',
+        'callback' => 'morty_create_order',
+        'permission_callback' => '__return_true'
+    ]);
 });
+
+function morty_get_products_callback(WP_REST_Request $request) {
+    if (!class_exists('WooCommerce')) {
+        return new WP_Error('woocommerce_not_active', 'WooCommerce no está activado.', ['status' => 500]);
+    }
+    
+    $params = $request->get_params();
+    $args = ['status' => 'publish', 'limit' => -1];
+
+    if (!empty($params['slug'])) {
+        $post = get_page_by_path($params['slug'], OBJECT, 'product');
+        if ($post) {
+            $product = wc_get_product($post->ID);
+            if ($product) {
+                // Check if this is an exact match for the slug
+                if ($product->get_slug() === $params['slug']) {
+                    $data = morty_get_product_details($product);
+                    return new WP_REST_Response([$data], 200);
+                }
+            }
+        }
+        return new WP_REST_Response([], 200);
+    }
+
+    if (!empty($params['category_slug'])) {
+        $args['category'] = [$params['category_slug']];
+    }
+    if (!empty($params['per_page'])) {
+        $args['limit'] = (int) $params['per_page'];
+    }
+     if (!empty($params['category_exclude_slug'])) {
+        $excluded_cat_term = get_term_by('slug', $params['category_exclude_slug'], 'product_cat');
+        if ($excluded_cat_term) {
+            $args['tax_query'] = [
+                [
+                    'taxonomy' => 'product_cat',
+                    'field' => 'term_id',
+                    'terms' => $excluded_cat_term->term_id,
+                    'operator' => 'NOT IN',
+                ],
+            ];
+        }
+    }
+
+    $products = wc_get_products($args);
+    $data = [];
+
+    foreach ($products as $product) {
+        $details = morty_get_product_details($product);
+        if ($details) {
+            $data[] = $details;
+        }
+    }
+
+    return new WP_REST_Response($data, 200);
+}
+
+
+function morty_create_payment_intent(WP_REST_Request $request) {
+    if (!class_exists('WC_Stripe_Gateway')) {
+        return new WP_Error('stripe_not_active', 'Stripe for WooCommerce no está activado.', ['status' => 500]);
+    }
+
+    $body = $request->get_json_params();
+    $amount = isset($body['amount']) ? $body['amount'] : 0;
+    $currency = isset($body['currency']) ? $body['currency'] : 'eur';
+
+    if (empty($amount)) {
+        return new WP_Error('invalid_amount', 'El importe no puede ser cero.', ['status' => 400]);
+    }
+
+    $stripe_gateway = new WC_Stripe_Gateway();
+    $stripe = $stripe_gateway->get_stripe_client();
+
+    try {
+        $intent = $stripe->payment_intents->create([
+            'amount' => $amount,
+            'currency' => $currency,
+            'payment_method_types' => ['card'],
+        ]);
+
+        return new WP_REST_Response(['client_secret' => $intent->client_secret], 200);
+
+    } catch (Exception $e) {
+        return new WP_Error('stripe_error', 'Error al crear la intención de pago: ' . $e->getMessage(), ['status' => 500]);
+    }
+}
+
+
+function morty_create_order(WP_REST_Request $request) {
+    $params = $request->get_json_params();
+
+    $billing_details = $params['billingDetails'];
+    $cart_items = $params['cartItems'];
+    $payment_intent_id = $params['paymentIntentId'];
+
+    if (empty($billing_details) || empty($cart_items) || empty($payment_intent_id)) {
+        return new WP_Error('invalid_data', 'Faltan datos para crear el pedido.', ['status' => 400]);
+    }
+
+    try {
+        $address = [
+            'first_name' => $billing_details['firstName'],
+            'last_name' => $billing_details['lastName'],
+            'address_1' => $billing_details['address'],
+            'city' => $billing_details['city'],
+            'postcode' => $billing_details['zip'],
+            'country' => 'ES', // Asumiendo España
+            'email' => $billing_details['email'],
+            'phone' => $billing_details['phone'],
+        ];
+
+        $order = wc_create_order();
+
+        $order->set_address($address, 'billing');
+
+        foreach ($cart_items as $item) {
+            $product = wc_get_product($item['id']);
+            if ($product) {
+                $order->add_product($product, $item['quantity']);
+            }
+        }
+
+        $order->set_payment_method('stripe');
+        $order->set_payment_method_title('Stripe (Tarjeta de crédito)');
+        $order->set_transaction_id($payment_intent_id);
+
+        $order->calculate_totals();
+        $order->update_status('processing', 'Pedido pagado a través de la API personalizada con Stripe.', true);
+
+        // Guardar el pedido
+        $order_id = $order->save();
+
+        return new WP_REST_Response(['orderId' => $order_id], 200);
+
+    } catch (Exception $e) {
+        return new WP_Error('order_creation_failed', 'Error al crear el pedido: ' . $e->getMessage(), ['status' => 500]);
+    }
+}
 ?>
