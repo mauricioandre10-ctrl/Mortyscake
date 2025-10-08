@@ -16,10 +16,12 @@
 add_action( 'rest_api_init', function() {
     remove_filter( 'rest_pre_serve_request', 'rest_send_cors_headers' );
     add_filter( 'rest_pre_serve_request', function( $value ) {
-        // Lista de dominios permitidos
+        // Lista de dominios permitidos. Se han añadido las URLs de Vercel.
         $allowed_origins = [
-            'https://mortyscake-website-abkn0i9ut-mauricio-s-projects-bb335663.vercel.app',
-            'https://mortyscake.com', // Tu dominio final
+            'https://mortyscake.com', // Dominio de producción final
+            'https://mortyscake-website.vercel.app', // Dominio principal de Vercel
+            'https://mortyscake-sitio-web-git-main-mauricio-s-projects-bb335663.vercel.app', // URL de despliegue de la rama main
+            'https://mortyscake-sitio-web-iyfpw5yl3-mauricio-s-projects-bb335663.vercel.app', // URL de despliegue de vista previa
             'http://localhost:9002', // Para desarrollo local
         ];
         
@@ -27,8 +29,7 @@ add_action( 'rest_api_init', function() {
         if ( $origin && in_array( $origin, $allowed_origins ) ) {
             header( 'Access-Control-Allow-Origin: ' . esc_url_raw( $origin ) );
         } else {
-            // Como fallback, podemos mantener el comodín o un dominio por defecto.
-            // Para producción, es más seguro especificar dominios.
+            // Un comodín como fallback puede ser útil, pero es menos seguro.
             header( 'Access-control-allow-origin: *' );
         }
 
@@ -93,7 +94,7 @@ function morty_get_products_with_details(WP_REST_Request $request) {
     else {
         $args = array(
             'status' => 'publish',
-            'limit' => isset($params['per_page']) ? intval($params['per_page']) : 10,
+            'limit' => isset($params['per_page']) ? intval($params['per_page']) : 100,
             'paginate' => false,
         );
 
@@ -142,7 +143,7 @@ function morty_get_products_with_details(WP_REST_Request $request) {
         foreach ($attributes as $attribute) {
             if ($attribute->get_visible()) {
                 $attributes_data[] = [
-                    'name' => $attribute->get_name(),
+                    'name' => wc_get_attribute_label($attribute->get_name()),
                     'options' => $attribute->get_options(),
                 ];
             }
