@@ -29,6 +29,7 @@ interface Course {
   category_names: string[];
   sku: string;
   tags: { name: string; slug: string }[];
+  attributes: { name: string; options: string[] }[];
 }
 
 // This function tells Next.js which slugs to pre-render at build time
@@ -189,24 +190,34 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
               />
           </TabsContent>
           <TabsContent value="additional-info" className="py-6 px-4 border rounded-b-md">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {course.sku && (
-                    <div>
-                        <h4 className="font-semibold mb-1">SKU</h4>
-                        <p>{course.sku}</p>
-                    </div>
-                )}
-                 {course.tags?.length > 0 && (
-                    <div>
-                        <h4 className="font-semibold mb-2">Etiquetas</h4>
-                        <div className="flex flex-wrap gap-2">
-                            {course.tags.map(tag => (
-                                <Badge key={tag.slug} variant="secondary">{tag.name}</Badge>
-                            ))}
-                        </div>
-                    </div>
-                )}
-            </div>
+             <table className="w-full text-sm">
+                <tbody>
+                  {course.sku && (
+                     <tr className="border-b">
+                        <td className="py-3 font-semibold pr-4">SKU</td>
+                        <td className="py-3">{course.sku}</td>
+                    </tr>
+                  )}
+                  {course.attributes && course.attributes.map((attr, index) => (
+                    <tr key={index} className="border-b">
+                      <td className="py-3 font-semibold pr-4">{attr.name}</td>
+                      <td className="py-3">{attr.options.join(', ')}</td>
+                    </tr>
+                  ))}
+                  {course.tags?.length > 0 && (
+                    <tr className="border-b">
+                        <td className="py-3 font-semibold pr-4 align-top">Etiquetas</td>
+                        <td className="py-3">
+                           <div className="flex flex-wrap gap-2">
+                                {course.tags.map(tag => (
+                                    <Badge key={tag.slug} variant="secondary">{tag.name}</Badge>
+                                ))}
+                            </div>
+                        </td>
+                    </tr>
+                   )}
+                </tbody>
+            </table>
           </TabsContent>
           <TabsContent value="reviews" className="py-6 px-4 border rounded-b-md">
             <h3 className="text-xl font-bold mb-4">Opiniones de los alumnos</h3>

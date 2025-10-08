@@ -38,7 +38,7 @@ add_action('rest_api_init', function () {
  * - Prioriza la búsqueda por 'slug' si se proporciona.
  * - Filtra por categoría (para 'cursos').
  * - Excluye una categoría (para 'productos').
- * - Siempre devuelve nombres de categorías, SKU y etiquetas.
+ * - Siempre devuelve nombres de categorías, SKU, etiquetas y atributos.
  */
 function morty_get_products_with_details(WP_REST_Request $request) {
     if (!class_exists('WooCommerce')) {
@@ -46,11 +46,7 @@ function morty_get_products_with_details(WP_REST_Request $request) {
     }
 
     $params = $request->get_params();
-    $args = array(
-        'status' => 'publish',
-        'limit' => isset($params['per_page']) ? intval($params['per_page']) : 10,
-        'paginate' => false,
-    );
+    $products = [];
 
     // Prioridad 1: Si se pasa un 'slug', buscar ese producto específico.
     if (!empty($params['slug'])) {
@@ -59,7 +55,6 @@ function morty_get_products_with_details(WP_REST_Request $request) {
             'name' => sanitize_text_field($params['slug']),
             'posts_per_page' => 1
         ));
-        $products = array();
         if ($product_query->have_posts()) {
             while ($product_query->have_posts()) {
                 $product_query->the_post();
@@ -73,6 +68,12 @@ function morty_get_products_with_details(WP_REST_Request $request) {
     } 
     // Prioridad 2: Si no hay slug, aplicar filtros de categoría para listas.
     else {
+        $args = array(
+            'status' => 'publish',
+            'limit' => isset($params['per_page']) ? intval($params['per_page']) : 10,
+            'paginate' => false,
+        );
+
         // Para obtener solo productos de una categoría específica (ej: 'cursos')
         if (!empty($params['category_slug'])) {
             $args['category'] = array(sanitize_text_field($params['category_slug']));
@@ -111,6 +112,20 @@ function morty_get_products_with_details(WP_REST_Request $request) {
             }
         }
         $product_data['tags'] = $tags;
+
+        // Obtener atributos visibles
+        $attributes_data = [];
+        $attributes = $product_obj->get_attributes();
+        foreach ($attributes as $attribute) {
+            if ($attribute->get_visible()) {
+                $attributes_data[] = [
+                    'name' => $attribute->get_name(),
+                    'options' => $attribute->get_options(),
+                ];
+            }
+        }
+        $product_data['attributes'] = $attributes_data;
+
 
         // Obtener todas las imágenes (destacada + galería)
         $images = [];
