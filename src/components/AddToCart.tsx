@@ -4,7 +4,6 @@
 import { Button, ButtonProps } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
-import { WOOCOMMERCE_STORE_URL } from '@/lib/env';
 
 interface AddToCartProps extends ButtonProps {
   id: string;
@@ -12,7 +11,8 @@ interface AddToCartProps extends ButtonProps {
 }
 
 export const AddToCart = ({ id, className, size = 'default', children }: AddToCartProps) => {
-  if (!WOOCOMMERCE_STORE_URL) {
+  const storeUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+  if (!storeUrl) {
     return (
       <Button className={className} size={size} disabled>
         {children || 'Añadir al carrito'}
@@ -20,7 +20,7 @@ export const AddToCart = ({ id, className, size = 'default', children }: AddToCa
     );
   }
   
-  const addToCartUrl = `${WOOCOMMERCE_STORE_URL}/cart/?add-to-cart=${id}`;
+  const addToCartUrl = `${storeUrl}/cart/?add-to-cart=${id}`;
 
   return (
     <Button asChild className={className} size={size}>

@@ -10,7 +10,6 @@ import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext
 import { ShareButton } from '@/components/ShareButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
-import { WOOCOMMERCE_STORE_URL } from '@/lib/env';
 
 interface Course {
   id: number;
@@ -29,16 +28,17 @@ interface Course {
 }
 
 async function getCourse(slug: string): Promise<Course | null> {
-  if (!WOOCOMMERCE_STORE_URL) {
+  const apiUrl = process.env.WOOCOMMERCE_API_URL;
+  if (!apiUrl) {
     console.error("WooCommerce API URL is not configured.");
     return null;
   };
   try {
-    const apiUrl = new URL(`${WOOCOMMERCE_STORE_URL}/wp-json/morty/v1/products`);
-    apiUrl.searchParams.set('slug', slug);
-    apiUrl.searchParams.set('per_page', '1');
+    const url = new URL(`${apiUrl}/wp-json/morty/v1/products`);
+    url.searchParams.set('slug', slug);
+    url.searchParams.set('per_page', '1');
     
-    const response = await fetch(apiUrl.toString(), { next: { revalidate: 60 } });
+    const response = await fetch(url.toString(), { next: { revalidate: 60 } });
     if (!response.ok) return null;
     
     const courses = await response.json();
