@@ -142,7 +142,7 @@ function FeaturedCourses() {
                   </div>
               </CardHeader>
               <CardContent className="flex flex-col flex-grow p-6">
-                <CardTitle className="font-headline text-xl mb-2">{course.name}</CardTitle>
+                <CardTitle className="font-card-title text-xl mb-2">{course.name}</CardTitle>
                     <div className="flex items-center gap-2 mb-2">
                       <div className="flex text-yellow-400">
                         {[...Array(5)].map((_, i) => (
@@ -263,7 +263,7 @@ function FeaturedProducts() {
                   </div>
               </CardHeader>
               <CardContent className="flex flex-col flex-grow p-6">
-                <CardTitle className="font-headline text-xl mb-2">{product.name}</CardTitle>
+                <CardTitle className="font-card-title text-xl mb-2">{product.name}</CardTitle>
                     <div className="flex items-center gap-2 mb-2">
                       <div className="flex text-yellow-400">
                         {[...Array(5)].map((_, i) => (

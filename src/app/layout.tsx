@@ -1,7 +1,7 @@
 
 import { Suspense } from 'react';
 import type { Metadata, Viewport } from 'next';
-import { Lato as FontSans, Pacifico as FontHeadline } from 'next/font/google';
+import { Lato as FontSans, Pacifico as FontHeadline, Playfair_Display as FontCardTitle } from 'next/font/google';
 import { Analytics } from '@/components/Analytics';
 import { cn } from '@/lib/utils';
 import Header from '@/components/header';
@@ -26,6 +26,12 @@ const fontHeadline = FontHeadline({
   variable: '--font-headline',
   display: 'swap',
   weight: '400',
+});
+
+const fontCardTitle = FontCardTitle({
+  subsets: ['latin'],
+  variable: '--font-card-title',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -89,7 +95,8 @@ export default function RootLayout({
         className={cn(
           'min-h-screen bg-background font-body antialiased',
           fontSans.variable,
-          fontHeadline.variable
+          fontHeadline.variable,
+          fontCardTitle.variable
         )}
       >
         <Suspense fallback={null}>

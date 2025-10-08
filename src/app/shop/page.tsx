@@ -47,7 +47,7 @@ function ProductCard({ product, siteUrl }: { product: Product, siteUrl: string |
             </div>
         </CardHeader>
         <CardContent className="flex flex-col flex-grow p-6">
-            <CardTitle className="font-headline text-xl mb-2">
+            <CardTitle className="font-card-title text-xl mb-2">
                 {product.name}
             </CardTitle>
             <CardDescription className="text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
