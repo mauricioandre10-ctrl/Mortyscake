@@ -33,7 +33,7 @@ export function CartSheet() {
 
   const handleCheckout = async () => {
     setIsRedirecting(true);
-    const checkoutUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_CHECKOUT_URL;
+    const checkoutUrl = 'https://cms.mortyscake.es/finalizar-compra/';
 
     if (!checkoutUrl) {
       toast({
@@ -45,23 +45,14 @@ export function CartSheet() {
       return;
     }
 
-    // Construir la URL de "añadir al carrito" de WooCommerce
-    // Formato: /checkout/?add-to-cart=ID_PROD_1&quantity[ID_PROD_1]=CANTIDAD_1&add-to-cart=ID_PROD_2&quantity[ID_PROD_2]=CANTIDAD_2
     const wooCheckoutUrl = new URL(checkoutUrl);
-
-    // Primero, vaciamos el carrito de WC por si acaso
-    wooCheckoutUrl.searchParams.set('empty-cart', 'true');
-
-    // Añadimos cada producto
+    
     Object.values(cartDetails ?? {}).forEach(item => {
         wooCheckoutUrl.searchParams.append('add-to-cart', item.id);
-        wooCheckoutUrl.searchParams.append(`quantity[${item.id}]`, item.quantity.toString());
     });
 
-    // Limpiamos el carrito local antes de redirigir
     clearCart();
 
-    // Redirigir al usuario
     window.location.href = wooCheckoutUrl.toString();
   };
 
