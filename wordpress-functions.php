@@ -19,9 +19,9 @@ add_action( 'rest_api_init', function() {
         // Lista de dominios permitidos. Se han añadido las URLs de Vercel.
         $allowed_origins = [
             'https://mortyscake.com', // Dominio de producción final
-            'https://mortyscake-website.vercel.app', // Dominio principal de Vercel
-            'https://mortyscake-sitio-web-git-main-mauricio-s-projects-bb335663.vercel.app', // URL de despliegue de la rama main
-            'https://mortyscake-sitio-web-iyfpw5yl3-mauricio-s-projects-bb335663.vercel.app', // URL de despliegue de vista previa
+            'https://mortyscake-website.vercel.app',
+            'https://mortyscake-sitio-web-git-main-mauricio-s-projects-bb335663.vercel.app',
+            'https://mortyscake-sitio-web-iyfpw5yl3-mauricio-s-projects-bb335663.vercel.app',
             'http://localhost:9002', // Para desarrollo local
         ];
         
@@ -57,12 +57,49 @@ add_action('rest_api_init', function () {
     ));
 });
 
+// Función para obtener las reseñas de un producto
+function morty_get_product_reviews($product_id) {
+    if (!$product_id) {
+        return [];
+    }
+
+    $reviews_query = new WP_Comment_Query([
+        'post_id' => $product_id,
+        'status' => 'approve',
+        'type' => 'review',
+        'orderby' => 'comment_date_gmt',
+        'order' => 'DESC',
+    ]);
+    
+    $reviews = [];
+    foreach ($reviews_query->comments as $comment) {
+        $rating = get_comment_meta($comment->comment_ID, 'rating', true);
+        $avatar = get_avatar_url($comment->comment_author_email);
+        
+        // La API REST de WP devuelve múltiples tamaños. Simulamos esto.
+        $avatar_urls = [
+            '24' => get_avatar_url($comment->comment_author_email, ['size' => 24]),
+            '48' => get_avatar_url($comment->comment_author_email, ['size' => 48]),
+            '96' => get_avatar_url($comment->comment_author_email, ['size' => 96]),
+        ];
+
+        $reviews[] = [
+            'id' => $comment->comment_ID,
+            'date_created' => $comment->comment_date_gmt,
+            'review' => $comment->comment_content,
+            'rating' => (int) $rating,
+            'reviewer' => $comment->comment_author,
+            'reviewer_email' => $comment->comment_author_email,
+            'reviewer_avatar_urls' => $avatar_urls
+        ];
+    }
+    return $reviews;
+}
+
+
 /**
  * Función robusta y simplificada para obtener productos de WooCommerce.
- * - Prioriza la búsqueda por 'slug' si se proporciona.
- * - Filtra por categoría (para 'cursos').
- * - Excluye una categoría (para 'productos').
- * - Siempre devuelve nombres de categorías, SKU, etiquetas y atributos.
+ * - Incluye valoraciones (reseñas) de cada producto.
  */
 function morty_get_products_with_details(WP_REST_Request $request) {
     if (!class_exists('WooCommerce')) {
@@ -180,6 +217,9 @@ function morty_get_products_with_details(WP_REST_Request $request) {
             }
         }
         $product_data['images'] = $images;
+
+        // *** NUEVO: Añadir valoraciones al producto ***
+        $product_data['reviews'] = morty_get_product_reviews($product_obj->get_id());
 
         $data[] = $product_data;
     }

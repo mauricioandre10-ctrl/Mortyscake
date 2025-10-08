@@ -4,7 +4,7 @@
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Star, ArrowLeft, Info, FileText, MessageSquare, Loader2 } from 'lucide-react';
+import { Star, ArrowLeft, Info, FileText, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { AddToCart } from '@/components/AddToCart';
@@ -13,6 +13,18 @@ import { ShareButton } from '@/components/ShareButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+
+interface Review {
+  id: number;
+  review: string;
+  rating: number;
+  reviewer: string;
+  reviewer_avatar_urls: { [key: string]: string };
+  date_created: string;
+}
 
 interface Course {
   id: number;
@@ -28,6 +40,7 @@ interface Course {
   sku: string;
   tags: { name: string; slug: string }[];
   attributes: { name: string; options: string[] }[] | Record<string, { name: string; options: string[] }>;
+  reviews: Review[];
 }
 
 export default function CourseDetailPage({ params }: { params: { slug: string } }) {
@@ -247,9 +260,35 @@ export default function CourseDetailPage({ params }: { params: { slug: string } 
             </table>
           </TabsContent>
           <TabsContent value="reviews" className="py-6 px-4 border rounded-b-md">
-            <h3 className="text-xl font-bold mb-4">Opiniones de los alumnos</h3>
-            <p className="text-muted-foreground">Actualmente no hay valoraciones para este curso.</p>
-             {/* TODO: Implementar la muestra de valoraciones de WooCommerce */}
+             <h3 className="text-xl font-bold mb-4">Opiniones de los alumnos ({course.reviews.length})</h3>
+              {course.reviews && course.reviews.length > 0 ? (
+                <div className="space-y-6">
+                  {course.reviews.map((review) => (
+                    <div key={review.id} className="flex gap-4">
+                      <Avatar>
+                        <AvatarImage src={review.reviewer_avatar_urls['96']} alt={review.reviewer} />
+                        <AvatarFallback>{review.reviewer.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <p className="font-semibold">{review.reviewer}</p>
+                           <time dateTime={review.date_created} className="text-xs text-muted-foreground">
+                            {format(new Date(review.date_created), "d 'de' MMMM 'de' yyyy", { locale: es })}
+                          </time>
+                        </div>
+                        <div className="flex text-yellow-400 mt-1 mb-2">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} className={`w-4 h-4 ${i < review.rating ? 'fill-current' : 'text-muted-foreground fill-muted'}`} />
+                          ))}
+                        </div>
+                        <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground" dangerouslySetInnerHTML={{ __html: review.review }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground">Actualmente no hay valoraciones para este curso.</p>
+              )}
           </TabsContent>
         </Tabs>
       </div>

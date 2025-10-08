@@ -4,7 +4,7 @@
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, Info, FileText, MessageSquare, Loader2 } from 'lucide-react';
+import { ArrowLeft, Info, FileText, MessageSquare, Star } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { AddToCart } from '@/components/AddToCart';
@@ -13,6 +13,18 @@ import { ShareButton } from '@/components/ShareButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+
+interface Review {
+  id: number;
+  review: string;
+  rating: number;
+  reviewer: string;
+  reviewer_avatar_urls: { [key: string]: string };
+  date_created: string;
+}
 
 interface Product {
   id: number;
@@ -26,7 +38,9 @@ interface Product {
   sku: string;
   tags: { name: string; slug: string }[];
   rating_count: number;
+  average_rating: number;
   attributes: { name: string; options: string[] }[] | Record<string, { name: string; options: string[] }>;
+  reviews: Review[];
 }
 
 export default function ProductDetailPage({ params }: { params: { slug: string }}) {
@@ -167,6 +181,15 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
             <ShareButton title={product.name} text={`Echa un vistazo a este producto: ${product.name}`} />
           </div>
           
+          <div className="flex items-center gap-2 mb-4">
+            <div className="flex text-yellow-400">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className={`w-5 h-5 ${i < product.average_rating ? 'fill-current' : 'text-muted-foreground fill-muted'}`} />
+              ))}
+            </div>
+            <span className="text-sm text-muted-foreground">({product.rating_count} reseñas)</span>
+          </div>
+
           <div 
             className="prose dark:prose-invert max-w-none text-muted-foreground mb-6"
             dangerouslySetInnerHTML={{ __html: product.short_description || '' }}
@@ -233,9 +256,35 @@ export default function ProductDetailPage({ params }: { params: { slug: string }
             </table>
           </TabsContent>
           <TabsContent value="reviews" className="py-6 px-4 border rounded-b-md">
-             <h3 className="text-xl font-bold mb-4">Opiniones de los clientes</h3>
-            <p className="text-muted-foreground">Actualmente no hay valoraciones para este producto.</p>
-             {/* TODO: Implementar la muestra de valoraciones de WooCommerce */}
+            <h3 className="text-xl font-bold mb-4">Opiniones de los clientes ({product.reviews.length})</h3>
+              {product.reviews && product.reviews.length > 0 ? (
+                <div className="space-y-6">
+                  {product.reviews.map((review) => (
+                    <div key={review.id} className="flex gap-4">
+                      <Avatar>
+                        <AvatarImage src={review.reviewer_avatar_urls['96']} alt={review.reviewer} />
+                        <AvatarFallback>{review.reviewer.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <p className="font-semibold">{review.reviewer}</p>
+                           <time dateTime={review.date_created} className="text-xs text-muted-foreground">
+                            {format(new Date(review.date_created), "d 'de' MMMM 'de' yyyy", { locale: es })}
+                          </time>
+                        </div>
+                        <div className="flex text-yellow-400 mt-1 mb-2">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} className={`w-4 h-4 ${i < review.rating ? 'fill-current' : 'text-muted-foreground fill-muted'}`} />
+                          ))}
+                        </div>
+                        <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground" dangerouslySetInnerHTML={{ __html: review.review }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground">Actualmente no hay valoraciones para este producto.</p>
+              )}
           </TabsContent>
         </Tabs>
       </div>
@@ -269,4 +318,3 @@ function LoadingSkeleton() {
       </div>
     );
 }
-
