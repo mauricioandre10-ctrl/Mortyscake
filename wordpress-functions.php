@@ -157,12 +157,12 @@ function morty_handle_cart_clear() {
  * Formatea los datos del carrito para una respuesta JSON consistente y limpia.
  */
 function morty_format_cart_data() {
-    if (!isset(WC()->cart) || WC()->cart->is_empty()) {
+    if (!function_exists('WC') || !isset(WC()->cart) || WC()->cart->is_empty()) {
         return [
             'items' => [],
             'item_count' => 0,
             'totals' => ['total_price' => '0.00'],
-            'checkout_url' => wc_get_checkout_url(),
+            'checkout_url' => function_exists('wc_get_checkout_url') ? wc_get_checkout_url() : '',
         ];
     }
     
@@ -345,7 +345,7 @@ function morty_get_product_images($product) {
     if (empty($images)) {
         $images[] = [
             'id' => 0,
-            'src' => wc_placeholder_img_src(),
+            'src' => function_exists('wc_placeholder_img_src') ? wc_placeholder_img_src() : '',
             'alt' => 'Placeholder Image',
         ];
     }
