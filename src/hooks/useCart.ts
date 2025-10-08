@@ -1,9 +1,10 @@
+
 'use client';
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { useToast } from './use-toast';
 
-// Define las interfaces para la estructura de datos del carrito
+// 1. Definir las interfaces para la estructura de datos
 interface CartItem {
   key: string;
   id: number;
@@ -38,11 +39,13 @@ interface CartContextType {
   clearCart: () => Promise<void>;
 }
 
+// 2. Crear el contexto con un valor por defecto
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+// 3. Crear el hook personalizado para consumir el contexto
 export const useCart = () => {
   const context = useContext(CartContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useCart debe ser usado dentro de un CartProvider');
   }
   return context;
@@ -50,7 +53,7 @@ export const useCart = () => {
 
 const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
 
-// Proveedor del contexto del carrito
+// 4. Crear el componente Provider
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<Cart | null>(null);
   const [isLoading, setIsLoading] = useState(true);
