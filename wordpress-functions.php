@@ -2,12 +2,7 @@
 // =============================================================================
 // CORS Configuration
 // =============================================================================
-add_action('rest_api_init', function () {
-    remove_filter('rest_pre_serve_request', 'rest_send_cors_headers');
-    add_filter('rest_pre_serve_request', 'morty_cors_headers', 15);
-});
-
-function morty_cors_headers($value) {
+function morty_cors_headers() {
     $allowed_origins = [
         'https://mortyscake-website.vercel.app',
         'https://mortyscake-website-git-main-mauricio-s-projects-bb335663.vercel.app'
@@ -25,14 +20,19 @@ function morty_cors_headers($value) {
         status_header(200);
         exit();
     }
-    return $value;
 }
+add_action('rest_api_init', function () {
+    remove_filter('rest_pre_serve_request', 'rest_send_cors_headers');
+    add_filter('rest_pre_serve_request', function ($value) {
+        morty_cors_headers();
+        return $value;
+    }, 15);
+}, 15);
+
 
 // =============================================================================
 // API Route Registration
 // =============================================================================
-add_action('rest_api_init', 'morty_register_rest_routes');
-
 function morty_register_rest_routes() {
     $namespace = 'morty/v1';
 
@@ -41,22 +41,10 @@ function morty_register_rest_routes() {
         'callback' => 'morty_get_products_with_details',
         'permission_callback' => '__return_true',
         'args' => [
-            'per_page' => [
-                'type' => 'integer',
-                'sanitize_callback' => 'absint',
-            ],
-            'slug' => [
-                'type' => 'string',
-                'sanitize_callback' => 'sanitize_text_field',
-            ],
-            'category_slug' => [
-                'type' => 'string',
-                'sanitize_callback' => 'sanitize_text_field',
-            ],
-            'category_exclude_slug' => [
-                'type' => 'string',
-                'sanitize_callback' => 'sanitize_text_field',
-            ],
+            'per_page' => [ 'type' => 'integer', 'sanitize_callback' => 'absint' ],
+            'slug' => [ 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ],
+            'category_slug' => [ 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ],
+            'category_exclude_slug' => [ 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ],
         ],
     ]);
 
@@ -86,12 +74,12 @@ function morty_register_rest_routes() {
         'permission_callback' => '__return_true',
     ]);
 }
+add_action('rest_api_init', 'morty_register_rest_routes');
+
 
 // =============================================================================
 // WC Session Initialization
 // =============================================================================
-add_action('init', 'morty_init_wc_session_for_api');
-
 function morty_init_wc_session_for_api() {
     if (strpos($_SERVER['REQUEST_URI'], '/wp-json/morty/v1/cart') !== false && !is_user_logged_in()) {
         if (isset(WC()->session) && !WC()->session->has_session()) {
@@ -99,6 +87,8 @@ function morty_init_wc_session_for_api() {
         }
     }
 }
+add_action('init', 'morty_init_wc_session_for_api');
+
 
 // =============================================================================
 // Cart Handling Callbacks
@@ -138,6 +128,7 @@ function morty_handle_cart_update(WP_REST_Request $request) {
     WC()->cart->set_quantity($item_key, intval($quantity));
     return new WP_REST_Response(morty_format_cart_data(), 200);
 }
+
 
 // =============================================================================
 // Data Formatting Helpers
@@ -281,3 +272,4 @@ function morty_get_product_reviews($product_id) {
     return $reviews;
 }
 ?>
+    
