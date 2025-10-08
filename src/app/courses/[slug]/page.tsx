@@ -57,6 +57,7 @@ async function getCourse(slug: string): Promise<Course | null> {
   try {
     const apiUrl = new URL(`${WP_API_URL}/wp-json/morty/v1/products`);
     apiUrl.searchParams.set('slug', slug);
+    apiUrl.searchParams.set('per_page', '1');
     
     const response = await fetch(apiUrl.toString());
     if (!response.ok) return null;
@@ -99,8 +100,8 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-        <div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+        <div className="lg:col-span-1">
           <Carousel className="w-full">
             <CarouselContent>
               {course.images?.length > 0 ? (
@@ -134,7 +135,7 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
           </Carousel>
         </div>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col lg:col-span-2">
           <h1 className="font-headline text-4xl md:text-5xl font-bold mb-2">{course.name}</h1>
           
           <div className="flex items-center gap-2 mb-4">

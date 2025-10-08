@@ -57,6 +57,7 @@ async function getProduct(slug: string): Promise<Product | null> {
   try {
     const apiUrl = new URL(`${WP_API_URL}/wp-json/morty/v1/products`);
     apiUrl.searchParams.set('slug', slug);
+    apiUrl.searchParams.set('per_page', '1');
     
     const response = await fetch(apiUrl.toString());
     if (!response.ok) {
@@ -68,11 +69,11 @@ async function getProduct(slug: string): Promise<Product | null> {
     const product = products[0];
 
     // After fetching the specific slug, ensure it's NOT a course.
-    if (product && (!product.category_names || !product.category_names.includes('Cursos'))) {
-        return product;
+    if (product && product.category_names && product.category_names.includes('Cursos')) {
+        return null;
     }
     
-    return null;
+    return product;
   } catch (error) {
     console.error('Error fetching product:', error);
     return null;
@@ -99,8 +100,8 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-        <div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+        <div className="lg:col-span-1">
           <Carousel className="w-full">
             <CarouselContent>
               {product.images?.length > 0 ? (
@@ -134,7 +135,7 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
           </Carousel>
         </div>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col lg:col-span-2">
           <h1 className="font-headline text-4xl md:text-5xl font-bold mb-4">{product.name}</h1>
           
           <div 
