@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import Image from 'next/image';
@@ -69,7 +68,10 @@ function PostsList() {
             try {
                 // El parámetro _embed puede ser útil para obtener info del autor o categorías.
                 const postsApiUrl = new URL(`${apiUrl}/wp-json/wp/v2/posts?_embed`);
-                const response = await fetch(postsApiUrl.toString(), { cache: 'no-store' });
+                const response = await fetch(postsApiUrl.toString(), {
+                  signal: AbortSignal.timeout(30000), // 30-second timeout
+                  next: { revalidate: 3600 } // Revalidate every hour
+                });
 
                 if (!response.ok) {
                     throw new Error(`Failed to fetch posts: ${response.statusText}`);
@@ -140,5 +142,3 @@ function LoadingSkeleton() {
       </div>
     );
 }
-
-    

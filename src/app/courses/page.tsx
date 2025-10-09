@@ -73,10 +73,7 @@ function CoursesList() {
     useEffect(() => {
         async function fetchCourses() {
             const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
-            console.log('[CLIENT] WOOCOMMERCE_API_URL:', apiUrl);
-
             if (!apiUrl) {
-                console.error('[CLIENT] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_STORE_URL no está configurada.');
                 setError('La configuración del sitio no es correcta.');
                 setLoading(false);
                 return;
@@ -87,23 +84,19 @@ function CoursesList() {
                 coursesApiUrl.searchParams.set('category_slug', 'cursos');
                 coursesApiUrl.searchParams.set('per_page', '100');
 
-                console.log(`[CLIENT] Fetching URL: ${coursesApiUrl.toString()}`);
+                const response = await fetch(coursesApiUrl.toString(), {
+                  signal: AbortSignal.timeout(30000), // 30-second timeout
+                  next: { revalidate: 3600 } // Revalidate every hour
+                });
                 
-                const response = await fetch(coursesApiUrl.toString(), { cache: 'no-store' });
-                
-                console.log(`[CLIENT] Response status: ${response.status}`);
-
                 if (!response.ok) {
-                    console.error(`[CLIENT] Failed to fetch courses. Status: ${response.status}, StatusText: ${response.statusText}`);
                     throw new Error(`Failed to fetch courses: ${response.statusText}`);
                 }
                 const data = await response.json();
-                console.log(`[CLIENT] Received ${data.length} items from API.`);
                 
                 const filteredData = data.filter((item: Course) => 
                     item.category_names && item.category_names.includes('Cursos')
                 );
-                console.log(`[CLIENT] Filtered to ${filteredData.length} courses.`);
                 
                 const sortedCourses = filteredData.sort((a: Course, b: Course) => {
                     const dateA = new Date(typeof a.date_created === 'object' ? a.date_created.date : a.date_created).getTime();

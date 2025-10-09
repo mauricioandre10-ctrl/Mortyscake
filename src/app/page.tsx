@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import Image from 'next/image';
@@ -66,7 +65,10 @@ function FeaturedCourses() {
         coursesApiUrl.searchParams.set('category_slug', 'cursos');
         coursesApiUrl.searchParams.set('per_page', '3'); 
 
-        const response = await fetch(coursesApiUrl.toString(), { cache: 'no-store' });
+        const response = await fetch(coursesApiUrl.toString(), { 
+            signal: AbortSignal.timeout(30000),
+            next: { revalidate: 3600 }
+        });
         
         if (!response.ok) {
           throw new Error(`Failed to fetch courses: ${response.statusText}`);
@@ -177,7 +179,10 @@ function FeaturedProducts() {
         productsApiUrl.searchParams.set('category_exclude_slug', 'cursos');
         productsApiUrl.searchParams.set('per_page', '10');
 
-        const response = await fetch(productsApiUrl.toString(), { cache: 'no-store' });
+        const response = await fetch(productsApiUrl.toString(), {
+            signal: AbortSignal.timeout(30000),
+            next: { revalidate: 3600 }
+        });
         
         if (!response.ok) {
           throw new Error(`Failed to fetch products: ${response.statusText}`);
@@ -286,7 +291,10 @@ function FeaturedBlogPosts() {
         postsApiUrl.searchParams.set('per_page', '2'); // Obtener solo 2 posts
         postsApiUrl.searchParams.set('_embed', ''); // Para obtener info como la imagen destacada
 
-        const response = await fetch(postsApiUrl.toString(), { cache: 'no-store' });
+        const response = await fetch(postsApiUrl.toString(), {
+            signal: AbortSignal.timeout(30000),
+            next: { revalidate: 3600 }
+        });
         if (!response.ok) {
           throw new Error(`Failed to fetch posts: ${response.statusText}`);
         }
@@ -618,5 +626,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

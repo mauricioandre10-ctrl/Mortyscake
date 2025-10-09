@@ -74,10 +74,7 @@ function ProductsList() {
     useEffect(() => {
         async function getProducts() {
             const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
-            console.log('[CLIENT] WOOCOMMERCE_API_URL:', apiUrl);
-
             if (!apiUrl) {
-                console.error('[CLIENT] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_STORE_URL no está configurada.');
                 setError('La configuración del sitio no es correcta.');
                 setLoading(false);
                 return;
@@ -88,21 +85,19 @@ function ProductsList() {
                 productsApiUrl.searchParams.set('category_exclude_slug', 'cursos');
                 productsApiUrl.searchParams.set('per_page', '100');
 
-                console.log(`[CLIENT] Fetching URL: ${productsApiUrl.toString()}`);
-                const response = await fetch(productsApiUrl.toString(), { cache: 'no-store' });
+                const response = await fetch(productsApiUrl.toString(), {
+                  signal: AbortSignal.timeout(30000), // 30-second timeout
+                  next: { revalidate: 3600 } // Revalidate every hour
+                });
                 
-                console.log(`[CLIENT] Response status: ${response.status}`);
                 if (!response.ok) {
-                    console.error(`[CLIENT] Failed to fetch products. Status: ${response.status}, StatusText: ${response.statusText}`);
                     throw new Error(`Failed to fetch products: ${response.statusText}`);
                 }
                 const data = await response.json();
-                console.log(`[CLIENT] Received ${data.length} items from API.`);
 
                 const filteredData = data.filter((item: Product) => 
                     !item.category_names || !item.category_names.includes('Cursos')
                 );
-                console.log(`[CLIENT] Filtered to ${filteredData.length} products.`);
                 
                 const sortedProducts = filteredData.sort((a: Product, b: Product) => a.menu_order - b.menu_order);
                 setProducts(sortedProducts);
