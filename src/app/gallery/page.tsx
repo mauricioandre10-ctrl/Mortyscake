@@ -66,14 +66,14 @@ export default function GalleryPage() {
         </div>
         
         {selectedImage && (
-             <DialogContent className="max-w-[95vw] w-auto h-auto p-2 bg-transparent border-0 flex items-center justify-center">
+             <DialogContent className="max-w-[90vw] max-h-[90vh] w-auto h-auto p-0 bg-transparent border-0 flex items-center justify-center">
                 <Image 
                     src={selectedImage.src}
                     alt={selectedImage.alt}
                     width={selectedImage.width}
                     height={selectedImage.height}
-                    className="object-contain h-auto w-auto max-h-[90vh] max-w-[95vw] rounded-lg shadow-2xl"
-                    sizes="95vw"
+                    className="object-contain h-auto w-auto max-h-[90vh] max-w-[90vw] rounded-lg shadow-2xl"
+                    sizes="90vw"
                 />
                  <ShareButton
                     title="Mira esta creación de Morty's Cake"
