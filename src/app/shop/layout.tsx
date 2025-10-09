@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Tienda de Repostería | Morty\'s Cake',
     description: 'Ingredientes, herramientas y todo lo que necesitas para tus creaciones de repostería.',
-    images: ['/image/og-image-shop.webp'],
+    images: ['/image/fondo_heder.webp'],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Tienda de Repostería | Morty\'s Cake',
     description: 'Ingredientes, herramientas y todo lo que necesitas para tus creaciones de repostería.',
-    images: ['/image/og-image-shop.webp'],
+    images: ['/image/fondo_heder.webp'],
   },
   robots: {
     index: true,
