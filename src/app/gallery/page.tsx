@@ -41,62 +41,66 @@ export default function GalleryPage() {
         setIsOpen(true);
     };
 
-  return (
-    <div className="container mx-auto py-12 px-4 md:px-6">
-      <header className="text-center mb-12">
-        <h1 className="font-headline text-4xl md:text-5xl">Nuestra Galería</h1>
-        <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-          Un vistazo a las dulces creaciones de nuestros cursos y encargos. Cada imagen cuenta una historia de pasión, sabor y arte.
-        </p>
-      </header>
+    return (
+        <div className="container mx-auto py-12 px-4 md:px-6">
+            <header className="text-center mb-12">
+                <h1 className="font-headline text-4xl md:text-5xl">Nuestra Galería</h1>
+                <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
+                    Un vistazo a las dulces creaciones de nuestros cursos y encargos. Cada imagen cuenta una historia de pasión, sabor y arte.
+                </p>
+            </header>
 
-      <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
-        {localGalleryImages.map((image, index) => (
-          <div 
-            key={index} 
-            className="overflow-hidden rounded-lg break-inside-avoid shadow-md hover:shadow-primary/20 hover:shadow-xl transition-all duration-300 cursor-pointer group"
-            onClick={() => handleImageClick(image)}
-            role="button"
-            aria-label={`Ver imagen ampliada: ${image.alt}`}
-          >
-              <Image
-                  src={image.src}
-                  alt={image.alt}
-                  width={image.width}
-                  height={image.height}
-                  className="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105"
-                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                  priority={index < 12} // Prioriza la carga de las primeras 12 imágenes
-              />
-          </div>
-        ))}
-      </div>
-      
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        {selectedImage && (
-            <DialogContent className="max-w-none w-auto h-auto p-2 bg-transparent border-0 flex items-center justify-center">
-                <DialogTitle className="sr-only">Imagen Ampliada</DialogTitle>
-                <DialogDescription className="sr-only">
-                    {selectedImage.alt}. Puedes cerrar esta vista con la tecla Escape o el botón de cierre.
-                </DialogDescription>
-                
-                <Image
-                    src={selectedImage.src}
-                    alt={selectedImage.alt}
-                    width={selectedImage.width}
-                    height={selectedImage.height}
-                    className="object-contain rounded-lg shadow-2xl"
-                />
-                <ShareButton
-                    title="Mira esta creación de Morty's Cake"
-                    text="¡Me encantó esta foto de la galería de Morty's Cake!"
-                    url={siteUrl ? `${siteUrl}${selectedImage.src}` : selectedImage.src}
-                    className="absolute top-4 right-4 z-20 bg-black/50 text-white hover:bg-black/70"
-                    size="icon"
-                />
-            </DialogContent>
-        )}
-      </Dialog>
-    </div>
-  );
+            <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
+                {localGalleryImages.map((image, index) => (
+                    <div
+                        key={index}
+                        className="overflow-hidden rounded-lg break-inside-avoid shadow-md hover:shadow-primary/20 hover:shadow-xl transition-all duration-300 cursor-pointer group"
+                        onClick={() => handleImageClick(image)}
+                        role="button"
+                        aria-label={`Ver imagen ampliada: ${image.alt}`}
+                    >
+                        <Image
+                            src={image.src}
+                            alt={image.alt}
+                            width={image.width}
+                            height={image.height}
+                            className="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105"
+                            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                            priority={index < 12} // Prioriza la carga de las primeras 12 imágenes
+                        />
+                    </div>
+                ))}
+            </div>
+
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                {selectedImage && (
+                    <DialogContent className="max-w-none w-auto h-auto p-2 bg-transparent border-0 flex items-center justify-center">
+                        <DialogTitle className="sr-only">Imagen Ampliada: {selectedImage.alt}</DialogTitle>
+                        <DialogDescription className="sr-only">
+                            Vista ampliada de la imagen: {selectedImage.alt}. Puedes cerrar esta vista con la tecla Escape o el botón de cierre.
+                        </DialogDescription>
+
+                        {/* Contenedor que define el tamaño máximo del visor */}
+                        <div className="relative w-[95vw] h-[95vh]">
+                            <Image
+                                src={selectedImage.src}
+                                alt={selectedImage.alt}
+                                fill
+                                className="object-contain"
+                                sizes="95vw"
+                            />
+                        </div>
+                        
+                        <ShareButton
+                            title="Mira esta creación de Morty's Cake"
+                            text="¡Me encantó esta foto de la galería de Morty's Cake!"
+                            url={siteUrl ? `${siteUrl}${selectedImage.src}` : selectedImage.src}
+                            className="absolute top-4 right-4 z-20 bg-black/50 text-white hover:bg-black/70"
+                            size="icon"
+                        />
+                    </DialogContent>
+                )}
+            </Dialog>
+        </div>
+    );
 }
