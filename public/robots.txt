@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://reposteria-cursos.com/sitemap.xml
+Sitemap: https://mortyscake.com/sitemap.xml
