@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -66,22 +65,22 @@ export default function GalleryPage() {
         </div>
         
         {selectedImage && (
-             <DialogContent className="max-w-[99vw] max-h-[99vh] w-auto h-auto p-0 bg-transparent border-0 flex items-center justify-center">
-                <Image 
+            <DialogContent className="max-w-[99vw] max-h-[99vh] w-auto h-auto p-0 bg-transparent border-0 flex items-center justify-center">
+                <Image
                     src={selectedImage.src}
                     alt={selectedImage.alt}
                     width={selectedImage.width}
                     height={selectedImage.height}
-                    className="object-contain h-auto w-auto max-h-[99vh] max-w-[99vw] rounded-lg shadow-2xl"
+                    className="object-contain w-auto h-auto max-w-[99vw] max-h-[99vh] rounded-lg shadow-2xl"
                     sizes="99vw"
                 />
-                 <ShareButton
+                <ShareButton
                     title="Mira esta creación de Morty's Cake"
                     text="¡Me encantó esta foto de la galería de Morty's Cake!"
                     url={siteUrl ? `${siteUrl}${selectedImage.src}` : selectedImage.src}
                     className="absolute top-4 right-4 z-20 bg-black/50 text-white hover:bg-black/70"
                     size="icon"
-                 />
+                />
             </DialogContent>
         )}
       </Dialog>
