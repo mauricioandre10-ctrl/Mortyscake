@@ -1,9 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import { ArrowLeft, FileText, Info, MessageSquare, Star } from 'lucide-react';
+import { ArrowLeft, FileText, Info, Star, MessageSquarePlus } from 'lucide-react';
 import Link from 'next/link';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,20 +13,8 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { ShareButton } from './ShareButton';
 import { AddToCart } from './AddToCart';
-
-
-interface Review {
-  id: number;
-  review: string;
-  rating: number;
-  reviewer: string;
-  reviewer_avatar_urls: { [key: string]: string };
-  date_created: string;
-}
 
 interface Course {
   id: number;
@@ -43,12 +30,12 @@ interface Course {
   sku: string;
   tags: { name: string; slug: string }[];
   attributes: { name: string; options: string[] }[] | Record<string, { name: string; options: string[] }>;
-  reviews: Review[];
 }
 
 export function CourseDetails({ course }: { course: Course }) {
   const fullDescription = course.description || course.short_description || 'No hay descripción disponible.';
   const courseAttributes = Array.isArray(course.attributes) ? course.attributes : Object.values(course.attributes);
+  const googleReviewUrl = "https://share.google/5iGt1ltt2KUW5eejD"; // Direct link to leave a review
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -102,13 +89,21 @@ export function CourseDetails({ course }: { course: Course }) {
             <ShareButton title={course.name} text={`Echa un vistazo a este curso: ${course.name}`} />
           </div>
 
-          <div className="flex items-center gap-2 mb-4">
-            <div className="flex text-yellow-400">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className={`w-5 h-5 ${i < course.average_rating ? 'fill-current' : 'text-muted-foreground fill-muted'}`} />
-              ))}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
+            <div className="flex items-center gap-2">
+              <div className="flex text-yellow-400">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className={`w-5 h-5 ${i < course.average_rating ? 'fill-current' : 'text-muted-foreground fill-muted'}`} />
+                ))}
+              </div>
+              <span className="text-sm text-muted-foreground">({course.rating_count} reseñas en WooCommerce)</span>
             </div>
-            <span className="text-sm text-muted-foreground">({course.rating_count} reseñas)</span>
+            <Button asChild variant="outline" size="sm">
+                <Link href={googleReviewUrl} target="_blank" rel="noopener noreferrer">
+                    <MessageSquarePlus className="mr-2 h-4 w-4"/>
+                    Dejar una Reseña en Google
+                </Link>
+            </Button>
           </div>
 
           <div
@@ -138,10 +133,9 @@ export function CourseDetails({ course }: { course: Course }) {
 
       <div className="mt-12">
         <Tabs defaultValue="description">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="description"><FileText className="mr-2" />Descripción</TabsTrigger>
             <TabsTrigger value="additional-info"><Info className="mr-2" />Info Adicional</TabsTrigger>
-            <TabsTrigger value="reviews"><MessageSquare className="mr-2" />Valoraciones ({course.rating_count})</TabsTrigger>
           </TabsList>
           <TabsContent value="description" className="py-6 px-4 border rounded-b-md">
             <div
@@ -181,40 +175,8 @@ export function CourseDetails({ course }: { course: Course }) {
               </tbody>
             </table>
           </TabsContent>
-          <TabsContent value="reviews" className="py-6 px-4 border rounded-b-md">
-            <h3 className="text-xl font-bold mb-4">Opiniones de los alumnos ({course.reviews?.length || 0})</h3>
-            {course.reviews && course.reviews.length > 0 ? (
-              <div className="space-y-6">
-                {course.reviews.map((review) => (
-                  <div key={review.id} className="flex gap-4">
-                    <Avatar>
-                      <AvatarImage src={review.reviewer_avatar_urls['96']} alt={review.reviewer} />
-                      <AvatarFallback>{review.reviewer.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <p className="font-semibold">{review.reviewer}</p>
-                        <time dateTime={review.date_created} className="text-xs text-muted-foreground">
-                          {format(new Date(review.date_created), "d 'de' MMMM 'de' yyyy", { locale: es })}
-                        </time>
-                      </div>
-                      <div className="flex text-yellow-400 mt-1 mb-2">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className={`w-4 h-4 ${i < review.rating ? 'fill-current' : 'text-muted-foreground fill-muted'}`} />
-                        ))}
-                      </div>
-                      <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground" dangerouslySetInnerHTML={{ __html: review.review }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-muted-foreground">Actualmente no hay valoraciones para este curso.</p>
-            )}
-          </TabsContent>
         </Tabs>
       </div>
-
     </div>
   )
 }

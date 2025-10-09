@@ -3,15 +3,6 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { ProductDetails } from '@/components/ProductDetails';
 
-interface Review {
-  id: number;
-  review: string;
-  rating: number;
-  reviewer: string;
-  reviewer_avatar_urls: { [key: string]: string };
-  date_created: string;
-}
-
 interface Product {
   id: number;
   name: string;
@@ -26,7 +17,6 @@ interface Product {
   rating_count: number;
   average_rating: number;
   attributes: { name: string; options: string[] }[] | Record<string, { name: string; options: string[] }>;
-  reviews: Review[];
 }
 
 async function getProduct(slug: string): Promise<Product | null> {
@@ -55,10 +45,13 @@ async function getProduct(slug: string): Promise<Product | null> {
 
         const fetchedProduct = products[0];
 
+        // Ensure we don't show a course in the product page
         if (fetchedProduct && fetchedProduct.category_names && fetchedProduct.category_names.includes('Cursos')) {
             return null;
         } else {
-            return fetchedProduct;
+            // Remove reviews from the object as they won't be used
+            const { reviews, ...productWithoutReviews } = fetchedProduct;
+            return productWithoutReviews;
         }
     } catch (err) {
         console.error('[SERVER] An unexpected error occurred:', err);

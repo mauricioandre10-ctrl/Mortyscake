@@ -3,15 +3,6 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { CourseDetails } from '@/components/CourseDetails';
 
-interface Review {
-  id: number;
-  review: string;
-  rating: number;
-  reviewer: string;
-  reviewer_avatar_urls: { [key: string]: string };
-  date_created: string;
-}
-
 interface Course {
   id: number;
   name: string;
@@ -26,7 +17,6 @@ interface Course {
   sku: string;
   tags: { name: string; slug: string }[];
   attributes: { name: string; options: string[] }[] | Record<string, { name: string; options: string[] }>;
-  reviews: Review[];
 }
 
 async function getCourse(slug: string): Promise<Course | null> {
@@ -55,8 +45,11 @@ async function getCourse(slug: string): Promise<Course | null> {
         
         const fetchedCourse = courses[0];
 
+        // Ensure we don't show a product in the course page
         if (fetchedCourse && fetchedCourse.category_names && fetchedCourse.category_names.includes('Cursos')) {
-            return fetchedCourse;
+            // Remove reviews from the object as they won't be used
+            const { reviews, ...courseWithoutReviews } = fetchedCourse;
+            return courseWithoutReviews;
         } else {
             return null;
         }
