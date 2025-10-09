@@ -1,9 +1,10 @@
+
 'use client';
 
 import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription, SheetHeader } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription, SheetHeader, SheetClose } from '@/components/ui/sheet';
 import { Menu, User, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from './ui/separator';
@@ -19,6 +20,7 @@ const Header = () => {
     { href: '/shop', label: 'Tienda' },
     { href: '/courses', label: 'Cursos' },
     { href: '/gallery', label: 'Galería' },
+    { href: '/blog', label: 'Blog' },
     { href: '/#about', label: 'Sobre Nosotros' },
     { href: '/#footer', 'label': 'Contacto' },
   ];
@@ -68,21 +70,22 @@ const Header = () => {
               </SheetTrigger>
               <SheetContent side="left">
                 <SheetHeader>
-                  <SheetTitle>Menú</SheetTitle>
-                  <SheetDescription>Navegación principal del sitio.</SheetDescription>
+                  <SheetTitle>
+                     <Link href="/" className="flex items-center gap-2 mb-4">
+                       <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width={180} height={64} className="object-contain h-auto max-w-[100px]" data-ai-hint="logo" />
+                    </Link>
+                  </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-4 p-4">
-                  <Link href="/" className="flex items-center gap-2 mb-4">
-                     <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width={180} height={64} className="object-contain h-auto max-w-[100px]" data-ai-hint="logo" />
-                  </Link>
                   {navLinks.map((link) => (
-                    <Link
-                      key={link.label}
-                      href={link.href}
-                      className="text-lg font-medium"
-                    >
-                      {link.label}
-                    </Link>
+                    <SheetClose asChild key={link.label}>
+                        <Link
+                          href={link.href}
+                          className="text-lg font-medium"
+                        >
+                          {link.label}
+                        </Link>
+                    </SheetClose>
                   ))}
                   <Separator className="my-2"/>
                    <Link href={accountUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-lg font-medium">

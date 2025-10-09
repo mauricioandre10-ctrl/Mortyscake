@@ -28,29 +28,22 @@ interface Product {
   category_names: string[];
 }
 
+interface Post {
+  id: number;
+  slug: string;
+  title: {
+    rendered: string;
+  };
+  excerpt: {
+    rendered: string;
+  };
+  featured_image_url: string | null;
+}
+
 const localGalleryImages = Array.from({ length: 9 }, (_, i) => ({
   src: `/image/galeria/foto${i + 1}.webp`,
   alt: `Imagen de la galería de repostería ${i + 1}`,
 }));
-
-
-// Datos simulados para el blog
-const blogPosts = [
-  {
-    slug: 'secretos-merengue-perfecto',
-    title: '5 Secretos para un Merengue Suizo Perfecto',
-    description: 'Descubre los trucos de profesional para lograr un merengue brillante, sedoso y estable que llevará tus postres al siguiente nivel.',
-    image: { src: 'https://picsum.photos/seed/blog1/800/450', hint: 'meringue' },
-    category: 'Técnicas',
-  },
-  {
-    slug: 'tendencias-decoracion-tartas-2025',
-    title: 'Tendencias en Decoración de Tartas para 2025',
-    description: 'Desde diseños minimalistas hasta texturas inspiradas en la naturaleza, te mostramos lo que viene para que tus creaciones sorprendan.',
-    image: { src: 'https://picsum.photos/seed/blog2/800/450', hint: 'cake trends' },
-    category: 'Inspiración',
-  }
-];
 
 function FeaturedCourses() {
   const [courses, setCourses] = useState<Product[]>([]);
@@ -102,7 +95,7 @@ function FeaturedCourses() {
               <Skeleton className="h-4 w-1/2" />
                <Skeleton className="h-10 w-full" />
             </CardContent>
-             <CardFooter className="flex justify-between items-center bg-muted/30 p-4">
+             <CardFooter className="p-4 flex justify-between items-center bg-muted/30">
                <Skeleton className="h-8 w-1/4" />
                <Skeleton className="h-10 w-1/2" />
             </CardFooter>
@@ -155,7 +148,7 @@ function FeaturedCourses() {
                     </div>
                 <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: course.short_description || '' }} />
               </CardContent>
-              <CardFooter className="flex justify-between items-center bg-muted/30 p-4 mt-auto">
+              <CardFooter className="p-4 flex justify-between items-center bg-muted/30 mt-auto">
                 <span className="text-2xl font-bold text-primary">
                   {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
                 </span>
@@ -224,7 +217,7 @@ function FeaturedProducts() {
               <Skeleton className="h-4 w-1/2" />
                <Skeleton className="h-10 w-full" />
             </CardContent>
-             <CardFooter className="flex justify-between items-center bg-muted/30 p-4">
+             <CardFooter className="p-4 flex justify-between items-center bg-muted/30">
                <Skeleton className="h-8 w-1/4" />
                <Skeleton className="h-10 w-1/2" />
             </CardFooter>
@@ -265,7 +258,7 @@ function FeaturedProducts() {
                     )}
                   </div>
               </CardHeader>
-              <CardContent className="flex flex-col flex-grow p-6">
+              <CardContent className="p-6 flex flex-col flex-grow">
                 <CardTitle className="font-card-title text-xl mb-2">{product.name}</CardTitle>
                     <div className="flex items-center gap-2 mb-2">
                       <div className="flex text-yellow-400">
@@ -277,13 +270,93 @@ function FeaturedProducts() {
                     </div>
                 <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
               </CardContent>
-              <CardFooter className="flex justify-between items-center bg-muted/30 p-4 mt-auto">
+              <CardFooter className="p-4 flex justify-between items-center bg-muted/30 mt-auto">
                 <span className="text-2xl font-bold text-primary">
                   {product.price === "0.00" ? 'Gratis' : `€${product.price}`}
                 </span>
                 <Button variant="secondary">Ver Detalles</Button>
               </CardFooter>
             </Link>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+function FeaturedBlogPosts() {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchPosts() {
+      const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+      if (!apiUrl) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const postsApiUrl = new URL(`${apiUrl}/wp-json/wp/v2/posts`);
+        postsApiUrl.searchParams.set('per_page', '2'); // Obtener solo 2 posts
+        postsApiUrl.searchParams.set('_embed', ''); // Para obtener info como la imagen destacada
+
+        const response = await fetch(postsApiUrl.toString(), { cache: 'no-store' });
+        if (!response.ok) {
+          throw new Error(`Failed to fetch posts: ${response.statusText}`);
+        }
+        const data: Post[] = await response.json();
+        setPosts(data);
+      } catch (err) {
+        console.error('[CLIENT] An unexpected error occurred fetching posts:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPosts();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        {[...Array(2)].map((_, i) => (
+          <Card key={i}>
+            <Skeleton className="aspect-[16/9] w-full" />
+            <CardContent className="p-6 space-y-2">
+              <Skeleton className="h-4 w-1/4" />
+              <Skeleton className="h-6 w-3/4" />
+              <Skeleton className="h-4 w-full" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  if (!posts.length) {
+    return null;
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+      {posts.map(post => (
+        <Card key={post.id} className="overflow-hidden group shadow-md">
+          <Link href={`/blog/${post.slug}`} className="block">
+            <div className="relative aspect-[16/9] bg-muted">
+                {post.featured_image_url ? (
+                    <Image 
+                        src={post.featured_image_url}
+                        alt={`Imagen para ${post.title.rendered}`}
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                ) : (
+                    <div className="w-full h-full bg-muted"></div>
+                )}
+            </div>
+            <CardContent className="p-6">
+                <CardTitle className="font-card-title text-xl mt-2">{post.title.rendered}</CardTitle>
+                <div className="text-muted-foreground mt-2 text-sm" dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}/>
+            </CardContent>
+          </Link>
         </Card>
       ))}
     </div>
@@ -430,7 +503,7 @@ export default function Home() {
                                   </div>
                                   <p className="text-muted-foreground italic text-sm">"{testimonial.quote}"</p>
                               </CardContent>
-                              <CardFooter className="flex items-center gap-4 p-6 bg-muted/30">
+                              <CardFooter className="p-6 flex items-center gap-4 bg-muted/30">
                                   <Image
                                       src={testimonial.avatar}
                                       alt={`Avatar de ${testimonial.name}`}
@@ -485,7 +558,7 @@ export default function Home() {
                   <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                     <div className="p-1">
                       <Card className="overflow-hidden">
-                        <CardContent className="flex aspect-square items-center justify-center p-0">
+                        <CardContent className="p-0 flex aspect-square items-center justify-center">
                            <div className="relative w-full h-full">
                              <Image
                                 src={image.src}
@@ -525,29 +598,7 @@ export default function Home() {
                       Consejos, recetas e inspiración para tu viaje en la repostería.
                   </p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                  {blogPosts.map(post => (
-                      <Card key={post.slug} className="overflow-hidden group shadow-md">
-                        <Link href={`/blog/${post.slug}`} className="block">
-                          <div className="relative aspect-[16/9]">
-                              <Image 
-                                  src={post.image.src}
-                                  alt={`Imagen para ${post.title}`}
-                                  fill
-                                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                  data-ai-hint={post.image.hint}
-                                  unoptimized
-                              />
-                          </div>
-                          <CardContent className="p-6">
-                              <span className="text-sm text-primary font-semibold">{post.category}</span>
-                              <CardTitle className="font-card-title text-xl mt-2">{post.title}</CardTitle>
-                              <p className="text-muted-foreground mt-2 text-sm">{post.description}</p>
-                          </CardContent>
-                        </Link>
-                      </Card>
-                  ))}
-              </div>
+              <FeaturedBlogPosts />
               <div className="text-center mt-12">
                   <Button asChild variant="outline">
                       <Link href="/blog">Visitar el Blog</Link>
