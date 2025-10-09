@@ -84,14 +84,6 @@ export function ProductDetails({ product }: { product: Product }) {
           </div>
 
            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
-            <div className="flex items-center gap-2">
-              <div className="flex text-yellow-400">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className={`w-5 h-5 ${i < product.average_rating ? 'fill-current' : 'text-muted-foreground fill-muted'}`} />
-                ))}
-              </div>
-              <span className="text-sm text-muted-foreground">({product.rating_count} reseñas en WooCommerce)</span>
-            </div>
              <Button asChild variant="outline" size="sm">
                 <Link href={googleReviewUrl} target="_blank" rel="noopener noreferrer">
                     <MessageSquarePlus className="mr-2 h-4 w-4"/>

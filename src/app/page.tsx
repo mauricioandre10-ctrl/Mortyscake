@@ -138,14 +138,6 @@ function FeaturedCourses() {
               </CardHeader>
               <CardContent className="flex flex-col flex-grow p-6">
                 <CardTitle className="font-card-title text-xl mb-2">{course.name}</CardTitle>
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="flex text-yellow-400">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className={`w-4 h-4 ${i < course.average_rating ? 'fill-current' : 'text-muted-foreground fill-muted'}`} />
-                        ))}
-                      </div>
-                      <span className="text-xs text-muted-foreground">({course.rating_count} reseñas)</span>
-                    </div>
                 <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: course.short_description || '' }} />
               </CardContent>
               <CardFooter className="flex-col gap-2 md:flex-row md:justify-between items-center bg-muted/30 p-4 mt-auto">
@@ -260,14 +252,6 @@ function FeaturedProducts() {
               </CardHeader>
               <CardContent className="p-6 flex flex-col flex-grow">
                 <CardTitle className="font-card-title text-xl mb-2">{product.name}</CardTitle>
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="flex text-yellow-400">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className={`w-4 h-4 ${i < product.average_rating ? 'fill-current' : 'text-muted-foreground fill-muted'}`} />
-                        ))}
-                      </div>
-                      <span className="text-xs text-muted-foreground">({product.rating_count} reseñas)</span>
-                    </div>
                 <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
               </CardContent>
               <CardFooter className="flex-col gap-2 md:flex-row md:justify-between items-center bg-muted/30 p-4 mt-auto">
