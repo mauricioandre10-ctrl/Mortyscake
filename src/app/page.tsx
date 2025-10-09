@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Image from 'next/image';
@@ -120,7 +121,7 @@ function FeaturedCourses() {
                     className="absolute top-2 right-2 z-10 h-8 w-8"
                     size="icon"
                   />
-                <div className="aspect-[4/3] w-full bg-muted relative overflow-hidden rounded-t-lg">
+                <div className="aspect-[4/3] w-full bg-muted relative rounded-t-lg overflow-hidden">
                   {course.images?.[0]?.src ? (
                       <Image
                         src={course.images[0].src}
@@ -234,7 +235,7 @@ function FeaturedProducts() {
                     className="absolute top-2 right-2 z-10 h-8 w-8"
                     size="icon"
                   />
-                <div className="aspect-[4/3] w-full bg-muted relative overflow-hidden rounded-t-lg">
+                <div className="aspect-[4/3] w-full bg-muted relative rounded-t-lg overflow-hidden">
                   {product.images?.[0]?.src ? (
                       <Image
                         src={product.images[0].src}
@@ -250,7 +251,7 @@ function FeaturedProducts() {
               </div>
               <CardContent className="p-6 flex flex-col flex-grow">
                 <CardTitle className="font-card-title text-xl mb-2">{product.name}</CardTitle>
-                <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
+                <CardDescription className="text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
               </CardContent>
               <CardFooter className="flex-col items-center gap-2 bg-muted/30 p-4 mt-auto">
                 <span className="text-2xl font-bold text-primary">
@@ -485,7 +486,7 @@ export default function Home() {
                                   </div>
                                   <p className="text-muted-foreground italic text-sm">"{testimonial.quote}"</p>
                               </CardContent>
-                              <CardFooter className="p-6 flex items-center gap-4 bg-muted/30">
+                              <CardFooter className="p-6 flex items-center gap-4 bg-muted/30 mt-auto">
                                   <Image
                                       src={testimonial.avatar}
                                       alt={`Avatar de ${testimonial.name}`}
