@@ -74,7 +74,7 @@ export default function GalleryPage() {
       
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         {selectedImage && (
-            <DialogContent className="max-w-[90vw] max-h-[90vh] w-auto h-auto p-2 bg-transparent border-0 flex items-center justify-center">
+            <DialogContent className="max-w-none w-auto h-auto p-2 bg-transparent border-0 flex items-center justify-center">
                 <DialogTitle className="sr-only">Imagen Ampliada</DialogTitle>
                 <DialogDescription className="sr-only">
                     {selectedImage.alt}. Puedes cerrar esta vista con la tecla Escape o el botón de cierre.
@@ -85,7 +85,7 @@ export default function GalleryPage() {
                     alt={selectedImage.alt}
                     width={selectedImage.width}
                     height={selectedImage.height}
-                    className="object-contain rounded-lg shadow-2xl max-w-full max-h-full w-auto h-auto"
+                    className="object-contain rounded-lg shadow-2xl"
                 />
                 <ShareButton
                     title="Mira esta creación de Morty's Cake"
