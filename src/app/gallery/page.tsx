@@ -62,10 +62,9 @@ export default function GalleryPage() {
                     <div
                         key={index}
                         className={cn(
-                            "overflow-hidden rounded-lg break-inside-avoid shadow-md hover:shadow-primary/20 hover:shadow-xl transition-all duration-300 cursor-pointer group",
-                            loadedImages.has(index) ? 'animate-fade-in opacity-100' : 'opacity-0'
+                            "overflow-hidden rounded-lg break-inside-avoid shadow-md hover:shadow-primary/20 hover:shadow-xl transition-all duration-300 cursor-pointer group opacity-0",
+                            loadedImages.has(index) && "animate-fade-in opacity-100"
                         )}
-                        style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'forwards' }}
                         onClick={() => handleImageClick(image)}
                         role="button"
                         aria-label={`Ver imagen ampliada: ${image.alt}`}
@@ -85,7 +84,7 @@ export default function GalleryPage() {
             </div>
 
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
-                <DialogContent>
+                <DialogContent className="w-auto max-w-none h-auto max-h-none p-0 bg-transparent border-none">
                 {selectedImage && (
                     <>
                         <DialogTitle className="sr-only">Imagen Ampliada: {selectedImage.alt}</DialogTitle>
@@ -107,7 +106,7 @@ export default function GalleryPage() {
                             title="Mira esta creación de Morty's Cake"
                             text="¡Me encantó esta foto de la galería de Morty's Cake!"
                             url={siteUrl ? `${siteUrl}${selectedImage.src}` : selectedImage.src}
-                            className="absolute top-16 right-4 z-20 bg-accent text-accent-foreground hover:bg-accent/90"
+                            className="absolute top-4 right-14 z-20 bg-accent text-accent-foreground hover:bg-accent/90"
                             size="icon"
                         />
                     </>
