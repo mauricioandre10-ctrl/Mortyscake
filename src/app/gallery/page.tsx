@@ -50,29 +50,29 @@ export default function GalleryPage() {
         </p>
       </header>
 
+      <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
+        {localGalleryImages.map((image, index) => (
+          <div 
+            key={index} 
+            className="overflow-hidden rounded-lg break-inside-avoid shadow-md hover:shadow-primary/20 hover:shadow-xl transition-all duration-300 cursor-pointer group"
+            onClick={() => handleImageClick(image)}
+            role="button"
+            aria-label={`Ver imagen ampliada: ${image.alt}`}
+          >
+              <Image
+                  src={image.src}
+                  alt={image.alt}
+                  width={image.width}
+                  height={image.height}
+                  className="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                  priority={index < 12} // Prioriza la carga de las primeras 12 imágenes
+              />
+          </div>
+        ))}
+      </div>
+      
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
-          {localGalleryImages.map((image, index) => (
-            <div 
-              key={index} 
-              className="overflow-hidden rounded-lg break-inside-avoid shadow-md hover:shadow-primary/20 hover:shadow-xl transition-all duration-300 cursor-pointer group"
-              onClick={() => handleImageClick(image)}
-              role="button"
-              aria-label={`Ver imagen ampliada: ${image.alt}`}
-            >
-                <Image
-                    src={image.src}
-                    alt={image.alt}
-                    width={image.width}
-                    height={image.height}
-                    className="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105"
-                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                    priority={index < 12} // Prioriza la carga de las primeras 12 imágenes
-                />
-            </div>
-          ))}
-        </div>
-        
         {selectedImage && (
             <DialogContent className="max-w-[95vw] max-h-[95vh] w-auto h-auto p-0 bg-transparent border-0 flex items-center justify-center">
                 <DialogTitle className="sr-only">Imagen Ampliada</DialogTitle>
