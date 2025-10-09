@@ -374,7 +374,7 @@ export default function Home() {
             src="/image/fondo_heder.webp" 
             alt="Mujer decorando una tarta con flores frescas"
             fill
-            className="object-cover opacity-40"
+            className="object-cover opacity-60"
             priority
          />
          <div className="relative z-10 text-center container mx-auto px-4">
