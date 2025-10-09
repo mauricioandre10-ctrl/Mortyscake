@@ -5,6 +5,8 @@ import {
   Dialog,
   DialogContent,
   DialogTrigger,
+  DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog"
 import { useState, useEffect } from 'react';
 import { ShareButton } from '@/components/ShareButton';
@@ -64,25 +66,33 @@ export default function GalleryPage() {
           ))}
         </div>
         
-        {selectedImage && (
-            <DialogContent className="max-w-[99vw] max-h-[99vh] w-auto h-auto p-0 bg-transparent border-0 flex items-center justify-center">
-                <Image
-                    src={selectedImage.src}
-                    alt={selectedImage.alt}
-                    width={selectedImage.width}
-                    height={selectedImage.height}
-                    className="object-contain w-auto h-auto max-w-[99vw] max-h-[99vh] rounded-lg shadow-2xl"
-                    sizes="99vw"
-                />
-                <ShareButton
-                    title="Mira esta creación de Morty's Cake"
-                    text="¡Me encantó esta foto de la galería de Morty's Cake!"
-                    url={siteUrl ? `${siteUrl}${selectedImage.src}` : selectedImage.src}
-                    className="absolute top-4 right-4 z-20 bg-black/50 text-white hover:bg-black/70"
-                    size="icon"
-                />
-            </DialogContent>
-        )}
+        <DialogContent className="max-w-[99vw] max-h-[99vh] w-auto h-auto p-0 bg-transparent border-0 flex items-center justify-center">
+            {selectedImage && (
+                <>
+                    {/* Elementos para accesibilidad, visualmente ocultos */}
+                    <DialogTitle className="sr-only">Imagen Ampliada</DialogTitle>
+                    <DialogDescription className="sr-only">
+                        {selectedImage.alt}. Puedes cerrar esta vista con la tecla Escape o el botón de cierre.
+                    </DialogDescription>
+                    
+                    <Image
+                        src={selectedImage.src}
+                        alt={selectedImage.alt}
+                        width={1920} // Aumentamos la resolución base para calidad
+                        height={1080}
+                        className="object-contain w-auto h-auto max-w-[99vw] max-h-[99vh] rounded-lg shadow-2xl"
+                        sizes="99vw"
+                    />
+                    <ShareButton
+                        title="Mira esta creación de Morty's Cake"
+                        text="¡Me encantó esta foto de la galería de Morty's Cake!"
+                        url={siteUrl ? `${siteUrl}${selectedImage.src}` : selectedImage.src}
+                        className="absolute top-4 right-4 z-20 bg-black/50 text-white hover:bg-black/70"
+                        size="icon"
+                    />
+                </>
+            )}
+        </DialogContent>
       </Dialog>
     </div>
   );
