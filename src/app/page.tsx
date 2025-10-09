@@ -114,7 +114,7 @@ function FeaturedCourses() {
       {courses.map(course => (
          <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
           <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(course.name, 'Curso')}>
-              <CardHeader className="p-0 relative">
+              <CardHeader className="p-0 relative rounded-t-lg">
                 <ShareButton 
                     title={course.name} 
                     text={`Echa un vistazo a este curso: ${course.name}`} 
@@ -122,7 +122,7 @@ function FeaturedCourses() {
                     className="absolute top-2 right-2 z-10 h-8 w-8"
                     size="icon"
                   />
-                <div className="aspect-[4/3] w-full bg-muted relative overflow-hidden">
+                <div className="aspect-[4/3] w-full bg-muted relative overflow-hidden rounded-t-lg">
                   {course.images?.[0]?.src ? (
                       <Image
                         src={course.images[0].src}
@@ -140,11 +140,11 @@ function FeaturedCourses() {
                 <CardTitle className="font-card-title text-xl mb-2">{course.name}</CardTitle>
                 <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: course.short_description || '' }} />
               </CardContent>
-              <CardFooter className="flex-col gap-2 md:flex-row md:justify-between items-center bg-muted/30 p-4 mt-auto">
+              <CardFooter className="flex-col items-center gap-2 bg-muted/30 p-4 mt-auto">
                 <span className="text-2xl font-bold text-primary">
                   {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
                 </span>
-                <Button variant="secondary" size="sm" className="w-full md:w-auto">Ver Detalles</Button>
+                <Button variant="secondary" size="sm" className="w-full">Ver Detalles</Button>
               </CardFooter>
             </Link>
         </Card>
@@ -228,7 +228,7 @@ function FeaturedProducts() {
       {products.map(product => (
          <Card key={product.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
           <Link href={`/shop/${product.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(product.name, 'Producto')}>
-              <CardHeader className="p-0 relative">
+              <CardHeader className="p-0 relative rounded-t-lg">
                 <ShareButton 
                     title={product.name} 
                     text={`Echa un vistazo a este producto: ${product.name}`} 
@@ -236,7 +236,7 @@ function FeaturedProducts() {
                     className="absolute top-2 right-2 z-10 h-8 w-8"
                     size="icon"
                   />
-                <div className="aspect-[4/3] w-full bg-muted relative overflow-hidden">
+                <div className="aspect-[4/3] w-full bg-muted relative overflow-hidden rounded-t-lg">
                   {product.images?.[0]?.src ? (
                       <Image
                         src={product.images[0].src}
@@ -254,11 +254,11 @@ function FeaturedProducts() {
                 <CardTitle className="font-card-title text-xl mb-2">{product.name}</CardTitle>
                 <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
               </CardContent>
-              <CardFooter className="flex-col gap-2 md:flex-row md:justify-between items-center bg-muted/30 p-4 mt-auto">
+              <CardFooter className="flex-col items-center gap-2 bg-muted/30 p-4 mt-auto">
                 <span className="text-2xl font-bold text-primary">
                   {product.price === "0.00" ? 'Gratis' : `€${product.price}`}
                 </span>
-                <Button variant="secondary" size="sm" className="w-full md:w-auto">Ver Detalles</Button>
+                <Button variant="secondary" size="sm" className="w-full">Ver Detalles</Button>
               </CardFooter>
             </Link>
         </Card>
