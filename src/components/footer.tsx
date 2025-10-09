@@ -1,4 +1,5 @@
 
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { Phone, MapPin } from 'lucide-react';
@@ -23,7 +24,7 @@ const Footer = () => {
               </div>
             </div>
             <div className="flex flex-col items-center">
-               <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width={90} height={32} className="object-contain" data-ai-hint="logo" />
+               <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width="90" height="32" style={{ height: 'auto' }} className="object-contain" data-ai-hint="logo" />
             </div>
             <div className="flex flex-col items-end">
               <h3 className="font-bold text-lg mb-4 font-headline">Síguenos</h3>
@@ -53,3 +54,5 @@ const Footer = () => {
 };
 
 export default Footer;
+
+    

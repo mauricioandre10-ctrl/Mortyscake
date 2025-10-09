@@ -1,4 +1,5 @@
 
+
 import { Suspense } from 'react';
 import type { Metadata, Viewport } from 'next';
 import { Lato as FontSans, Pacifico as FontHeadline, Playfair_Display as FontCardTitle } from 'next/font/google';
@@ -119,3 +120,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+    

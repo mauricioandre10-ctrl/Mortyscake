@@ -1,4 +1,5 @@
 
+
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Image from 'next/image';
@@ -146,6 +147,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
             src={post.featured_image_url}
             alt={post.title.rendered}
             fill
+            sizes="100vw"
             className="object-cover"
             priority
           />
@@ -159,3 +161,5 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     </article>
   );
 }
+
+    

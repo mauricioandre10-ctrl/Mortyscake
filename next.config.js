@@ -1,4 +1,5 @@
 
+
 /** @type {import('next').NextConfig} */
 
 // Define la Content Security Policy (CSP)
@@ -7,9 +8,9 @@ const ContentSecurityPolicy = `
   script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.youtube.com;
   child-src 'self' https://www.youtube.com https://www.youtube-nocookie.com;
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-  img-src 'self' data: https:;
+  img-src 'self' data: https: cms.mortyscake.es;
   font-src 'self' https://fonts.gstatic.com;
-  connect-src 'self' https://*.mortyscake.es https://www.google-analytics.com;
+  connect-src 'self' https://*.mortyscake.es https://www.google-analytics.com https://cms.mortyscake.es;
   frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com;
 `;
 
@@ -88,3 +89,5 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
+
+    
