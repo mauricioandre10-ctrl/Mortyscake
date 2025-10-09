@@ -4,7 +4,6 @@
 import Image from 'next/image';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Star } from 'lucide-react';
 import Link from 'next/link';
 import { ShareButton } from '@/components/ShareButton';
 import { useState, useEffect } from 'react';
