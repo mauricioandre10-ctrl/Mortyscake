@@ -72,7 +72,7 @@ const Header = () => {
                 <SheetHeader>
                   <SheetTitle>
                      <Link href="/" className="flex items-center gap-2 mb-4">
-                       <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width={180} height={64} className="object-contain h-auto max-w-[100px]" data-ai-hint="logo" />
+                       <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width={100} height={36} className="object-contain h-auto" data-ai-hint="logo" />
                     </Link>
                   </SheetTitle>
                 </SheetHeader>
@@ -88,10 +88,12 @@ const Header = () => {
                     </SheetClose>
                   ))}
                   <Separator className="my-2"/>
-                   <Link href={accountUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-lg font-medium">
-                    <User className="h-5 w-5" />
-                    <span>Mi Cuenta</span>
-                  </Link>
+                  <SheetClose asChild>
+                    <Link href={accountUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-lg font-medium">
+                        <User className="h-5 w-5" />
+                        <span>Mi Cuenta</span>
+                    </Link>
+                  </SheetClose>
                 </div>
               </SheetContent>
             </Sheet>
