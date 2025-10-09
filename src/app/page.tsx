@@ -88,7 +88,9 @@ function FeaturedCourses() {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
         {[...Array(3)].map((_, i) => (
            <Card key={i}>
-            <Skeleton className="aspect-[4/3] w-full" />
+             <div className="aspect-[4/3] w-full bg-muted relative rounded-t-lg overflow-hidden">
+                <Skeleton className="w-full h-full" />
+             </div>
             <CardContent className="p-6 space-y-2">
               <Skeleton className="h-6 w-3/4" />
               <Skeleton className="h-4 w-1/2" />
@@ -202,7 +204,9 @@ function FeaturedProducts() {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
         {[...Array(3)].map((_, i) => (
            <Card key={i}>
-            <Skeleton className="aspect-[4/3] w-full" />
+            <div className="aspect-[4/3] w-full bg-muted relative rounded-t-lg overflow-hidden">
+                <Skeleton className="w-full h-full" />
+            </div>
             <CardContent className="p-6 space-y-2">
               <Skeleton className="h-6 w-3/4" />
               <Skeleton className="h-4 w-1/2" />
@@ -251,7 +255,7 @@ function FeaturedProducts() {
               </div>
               <CardContent className="p-6 flex flex-col flex-grow">
                 <CardTitle className="font-card-title text-xl mb-2">{product.name}</CardTitle>
-                <CardDescription className="text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
+                <CardDescription className="text-sm flex-grow" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
               </CardContent>
               <CardFooter className="flex-col items-center gap-2 bg-muted/30 p-4 mt-auto">
                 <span className="text-2xl font-bold text-primary">
@@ -302,7 +306,9 @@ function FeaturedBlogPosts() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
         {[...Array(2)].map((_, i) => (
           <Card key={i}>
-            <Skeleton className="aspect-[16/9] w-full" />
+            <div className="aspect-[16/9] w-full relative rounded-t-lg overflow-hidden">
+                <Skeleton className="w-full h-full" />
+            </div>
             <CardContent className="p-6 space-y-2">
               <Skeleton className="h-4 w-1/4" />
               <Skeleton className="h-6 w-3/4" />
@@ -323,7 +329,7 @@ function FeaturedBlogPosts() {
       {posts.map(post => (
         <Card key={post.id} className="overflow-hidden group shadow-md">
           <Link href={`/blog/${post.slug}`} className="block">
-            <div className="relative aspect-[16/9] bg-muted overflow-hidden rounded-t-lg">
+            <div className="relative aspect-[16/9] bg-muted rounded-t-lg overflow-hidden">
                 {post.featured_image_url ? (
                     <Image 
                         src={post.featured_image_url}
@@ -486,7 +492,7 @@ export default function Home() {
                                   </div>
                                   <p className="text-muted-foreground italic text-sm">"{testimonial.quote}"</p>
                               </CardContent>
-                              <CardFooter className="p-6 flex items-center gap-4 bg-muted/30 mt-auto">
+                              <CardFooter className="p-6 flex items-center gap-4 bg-muted/30">
                                   <Image
                                       src={testimonial.avatar}
                                       alt={`Avatar de ${testimonial.name}`}
