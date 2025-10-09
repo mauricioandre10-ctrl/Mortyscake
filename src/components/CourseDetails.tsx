@@ -4,7 +4,6 @@
 import Image from 'next/image';
 import { ArrowLeft, FileText, Info, MessageSquarePlus } from 'lucide-react';
 import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Carousel,
@@ -47,7 +46,7 @@ export function CourseDetails({ course }: { course: Course }) {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
         <div className="lg:col-span-1">
           <Carousel className="w-full">
             <CarouselContent>
@@ -60,7 +59,7 @@ export function CourseDetails({ course }: { course: Course }) {
                         alt={image.alt || course.name}
                         fill
                         className="object-cover"
-                        sizes="(max-width: 1024px) 100vw, 33vw"
+                        sizes="(max-width: 1024px) 100vw, 50vw"
                       />
                     </div>
                   </CarouselItem>
@@ -82,7 +81,7 @@ export function CourseDetails({ course }: { course: Course }) {
           </Carousel>
         </div>
 
-        <div className="flex flex-col lg:col-span-2">
+        <div className="flex flex-col lg:col-span-1">
           <div className="flex justify-between items-start">
             <h1 className="font-card-title text-4xl md:text-5xl mb-2">{course.name}</h1>
             <ShareButton title={course.name} text={`Echa un vistazo a este curso: ${course.name}`} />
@@ -102,22 +101,22 @@ export function CourseDetails({ course }: { course: Course }) {
             dangerouslySetInnerHTML={{ __html: course.short_description || '' }}
           />
 
-          <div className="mt-auto">
-            <div className="flex items-baseline gap-4 mb-6">
-              <span className="text-4xl font-bold text-primary">
-                {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
-              </span>
+          <div className="mt-auto pt-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <span className="text-4xl font-bold text-primary text-center sm:text-left">
+                    {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
+                </span>
+                <AddToCart
+                    name={course.name}
+                    id={course.id.toString()}
+                    price={parseFloat(course.price)}
+                    currency="EUR"
+                    image={course.images?.[0]?.src}
+                    description={course.short_description}
+                    sku={course.sku}
+                    isCourse={true}
+                />
             </div>
-            <AddToCart
-                name={course.name}
-                id={course.id.toString()}
-                price={parseFloat(course.price)}
-                currency="EUR"
-                image={course.images?.[0]?.src}
-                description={course.short_description}
-                sku={course.sku}
-                isCourse={true}
-            />
           </div>
         </div>
       </div>

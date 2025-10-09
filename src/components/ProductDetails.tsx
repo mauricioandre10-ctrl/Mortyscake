@@ -41,7 +41,7 @@ export function ProductDetails({ product }: { product: Product }) {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
         <div className="lg:col-span-1">
           <Carousel className="w-full">
             <CarouselContent>
@@ -54,7 +54,7 @@ export function ProductDetails({ product }: { product: Product }) {
                         alt={image.alt || product.name}
                         fill
                         className="object-cover"
-                        sizes="(max-width: 1024px) 100vw, 33vw"
+                        sizes="(max-width: 1024px) 100vw, 50vw"
                       />
                     </div>
                   </CarouselItem>
@@ -76,7 +76,7 @@ export function ProductDetails({ product }: { product: Product }) {
           </Carousel>
         </div>
 
-        <div className="flex flex-col lg:col-span-2">
+        <div className="flex flex-col lg:col-span-1">
           <div className="flex justify-between items-start">
             <h1 className="font-card-title text-4xl md:text-5xl mb-4">{product.name}</h1>
             <ShareButton title={product.name} text={`Echa un vistazo a este producto: ${product.name}`} />
@@ -96,22 +96,22 @@ export function ProductDetails({ product }: { product: Product }) {
             dangerouslySetInnerHTML={{ __html: product.short_description || '' }}
           />
 
-          <div className="mt-auto">
-            <div className="flex items-center mb-6">
-              <span className="text-4xl font-bold text-primary">
-                €{product.price}
-              </span>
+          <div className="mt-auto pt-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <span className="text-4xl font-bold text-primary text-center sm:text-left">
+                    €{product.price}
+                </span>
+                <AddToCart
+                    name={product.name}
+                    id={product.id.toString()}
+                    price={parseFloat(product.price)}
+                    currency="EUR"
+                    image={product.images?.[0]?.src}
+                    description={product.short_description}
+                    sku={product.sku}
+                    isCourse={false}
+                />
             </div>
-            <AddToCart
-                name={product.name}
-                id={product.id.toString()}
-                price={parseFloat(product.price)}
-                currency="EUR"
-                image={product.images?.[0]?.src}
-                description={product.short_description}
-                sku={product.sku}
-                isCourse={false}
-            />
           </div>
         </div>
       </div>
