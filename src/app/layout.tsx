@@ -38,14 +38,14 @@ const fontCardTitle = FontCardTitle({
 export const metadata: Metadata = {
   metadataBase: new URL('https://mortyscake.com'),
   title: {
-    default: 'Morty\'s Cake | Cursos de Repostería y Pastelería Gourmet',
-    template: '%s | Morty\'s Cake',
+    default: 'Morty\'s Cake | Repostería Creativa y Cursos en Ourense',
+    template: '%s | Morty\'s Cake Ourense',
   },
-  description: 'Aprende repostería desde cero hasta un nivel experto con nuestros cursos online. Descubre tartas y postres personalizados para tus eventos. ¡Transforma tu pasión en arte!',
-  keywords: ['cursos de repostería', 'repostería online', 'tartas personalizadas', 'pastelería gourmet', 'repostería creativa', 'tartas de boda', 'Ourense'],
+  description: 'Aprende repostería en Ourense con nuestros cursos online y presenciales. Descubre tartas y postres personalizados en Galicia. ¡Transforma tu pasión en arte!',
+  keywords: ['cursos de repostería Ourense', 'repostería online Ourense', 'tartas personalizadas Ourense', 'pastelería gourmet Ourense', 'repostería creativa Galicia', 'tartas de boda Ourense', 'Ourense', 'Galicia'],
   openGraph: {
-    title: 'Morty\'s Cake | Cursos de Repostería y Pastelería Gourmet',
-    description: 'Transforma tu pasión por la repostería en un arte. Cursos para todos los niveles, tartas personalizadas y mucho más.',
+    title: 'Morty\'s Cake | Cursos de Repostería y Pastelería Gourmet en Ourense',
+    description: 'Transforma tu pasión por la repostería en arte con nuestros cursos en Ourense. Ofrecemos tartas personalizadas y mucho más en el corazón de Galicia.',
     url: 'https://mortyscake.com',
     siteName: 'Morty\'s Cake',
     images: [
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
         url: '/image/fondo_heder.webp', // URL relativa a metadataBase
         width: 1200,
         height: 630,
-        alt: 'Alumna sonriendo mientras decora una tarta de flores en un curso de repostería.',
+        alt: 'Alumna sonriendo mientras decora una tarta de flores en un curso de repostería en Ourense.',
       },
     ],
     locale: 'es_ES',
@@ -61,8 +61,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Morty\'s Cake | Cursos de Repostería y Pastelería Gourmet',
-    description: 'De cero a experto en repostería con nuestros cursos prácticos. Descubre también nuestras tartas personalizadas para eventos.',
+    title: 'Morty\'s Cake | Repostería y Cursos en Ourense',
+    description: 'De cero a experto en repostería con nuestros cursos prácticos en Ourense. Descubre también nuestras tartas personalizadas para eventos en Galicia.',
     images: ['/image/fondo_heder.webp'], // URL relativa a metadataBase
   },
   robots: {

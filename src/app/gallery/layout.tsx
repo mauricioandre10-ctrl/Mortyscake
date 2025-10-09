@@ -2,17 +2,17 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Galería de Tartas y Postres Artísticos',
-  description: 'Explora nuestra galería de creaciones de repostería. Inspírate con nuestras tartas de boda, cumpleaños y postres personalizados, todos hechos con pasión y arte en Ourense.',
+  title: 'Galería de Tartas y Postres Artísticos en Ourense',
+  description: 'Explora nuestra galería de creaciones de repostería en Ourense. Inspírate con nuestras tartas de boda, cumpleaños y postres personalizados hechos en Galicia.',
   openGraph: {
-    title: 'Galería de Creaciones | Morty\'s Cake',
-    description: 'Un vistazo a las dulces obras de arte de nuestros cursos y encargos. Cada imagen cuenta una historia de sabor.',
+    title: 'Galería de Creaciones | Morty\'s Cake Ourense',
+    description: 'Un vistazo a las dulces obras de arte de nuestros cursos y encargos en Ourense. Cada imagen cuenta una historia de sabor.',
     images: ['/image/fondo_heder.webp'],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Galería de Creaciones | Morty\'s Cake',
-    description: 'Inspírate con nuestra galería de tartas y postres únicos.',
+    title: 'Galería de Creaciones | Morty\'s Cake Ourense',
+    description: 'Inspírate con nuestra galería de tartas y postres únicos hechos en Ourense.',
     images: ['/image/fondo_heder.webp'],
   },
   robots: {

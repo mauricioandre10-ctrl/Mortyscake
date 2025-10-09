@@ -2,17 +2,17 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Cursos de Repostería Online y Presenciales',
-  description: 'Explora nuestra gama de cursos de repostería en Ourense. Aprende desde técnicas fundamentales hasta decoración avanzada y convierte tu pasión en arte.',
+  title: 'Cursos de Repostería en Ourense | Online y Presenciales',
+  description: 'Explora nuestros cursos de repostería en Ourense. Aprende desde técnicas fundamentales hasta decoración avanzada y convierte tu pasión en arte en Galicia.',
   openGraph: {
-    title: 'Cursos de Repostería | Morty\'s Cake',
-    description: 'Encuentra el curso perfecto para ti, ya seas principiante o busques perfeccionar tu técnica. ¡Inscríbete hoy!',
+    title: 'Cursos de Repostería en Ourense | Morty\'s Cake',
+    description: 'Encuentra el curso de repostería perfecto para ti en Ourense. ¡Inscríbete hoy y aprende con los mejores de Galicia!',
     images: ['/image/fondo_heder.webp'],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Cursos de Repostería | Morty\'s Cake',
-    description: 'Explora nuestros cursos de repostería y aprende desde cero hasta nivel experto con técnicas profesionales.',
+    title: 'Cursos de Repostería en Ourense | Morty\'s Cake',
+    description: 'Aprende repostería desde cero hasta nivel experto con nuestros cursos en Ourense.',
     images: ['/image/fondo_heder.webp'],
   },
   robots: {

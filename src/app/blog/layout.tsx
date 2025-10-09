@@ -2,17 +2,17 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Blog de Repostería Creativa',
-  description: 'Descubre recetas, consejos, y las últimas tendencias en el mundo de la repostería. Artículos de Morty\'s Cake para inspirar tu creatividad en la cocina.',
+  title: 'Blog de Repostería Creativa en Ourense',
+  description: 'Descubre recetas, consejos y tendencias en repostería desde Ourense. Artículos de Morty\'s Cake para inspirar tu creatividad en la cocina en Galicia.',
   openGraph: {
-    title: 'Blog de Repostería | Morty\'s Cake',
-    description: 'Recetas, consejos e inspiración para amantes de la pastelería. ¡Aprende y crea con nosotros!',
+    title: 'Blog de Repostería | Morty\'s Cake Ourense',
+    description: 'Recetas, consejos e inspiración para amantes de la pastelería en Ourense y Galicia.',
     images: ['/image/fondo_heder.webp'],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Blog de Repostería | Morty\'s Cake',
-    description: 'Recetas, consejos e inspiración para amantes de la pastelería. ¡Aprende y crea con nosotros!',
+    title: 'Blog de Repostería | Morty\'s Cake Ourense',
+    description: 'Recetas, consejos e inspiración para amantes de la pastelería en Ourense.',
     images: ['/image/fondo_heder.webp'],
   },
   robots: {
