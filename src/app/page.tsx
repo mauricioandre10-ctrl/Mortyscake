@@ -23,8 +23,6 @@ interface Product {
   description: string;
   images: { id: number; src: string; alt: string }[];
   menu_order: number;
-  average_rating: number;
-  rating_count: number;
   category_names: string[];
 }
 
@@ -95,7 +93,7 @@ function FeaturedCourses() {
               <Skeleton className="h-4 w-1/2" />
                <Skeleton className="h-10 w-full" />
             </CardContent>
-             <CardFooter className="p-4 flex justify-between items-center bg-muted/30">
+             <CardFooter className="flex-col items-center gap-2 bg-muted/30 p-4">
                <Skeleton className="h-8 w-1/4" />
                <Skeleton className="h-10 w-1/2" />
             </CardFooter>
@@ -114,7 +112,7 @@ function FeaturedCourses() {
       {courses.map(course => (
          <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
           <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(course.name, 'Curso')}>
-              <CardHeader className="p-0 relative rounded-t-lg">
+              <CardHeader className="p-0 relative">
                 <ShareButton 
                     title={course.name} 
                     text={`Echa un vistazo a este curso: ${course.name}`} 
@@ -209,7 +207,7 @@ function FeaturedProducts() {
               <Skeleton className="h-4 w-1/2" />
                <Skeleton className="h-10 w-full" />
             </CardContent>
-             <CardFooter className="p-4 flex justify-between items-center bg-muted/30">
+             <CardFooter className="flex-col items-center gap-2 bg-muted/30 p-4">
                <Skeleton className="h-8 w-1/4" />
                <Skeleton className="h-10 w-1/2" />
             </CardFooter>
@@ -228,7 +226,7 @@ function FeaturedProducts() {
       {products.map(product => (
          <Card key={product.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
           <Link href={`/shop/${product.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(product.name, 'Producto')}>
-              <CardHeader className="p-0 relative rounded-t-lg">
+              <CardHeader className="p-0 relative">
                 <ShareButton 
                     title={product.name} 
                     text={`Echa un vistazo a este producto: ${product.name}`} 
@@ -612,5 +610,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

@@ -19,8 +19,6 @@ interface Course {
   short_description: string;
   description: string;
   images: { id: number; src: string; alt: string }[];
-  average_rating: number;
-  rating_count: number;
   date_created: string | { date: string };
   menu_order: number;
   category_names: string[];
@@ -30,7 +28,7 @@ function CourseCard({ course, siteUrl }: { course: Course, siteUrl: string | und
   return (
     <Card className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
       <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(course.name, 'Curso')}>
-          <CardHeader className="p-0 relative rounded-t-lg">
+          <CardHeader className="p-0 relative">
              <ShareButton 
                 title={course.name} 
                 text={`Echa un vistazo a este curso: ${course.name}`} 
@@ -173,7 +171,7 @@ function LoadingSkeleton() {
               <Skeleton className="h-6 w-3/4" />
               <Skeleton className="h-4 w-full" />
             </CardContent>
-            <CardFooter className="flex justify-between items-center bg-muted/30 p-4">
+            <CardFooter className="flex-col items-center gap-2 bg-muted/30 p-4">
                <Skeleton className="h-8 w-1/4" />
                <Skeleton className="h-10 w-1/2" />
             </CardFooter>
@@ -182,5 +180,3 @@ function LoadingSkeleton() {
       </div>
     );
 }
-
-    
