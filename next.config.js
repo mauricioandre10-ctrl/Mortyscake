@@ -1,16 +1,15 @@
-
-
 /** @type {import('next').NextConfig} */
 
 // Define la Content Security Policy (CSP)
 const ContentSecurityPolicy = `
   default-src 'self' https://*.mortyscake.es https://*.google.com;
   script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.youtube.com https://js.stripe.com https://vercel.live;
+  script-src-elem 'self' 'unsafe-inline' https://js.stripe.com https://vercel.live;
   child-src 'self' https://www.youtube.com https://www.youtube-nocookie.com;
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
   img-src 'self' data: https: cms.mortyscake.es;
   font-src 'self' https://fonts.gstatic.com;
-  connect-src 'self' https://*.mortyscake.es https://*.google-analytics.com https://cms.mortyscake.es https://region1.google-analytics.com;
+  connect-src 'self' https://*.mortyscake.es https://www.google-analytics.com https://cms.mortyscake.es https://region1.google-analytics.com https://js.stripe.com https://www.googletagmanager.com;
   frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://js.stripe.com;
 `;
 
@@ -38,7 +37,6 @@ const securityHeaders = [
 ];
 
 const nextConfig = {
-  /* config options here */
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -89,5 +87,3 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
-
-    
