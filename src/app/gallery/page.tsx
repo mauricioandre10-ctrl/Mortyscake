@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog"
 import { useState, useEffect } from 'react';
 import { ShareButton } from '@/components/ShareButton';
+import { cn } from '@/lib/utils';
 
 // Genera una lista de 60 imágenes con nombres consecutivos y alturas variables
 const localGalleryImages = Array.from({ length: 60 }, (_, i) => ({
@@ -30,6 +31,7 @@ export default function GalleryPage() {
     const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
     const [isOpen, setIsOpen] = useState(false);
     const [siteUrl, setSiteUrl] = useState('');
+    const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -40,6 +42,10 @@ export default function GalleryPage() {
     const handleImageClick = (image: GalleryImage) => {
         setSelectedImage(image);
         setIsOpen(true);
+    };
+
+    const handleImageLoad = (index: number) => {
+        setLoadedImages(prev => new Set(prev).add(index));
     };
 
     return (
@@ -55,7 +61,11 @@ export default function GalleryPage() {
                 {localGalleryImages.map((image, index) => (
                     <div
                         key={index}
-                        className="overflow-hidden rounded-lg break-inside-avoid shadow-md hover:shadow-primary/20 hover:shadow-xl transition-all duration-300 cursor-pointer group"
+                        className={cn(
+                            "overflow-hidden rounded-lg break-inside-avoid shadow-md hover:shadow-primary/20 hover:shadow-xl transition-all duration-300 cursor-pointer group opacity-0 animate-fade-in",
+                            loadedImages.has(index) ? 'opacity-100' : 'opacity-0'
+                        )}
+                        style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'forwards' }}
                         onClick={() => handleImageClick(image)}
                         role="button"
                         aria-label={`Ver imagen ampliada: ${image.alt}`}
@@ -67,7 +77,8 @@ export default function GalleryPage() {
                             height={image.height}
                             className="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105"
                             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                            priority={index < 12} // Prioriza la carga de las primeras 12 imágenes
+                            priority={index < 12}
+                            onLoad={() => handleImageLoad(index)}
                         />
                     </div>
                 ))}
