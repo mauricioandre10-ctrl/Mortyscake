@@ -86,7 +86,7 @@ function FeaturedCourses() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
         {[...Array(3)].map((_, i) => (
            <Card key={i}>
             <Skeleton className="aspect-[4/3] w-full" />
@@ -110,7 +110,7 @@ function FeaturedCourses() {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
       {courses.map(course => (
          <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
           <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(course.name, 'Curso')}>
@@ -208,7 +208,7 @@ function FeaturedProducts() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
         {[...Array(3)].map((_, i) => (
            <Card key={i}>
             <Skeleton className="aspect-[4/3] w-full" />
@@ -232,7 +232,7 @@ function FeaturedProducts() {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
       {products.map(product => (
          <Card key={product.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
           <Link href={`/shop/${product.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(product.name, 'Producto')}>

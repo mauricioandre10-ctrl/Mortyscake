@@ -148,7 +148,7 @@ function CoursesList() {
     }
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
           {courses.map((course: Course) => (
              <CourseCard key={course.id} course={course} siteUrl={siteUrl} />
           ))}
@@ -173,8 +173,8 @@ export default function CoursesPage() {
 
 function LoadingSkeleton() {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {[...Array(3)].map((_, i) => (
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
+        {[...Array(6)].map((_, i) => (
           <Card key={i}>
             <Skeleton className="aspect-[4/3] w-full" />
             <CardContent className="p-6 space-y-2">
