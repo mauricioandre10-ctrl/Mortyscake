@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -74,7 +75,7 @@ export default function GalleryPage() {
 
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 {selectedImage && (
-                     <DialogContent className="max-w-none w-auto h-auto p-2 bg-transparent border-0 flex items-center justify-center">
+                     <DialogContent className="max-w-none w-auto h-auto p-0 bg-transparent border-0 flex items-center justify-center">
                         <DialogTitle className="sr-only">Imagen Ampliada: {selectedImage.alt}</DialogTitle>
                         <DialogDescription className="sr-only">
                             Vista ampliada de la imagen: {selectedImage.alt}. Puedes cerrar esta vista con la tecla Escape o el botón de cierre.
@@ -94,7 +95,7 @@ export default function GalleryPage() {
                             title="Mira esta creación de Morty's Cake"
                             text="¡Me encantó esta foto de la galería de Morty's Cake!"
                             url={siteUrl ? `${siteUrl}${selectedImage.src}` : selectedImage.src}
-                            className="absolute top-16 right-4 z-20 bg-black/50 text-white hover:bg-black/70"
+                            className="absolute top-16 right-4 z-20 bg-accent text-accent-foreground hover:bg-accent/90"
                             size="icon"
                         />
                     </DialogContent>
