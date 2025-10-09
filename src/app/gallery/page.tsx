@@ -74,19 +74,20 @@ export default function GalleryPage() {
 
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 {selectedImage && (
-                    <DialogContent className="max-w-none w-auto h-auto p-0 bg-transparent border-0 flex items-center justify-center">
+                    <DialogContent className="max-w-none w-auto h-auto p-2 bg-transparent border-0 flex items-center justify-center">
                         <DialogTitle className="sr-only">Imagen Ampliada: {selectedImage.alt}</DialogTitle>
                         <DialogDescription className="sr-only">
                             Vista ampliada de la imagen: {selectedImage.alt}. Puedes cerrar esta vista con la tecla Escape o el botón de cierre.
                         </DialogDescription>
 
-                        {/* Contenedor que define el tamaño del visor */}
-                        <div className="relative w-[95vw] h-[95vh]">
+                        {/* Contenedor que permite que la imagen se escale hacia abajo pero no hacia arriba */}
+                        <div className="relative max-w-[95vw] max-h-[95vh] flex items-center justify-center">
                             <Image
                                 src={selectedImage.src}
                                 alt={selectedImage.alt}
-                                fill
-                                className="object-contain"
+                                width={selectedImage.width}
+                                height={selectedImage.height}
+                                className="object-contain h-auto w-auto max-w-full max-h-full"
                                 sizes="95vw"
                             />
                         </div>
