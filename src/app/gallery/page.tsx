@@ -66,14 +66,15 @@ export default function GalleryPage() {
         </div>
         
         {selectedImage && (
-             <DialogContent className="max-w-none w-auto h-auto max-h-[90vh] p-2 bg-transparent border-0 flex items-center justify-center">
-                <div className="relative h-auto w-auto max-h-[90vh] max-w-[90vw]">
+             <DialogContent className="max-w-[90vw] max-h-[90vh] w-auto h-auto p-2 bg-transparent border-0 flex items-center justify-center">
+                <div className="relative h-full w-full">
                     <Image 
                         src={selectedImage.src}
                         alt={selectedImage.alt}
                         width={selectedImage.width}
                         height={selectedImage.height}
-                        className="object-contain h-full w-auto max-h-[90vh] rounded-lg shadow-2xl"
+                        className="object-contain h-full w-full rounded-lg shadow-2xl"
+                        style={{ maxHeight: 'calc(90vh - 1rem)', maxWidth: 'calc(90vw - 1rem)' }}
                         sizes="90vw"
                     />
                      <ShareButton
