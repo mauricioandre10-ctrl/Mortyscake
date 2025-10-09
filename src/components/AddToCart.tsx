@@ -41,7 +41,7 @@ export function AddToCart({ name, id, price, currency, image, description, isCou
   };
 
   return (
-    <Button size="lg" onClick={handleAddToCart} className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-md">
+    <Button size="lg" onClick={handleAddToCart} className="shadow-md">
       <ShoppingCart className="mr-2" />
       {isCourse ? 'Inscribirse Ahora' : 'Añadir al carrito'}
     </Button>
