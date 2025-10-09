@@ -28,7 +28,7 @@ function PostCard({ post }: { post: Post }) {
   return (
     <Card className="overflow-hidden group shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300">
       <Link href={`/blog/${post.slug}`} className="block h-full flex flex-col">
-        <div className="relative aspect-[16/9] bg-muted">
+        <div className="relative aspect-[16/9] bg-muted overflow-hidden rounded-t-lg">
           {post.featured_image_url ? (
             <Image 
                 src={post.featured_image_url}

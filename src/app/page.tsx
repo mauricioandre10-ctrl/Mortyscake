@@ -112,7 +112,7 @@ function FeaturedCourses() {
       {courses.map(course => (
          <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
           <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(course.name, 'Curso')}>
-              <CardHeader className="p-0 relative">
+              <div className="relative">
                 <ShareButton 
                     title={course.name} 
                     text={`Echa un vistazo a este curso: ${course.name}`} 
@@ -133,7 +133,7 @@ function FeaturedCourses() {
                       <div className="w-full h-full bg-muted"></div>
                     )}
                   </div>
-              </CardHeader>
+              </div>
               <CardContent className="flex flex-col flex-grow p-6">
                 <CardTitle className="font-card-title text-xl mb-2">{course.name}</CardTitle>
                 <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: course.short_description || '' }} />
@@ -226,7 +226,7 @@ function FeaturedProducts() {
       {products.map(product => (
          <Card key={product.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
           <Link href={`/shop/${product.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(product.name, 'Producto')}>
-              <CardHeader className="p-0 relative">
+              <div className="relative">
                 <ShareButton 
                     title={product.name} 
                     text={`Echa un vistazo a este producto: ${product.name}`} 
@@ -247,7 +247,7 @@ function FeaturedProducts() {
                       <div className="w-full h-full bg-muted"></div>
                     )}
                   </div>
-              </CardHeader>
+              </div>
               <CardContent className="p-6 flex flex-col flex-grow">
                 <CardTitle className="font-card-title text-xl mb-2">{product.name}</CardTitle>
                 <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
@@ -322,7 +322,7 @@ function FeaturedBlogPosts() {
       {posts.map(post => (
         <Card key={post.id} className="overflow-hidden group shadow-md">
           <Link href={`/blog/${post.slug}`} className="block">
-            <div className="relative aspect-[16/9] bg-muted">
+            <div className="relative aspect-[16/9] bg-muted overflow-hidden rounded-t-lg">
                 {post.featured_image_url ? (
                     <Image 
                         src={post.featured_image_url}

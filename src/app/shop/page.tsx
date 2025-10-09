@@ -26,7 +26,7 @@ function ProductCard({ product, siteUrl }: { product: Product, siteUrl: string |
   return (
     <Card className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
         <Link href={`/shop/${product.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(product.name, 'Producto')}>
-        <CardHeader className="p-0 relative">
+        <div className="relative">
             <ShareButton 
                 title={product.name} 
                 text={`Echa un vistazo a este producto: ${product.name}`} 
@@ -47,7 +47,7 @@ function ProductCard({ product, siteUrl }: { product: Product, siteUrl: string |
                 <div className="w-full h-full bg-muted"></div>
                 )}
             </div>
-        </CardHeader>
+        </div>
         <CardContent className="flex flex-col flex-grow p-6">
             <CardTitle className="font-card-title text-xl mb-2">
                 {product.name}

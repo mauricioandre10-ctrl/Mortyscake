@@ -27,7 +27,7 @@ function CourseCard({ course, siteUrl }: { course: Course, siteUrl: string | und
   return (
     <Card className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
       <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(course.name, 'Curso')}>
-          <CardHeader className="p-0 relative">
+          <div className="relative">
              <ShareButton 
                 title={course.name} 
                 text={`Echa un vistazo a este curso: ${course.name}`} 
@@ -48,7 +48,7 @@ function CourseCard({ course, siteUrl }: { course: Course, siteUrl: string | und
                    <div className="w-full h-full bg-muted"></div>
                 )}
               </div>
-          </CardHeader>
+          </div>
           <CardContent className="flex flex-col flex-grow p-6">
              <CardTitle className="font-card-title text-xl mb-2">{course.name}</CardTitle>
             <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: course.short_description || '' }} />
