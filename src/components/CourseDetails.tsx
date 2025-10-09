@@ -15,6 +15,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ShareButton } from './ShareButton';
 import { AddToCart } from './AddToCart';
+import { Badge } from '@/components/ui/badge';
 
 interface Course {
   id: number;
@@ -87,36 +88,37 @@ export function CourseDetails({ course }: { course: Course }) {
             <ShareButton title={course.name} text={`Echa un vistazo a este curso: ${course.name}`} />
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
-            <Button asChild variant="outline" size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-md">
-                <Link href={googleReviewUrl} target="_blank" rel="noopener noreferrer">
-                    <MessageSquarePlus className="mr-2 h-4 w-4"/>
-                    Dejar una Reseña en Google
-                </Link>
-            </Button>
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+              <div>
+                  <Button asChild variant="outline" size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-md mb-4">
+                      <Link href={googleReviewUrl} target="_blank" rel="noopener noreferrer">
+                          <MessageSquarePlus className="mr-2 h-4 w-4"/>
+                          Dejar una Reseña en Google
+                      </Link>
+                  </Button>
+                  <div
+                    className="prose dark:prose-invert max-w-none text-muted-foreground"
+                    dangerouslySetInnerHTML={{ __html: course.short_description || '' }}
+                  />
+              </div>
 
-          <div
-            className="prose dark:prose-invert max-w-none text-muted-foreground mb-6"
-            dangerouslySetInnerHTML={{ __html: course.short_description || '' }}
-          />
-
-          <div className="mt-auto pt-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <span className="text-4xl font-bold text-primary text-center sm:text-left">
-                    {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
-                </span>
-                <AddToCart
-                    name={course.name}
-                    id={course.id.toString()}
-                    price={parseFloat(course.price)}
-                    currency="EUR"
-                    image={course.images?.[0]?.src}
-                    description={course.short_description}
-                    sku={course.sku}
-                    isCourse={true}
-                />
-            </div>
+              <div className="mt-auto pt-6 bg-muted/30 p-6 rounded-lg shadow-inner">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <span className="text-4xl font-bold text-primary text-center sm:text-left">
+                        {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
+                    </span>
+                    <AddToCart
+                        name={course.name}
+                        id={course.id.toString()}
+                        price={parseFloat(course.price)}
+                        currency="EUR"
+                        image={course.images?.[0]?.src}
+                        description={course.short_description}
+                        sku={course.sku}
+                        isCourse={true}
+                    />
+                </div>
+              </div>
           </div>
         </div>
       </div>
