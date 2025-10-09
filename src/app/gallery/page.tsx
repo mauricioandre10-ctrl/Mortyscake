@@ -4,7 +4,6 @@ import Image from 'next/image';
 import {
   Dialog,
   DialogContent,
-  DialogTrigger,
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog"
@@ -26,9 +25,9 @@ interface GalleryImage {
     height: number;
 }
 
-
 export default function GalleryPage() {
     const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
+    const [isOpen, setIsOpen] = useState(false);
     const [siteUrl, setSiteUrl] = useState('');
 
     useEffect(() => {
@@ -37,6 +36,10 @@ export default function GalleryPage() {
         }
     }, []);
 
+    const handleImageClick = (image: GalleryImage) => {
+        setSelectedImage(image);
+        setIsOpen(true);
+    };
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -47,52 +50,53 @@ export default function GalleryPage() {
         </p>
       </header>
 
-      <Dialog>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
           {localGalleryImages.map((image, index) => (
-             <DialogTrigger asChild key={index} onClick={() => setSelectedImage(image)}>
-                <div className="overflow-hidden rounded-lg break-inside-avoid shadow-md hover:shadow-primary/20 hover:shadow-xl transition-all duration-300 cursor-pointer group">
-                    <Image
-                        src={image.src}
-                        alt={image.alt}
-                        width={image.width}
-                        height={image.height}
-                        className="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105"
-                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                        priority={index < 12} // Prioriza la carga de las primeras 12 imágenes
-                    />
-                </div>
-            </DialogTrigger>
+            <div 
+              key={index} 
+              className="overflow-hidden rounded-lg break-inside-avoid shadow-md hover:shadow-primary/20 hover:shadow-xl transition-all duration-300 cursor-pointer group"
+              onClick={() => handleImageClick(image)}
+              role="button"
+              aria-label={`Ver imagen ampliada: ${image.alt}`}
+            >
+                <Image
+                    src={image.src}
+                    alt={image.alt}
+                    width={image.width}
+                    height={image.height}
+                    className="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105"
+                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                    priority={index < 12} // Prioriza la carga de las primeras 12 imágenes
+                />
+            </div>
           ))}
         </div>
         
-        <DialogContent className="max-w-[99vw] max-h-[99vh] w-auto h-auto p-0 bg-transparent border-0 flex items-center justify-center">
-            {selectedImage && (
-                <>
-                    {/* Elementos para accesibilidad, visualmente ocultos */}
-                    <DialogTitle className="sr-only">Imagen Ampliada</DialogTitle>
-                    <DialogDescription className="sr-only">
-                        {selectedImage.alt}. Puedes cerrar esta vista con la tecla Escape o el botón de cierre.
-                    </DialogDescription>
-                    
-                    <Image
-                        src={selectedImage.src}
-                        alt={selectedImage.alt}
-                        width={1920} // Aumentamos la resolución base para calidad
-                        height={1080}
-                        className="object-contain w-auto h-auto max-w-[99vw] max-h-[99vh] rounded-lg shadow-2xl"
-                        sizes="99vw"
-                    />
-                    <ShareButton
-                        title="Mira esta creación de Morty's Cake"
-                        text="¡Me encantó esta foto de la galería de Morty's Cake!"
-                        url={siteUrl ? `${siteUrl}${selectedImage.src}` : selectedImage.src}
-                        className="absolute top-4 right-4 z-20 bg-black/50 text-white hover:bg-black/70"
-                        size="icon"
-                    />
-                </>
-            )}
-        </DialogContent>
+        {selectedImage && (
+            <DialogContent className="max-w-[95vw] max-h-[95vh] w-auto h-auto p-0 bg-transparent border-0 flex items-center justify-center">
+                <DialogTitle className="sr-only">Imagen Ampliada</DialogTitle>
+                <DialogDescription className="sr-only">
+                    {selectedImage.alt}. Puedes cerrar esta vista con la tecla Escape o el botón de cierre.
+                </DialogDescription>
+                
+                <Image
+                    src={selectedImage.src}
+                    alt={selectedImage.alt}
+                    width={1920}
+                    height={1080}
+                    className="object-contain w-auto h-auto max-w-[95vw] max-h-[95vh] rounded-lg shadow-2xl"
+                    sizes="95vw"
+                />
+                <ShareButton
+                    title="Mira esta creación de Morty's Cake"
+                    text="¡Me encantó esta foto de la galería de Morty's Cake!"
+                    url={siteUrl ? `${siteUrl}${selectedImage.src}` : selectedImage.src}
+                    className="absolute top-4 right-4 z-20 bg-black/50 text-white hover:bg-black/70"
+                    size="icon"
+                />
+            </DialogContent>
+        )}
       </Dialog>
     </div>
   );
