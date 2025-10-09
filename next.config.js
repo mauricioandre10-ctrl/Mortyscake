@@ -20,6 +20,12 @@ const nextConfig = {
         hostname: 'picsum.photos',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'secure.gravatar.com',
+        port: '',
+        pathname: '/avatar/**',
       }
     ],
   },
