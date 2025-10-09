@@ -148,11 +148,11 @@ function FeaturedCourses() {
                     </div>
                 <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: course.short_description || '' }} />
               </CardContent>
-              <CardFooter className="p-4 flex justify-between items-center bg-muted/30 mt-auto">
+              <CardFooter className="flex-col gap-2 md:flex-row md:justify-between items-center bg-muted/30 p-4 mt-auto">
                 <span className="text-2xl font-bold text-primary">
                   {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
                 </span>
-                <Button variant="secondary">Ver Detalles</Button>
+                <Button variant="secondary" size="sm" className="w-full md:w-auto">Ver Detalles</Button>
               </CardFooter>
             </Link>
         </Card>
@@ -270,11 +270,11 @@ function FeaturedProducts() {
                     </div>
                 <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
               </CardContent>
-              <CardFooter className="p-4 flex justify-between items-center bg-muted/30 mt-auto">
+              <CardFooter className="flex-col gap-2 md:flex-row md:justify-between items-center bg-muted/30 p-4 mt-auto">
                 <span className="text-2xl font-bold text-primary">
                   {product.price === "0.00" ? 'Gratis' : `€${product.price}`}
                 </span>
-                <Button variant="secondary">Ver Detalles</Button>
+                <Button variant="secondary" size="sm" className="w-full md:w-auto">Ver Detalles</Button>
               </CardFooter>
             </Link>
         </Card>
@@ -628,3 +628,5 @@ export default function Home() {
     </div>
   );
 }
+
+    

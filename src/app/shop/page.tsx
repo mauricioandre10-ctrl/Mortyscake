@@ -54,11 +54,11 @@ function ProductCard({ product, siteUrl }: { product: Product, siteUrl: string |
             </CardTitle>
             <CardDescription className="text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
         </CardContent>
-        <CardFooter className="flex justify-between items-center bg-muted/30 p-4 mt-auto">
+        <CardFooter className="flex-col gap-2 md:flex-row md:justify-between items-center bg-muted/30 p-4 mt-auto">
             <span className="text-2xl font-bold text-primary">
             €{product.price}
             </span>
-            <Button variant="secondary">Ver Detalles</Button>
+            <Button variant="secondary" size="sm" className="w-full md:w-auto">Ver Detalles</Button>
         </CardFooter>
         </Link>
     </Card>
@@ -174,3 +174,5 @@ function LoadingSkeleton() {
       </div>
     );
 }
+
+    
