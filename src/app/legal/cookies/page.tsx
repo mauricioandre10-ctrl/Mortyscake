@@ -5,7 +5,7 @@ import React from 'react';
 
 export const metadata: Metadata = {
   title: 'Política de Cookies',
-  description: 'Descubre cómo Morty\'s Cake utiliza cookies para mejorar tu experiencia de usuario, analizar el tráfico del sitio y ofrecer contenido personalizado.',
+  description: 'Descubre cómo Morty\'s Cake utiliza cookies para mejorar tu experiencia de usuario, analizar el tráfico del sitio y ofrecer contenido personalizado en nuestra web de repostería.',
   robots: { 
     index: true, 
     follow: true 
@@ -13,10 +13,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Política de Cookies | Morty\'s Cake',
     description: 'Información detallada sobre el uso de cookies en nuestro sitio web.',
+    images: ['/image/fondo_heder.webp'],
   },
   twitter: {
+    card: 'summary_large_image',
     title: 'Política de Cookies | Morty\'s Cake',
     description: 'Información detallada sobre el uso de cookies en nuestro sitio web.',
+    images: ['/image/fondo_heder.webp'],
   },
 };
 
@@ -52,10 +55,10 @@ const CookiesPolicyPage = () => {
               <strong>Cookies de Análisis o Rendimiento:</strong> Nos permiten reconocer y contar el número de visitantes, así como analizar cómo navegan por el sitio web. Utilizamos esta información, normalmente de forma agregada, para mejorar el funcionamiento de nuestro sitio, por ejemplo, asegurando que los usuarios encuentren fácilmente lo que buscan. Usamos herramientas como Google Analytics para este fin.
             </li>
             <li>
-              <strong>Cookies de Funcionalidad:</strong> Se utilizan para reconocerte cuando regresas a nuestro sitio web. Esto nos permite personalizar nuestro contenido para ti, saludarte por tu nombre y recordar tus preferencias (por ejemplo, tu elección de idioma o región). También pueden ser utilizadas para recordar si ya has aceptado esta política de cookies.
+              <strong>Cookies de Funcionalidad:</strong> Se utilizan para reconocerte cuando regresas a nuestro sitio web. Esto nos permite personalizar nuestro contenido para ti, saludarte por tu nombre y recordar tus preferences (por ejemplo, tu elección de idioma o región). También pueden ser utilizadas para recordar si ya has aceptado esta política de cookies.
             </li>
              <li>
-              <strong>Cookies de Marketing o Publicidad:</strong> Estas cookies registran tu visita a nuestro sitio web, las páginas que has visitado y los enlaces que has seguido. Utilizaremos esta información para que la publicidad que se muestre sea más relevante para tus intereses. No compartimos esta información con terceros de forma que puedan identificarte personalmente.
+              <strong>Cookies de Marketing o Publicidad:</strong> Estas cookies registran tu visita a nuestro sitio web, las páginas que has visitado y los enlaces que has seguido. Utilizaremos esta información para que la publicidad que se muestre sea más relevante para tus intereses. No compartimos esta información con terceros de forma que puedan identificarte personally.
             </li>
           </ul>
         </section>

@@ -7,13 +7,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Blog de Repostería | Morty\'s Cake',
     description: 'Recetas, consejos e inspiración para amantes de la pastelería. ¡Aprende y crea con nosotros!',
-    images: ['/image/og-image-blog.webp'],
+    images: ['/image/fondo_heder.webp'],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Blog de Repostería | Morty\'s Cake',
     description: 'Recetas, consejos e inspiración para amantes de la pastelería. ¡Aprende y crea con nosotros!',
-    images: ['/image/og-image-blog.webp'],
+    images: ['/image/fondo_heder.webp'],
   },
   robots: {
     index: true,

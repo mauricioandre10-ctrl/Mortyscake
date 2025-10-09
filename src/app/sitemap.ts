@@ -24,7 +24,7 @@ async function getAllProducts(): Promise<Product[]> {
         const url = new URL(`${apiUrl}/wp-json/morty/v1/products`);
         url.searchParams.set('per_page', '100');
         
-        const response = await fetch(url.toString(), { next: { revalidate: 3600 } });
+        const response = await fetch(url.toString(), { next: { revalidate: 3600 } }); // Revalidar cada hora
         
         if (!response.ok) {
             console.error(`[Sitemap] Failed to fetch products. Status: ${response.status}`);
@@ -123,15 +123,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1.0,
     },
     {
-      url: `${siteUrl}/courses`,
+      url: `${siteUrl}/shop`,
       lastModified: new Date(),
-      changeFrequency: 'daily',
+      changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
-      url: `${siteUrl}/shop`,
+      url: `${siteUrl}/courses`,
       lastModified: new Date(),
-      changeFrequency: 'daily',
+      changeFrequency: 'weekly',
       priority: 0.9,
     },
      {

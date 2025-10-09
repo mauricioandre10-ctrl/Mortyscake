@@ -5,7 +5,7 @@ import React from 'react';
 
 export const metadata: Metadata = {
   title: 'Política de Privacidad',
-  description: 'Entiende cómo recopilamos, usamos y protegemos tu información personal cuando utilizas nuestros servicios de cursos de repostería en Morty\'s Cake.',
+  description: 'Entiende cómo recopilamos, usamos y protegemos tu información personal cuando utilizas nuestros servicios de cursos y productos de repostería en Morty\'s Cake.',
   robots: { 
     index: true, 
     follow: true 
@@ -13,10 +13,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Política de Privacidad | Morty\'s Cake',
     description: 'Detalles sobre cómo protegemos y gestionamos tus datos personales.',
+    images: ['/image/fondo_heder.webp'],
   },
   twitter: {
+    card: 'summary_large_image',
     title: 'Política de Privacidad | Morty\'s Cake',
     description: 'Detalles sobre cómo protegemos y gestionamos tus datos personales.',
+    images: ['/image/fondo_heder.webp'],
   },
 };
 
