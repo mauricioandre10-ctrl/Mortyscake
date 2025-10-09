@@ -1,3 +1,4 @@
+
 /** @type {import('next').NextConfig} */
 
 // Define la Content Security Policy (CSP)
