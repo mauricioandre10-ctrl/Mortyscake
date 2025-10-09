@@ -1,7 +1,8 @@
+
 'use client';
 
 import Image from 'next/image';
-import { ArrowLeft, FileText, Info, Star, MessageSquarePlus } from 'lucide-react';
+import { ArrowLeft, FileText, Info, MessageSquarePlus } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -24,8 +25,6 @@ interface Course {
   short_description: string;
   description: string;
   images: { id: number; src: string; alt: string }[];
-  average_rating: number;
-  rating_count: number;
   category_names: string[];
   sku: string;
   tags: { name: string; slug: string }[];
@@ -90,7 +89,7 @@ export function CourseDetails({ course }: { course: Course }) {
           </div>
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
-            <Button asChild variant="outline" size="sm">
+            <Button asChild variant="outline" size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-md">
                 <Link href={googleReviewUrl} target="_blank" rel="noopener noreferrer">
                     <MessageSquarePlus className="mr-2 h-4 w-4"/>
                     Dejar una Reseña en Google

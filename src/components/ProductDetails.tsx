@@ -1,7 +1,8 @@
+
 'use client';
 
 import Image from 'next/image';
-import { ArrowLeft, Info, FileText, Star, MessageSquarePlus } from 'lucide-react';
+import { ArrowLeft, Info, FileText, MessageSquarePlus } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel';
@@ -21,8 +22,6 @@ interface Product {
   category_names: string[];
   sku: string;
   tags: { name: string; slug: string }[];
-  rating_count: number;
-  average_rating: number;
   attributes: { name: string; options: string[] }[] | Record<string, { name: string; options: string[] }>;
 }
 
@@ -84,7 +83,7 @@ export function ProductDetails({ product }: { product: Product }) {
           </div>
 
            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
-             <Button asChild variant="outline" size="sm">
+             <Button asChild variant="outline" size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-md">
                 <Link href={googleReviewUrl} target="_blank" rel="noopener noreferrer">
                     <MessageSquarePlus className="mr-2 h-4 w-4"/>
                     Dejar una Reseña en Google
