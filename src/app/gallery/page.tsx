@@ -62,8 +62,8 @@ export default function GalleryPage() {
                     <div
                         key={index}
                         className={cn(
-                            "overflow-hidden rounded-lg break-inside-avoid shadow-md hover:shadow-primary/20 hover:shadow-xl transition-all duration-300 cursor-pointer group opacity-0 animate-fade-in",
-                            loadedImages.has(index) ? 'opacity-100' : 'opacity-0'
+                            "overflow-hidden rounded-lg break-inside-avoid shadow-md hover:shadow-primary/20 hover:shadow-xl transition-all duration-300 cursor-pointer group",
+                            loadedImages.has(index) ? 'animate-fade-in opacity-100' : 'opacity-0'
                         )}
                         style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'forwards' }}
                         onClick={() => handleImageClick(image)}
@@ -85,8 +85,9 @@ export default function GalleryPage() {
             </div>
 
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                <DialogContent>
                 {selectedImage && (
-                     <DialogContent className="max-w-none w-auto h-auto p-0 bg-transparent border-0 flex items-center justify-center">
+                    <>
                         <DialogTitle className="sr-only">Imagen Ampliada: {selectedImage.alt}</DialogTitle>
                         <DialogDescription className="sr-only">
                             Vista ampliada de la imagen: {selectedImage.alt}. Puedes cerrar esta vista con la tecla Escape o el botón de cierre.
@@ -109,8 +110,9 @@ export default function GalleryPage() {
                             className="absolute top-16 right-4 z-20 bg-accent text-accent-foreground hover:bg-accent/90"
                             size="icon"
                         />
-                    </DialogContent>
+                    </>
                 )}
+                </DialogContent>
             </Dialog>
         </div>
     );
