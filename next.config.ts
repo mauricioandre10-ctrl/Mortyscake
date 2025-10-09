@@ -28,6 +28,12 @@ const nextConfig: NextConfig = {
         hostname: 'cms.mortyscake.com',
         port: '',
         pathname: '/wp-content/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'secure.gravatar.com',
+        port: '',
+        pathname: '/avatar/**',
       }
     ],
   },
