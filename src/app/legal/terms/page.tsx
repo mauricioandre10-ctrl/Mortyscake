@@ -49,7 +49,7 @@ const TermsPage = () => {
         </section>
 
         <section id="payments-refunds" className="mb-8">
-          <h2 className="text-3xl font-bold">3. Pedidos, Pagos y Política de Devoluciones</h2>
+          <h2 className="text-3xl font-bold">3. Pedidos, Pagos y Política de Desistimiento (Cancelación)</h2>
           <p>
             Todos los pagos se procesan a través de pasarelas de pago seguras. Al realizar un pedido, te comprometes a proporcionar información de pago válida y actual.
           </p>
