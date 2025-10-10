@@ -49,37 +49,39 @@ const TermsPage = () => {
         </section>
 
         <section id="payments-refunds" className="mb-8">
-          <h2 className="text-3xl font-bold">3. Pedidos, Pagos y Política de Reembolso</h2>
+          <h2 className="text-3xl font-bold">3. Pedidos, Pagos y Política de Devoluciones</h2>
           <p>
             Todos los pagos se procesan a través de pasarelas de pago seguras. Al realizar un pedido, te comprometes a proporcionar información de pago válida y actual.
           </p>
           
-          <h3 className="text-2xl font-semibold mt-6">Política de Desistimiento y Reembolso</h3>
+          <h3 className="text-2xl font-semibold mt-6">Política de Desistimiento (Cancelación)</h3>
+          <p>El derecho de desistimiento es la facultad del consumidor de anular una compra sin necesidad de justificación. Sin embargo, la legislación española y europea establece excepciones importantes para los productos que ofrecemos:</p>
           
           <div className="mt-4 p-4 border rounded-lg bg-muted/30">
             <h4 className="font-bold">Para Cursos Online (Contenido Digital)</h4>
             <p className="mt-2">
-              Dada la naturaleza de nuestros cursos online, que otorgan acceso inmediato a todo el material digital (vídeos, recetas, etc.), se aplica una excepción legal al derecho de desistimiento.
-            </p>
-            <p className="mt-2">
-              De conformidad con el Real Decreto Legislativo 1/2007, de 16 de noviembre, el derecho de desistimiento no es aplicable a los contratos de suministro de contenido digital que no se preste en un soporte material cuando la ejecución haya comenzado.
+              De conformidad con el Real Decreto Legislativo 1/2007, el derecho de desistimiento no es aplicable a los contratos de suministro de contenido digital que no se preste en un soporte material (como nuestros cursos online) cuando la ejecución haya comenzado.
             </p>
             <p className="mt-2 font-semibold">
-              Al realizar la compra de un curso, aceptas expresamente y eres consciente de que tu derecho a desistir finaliza en el momento en que se te concede acceso al contenido. Por lo tanto, una vez completado el pago y otorgado el acceso, todas las ventas de cursos son finales y no se realizarán reembolsos.
+              Al realizar la compra de un curso, aceptas expresamente y eres consciente de que, una vez que se te concede acceso al contenido digital, pierdes tu derecho de desistimiento. Por lo tanto, no se realizarán reembolsos una vez el acceso haya sido otorgado.
             </p>
           </div>
 
           <div className="mt-4 p-4 border rounded-lg bg-muted/30">
             <h4 className="font-bold">Para Productos Físicos (Tartas, Galletas, etc.)</h4>
             <p className="mt-2">
-              Nuestros productos de repostería (tartas, galletas, etc.) son bienes perecederos, elaborados de forma artesanal y, en muchos casos, personalizados bajo pedido.
-            </p>
-            <p className="mt-2">
-              Según la misma legislación (Real Decreto Legislativo 1/2007), el derecho de desistimiento no es aplicable a los contratos de suministro de bienes "que puedan deteriorarse o caducar con rapidez".
+              Nuestros productos de repostería son bienes perecederos, elaborados de forma artesanal y, en muchos casos, personalizados bajo pedido. La ley excluye del derecho de desistimiento los bienes "que puedan deteriorarse o caducar con rapidez".
             </p>
             <p className="mt-2 font-semibold">
-              Por este motivo, una vez que el pedido de un producto físico ha sido confirmado y ha entrado en preparación, no se aceptarán cancelaciones ni se realizarán reembolsos.
+              Por este motivo, una vez que el pedido de un producto físico ha sido confirmado y ha entrado en preparación, no se aceptarán cancelaciones ni se realizarán reembolsos bajo el derecho de desistimiento.
             </p>
+          </div>
+
+          <h3 className="text-2xl font-semibold mt-6">Garantía y Devoluciones de Productos Defectuosos</h3>
+          <p>Independientemente de lo anterior, tienes derecho a la garantía legal si el producto que recibes no es conforme al contrato, es decir, si está defectuoso, dañado o es incorrecto.</p>
+          <div className="mt-4 p-4 border rounded-lg bg-card">
+              <p>Si consideras que el producto entregado tiene algún defecto o no se corresponde con lo pedido, deberás ponerte en contacto con nosotros de forma inmediata (en un plazo máximo de 24 horas desde la recepción, dada la naturaleza perecedera de los productos) a través de nuestro correo electrónico <a href="mailto:info@mortyscake.com">info@mortyscake.com</a>, facilitando los datos del producto y una descripción del daño o defecto, adjuntando una fotografía.</p>
+              <p className="mt-2">Una vez recibida la notificación, examinaremos el caso y te comunicaremos si procede el reembolso o la sustitución del producto. Dicha gestión se realizará lo antes posible. En caso de reembolso, se efectuará en el mismo medio de pago utilizado para la compra.</p>
           </div>
         </section>
 
