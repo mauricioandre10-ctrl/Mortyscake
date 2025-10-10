@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { CookieSettingsDialog, ConsentPreferences } from '@/components/CookieSettingsDialog';
 import { useCookieConsent } from '@/hooks/useCookieConsent';
+import Link from 'next/link';
 
 // Function to stringify consent object and set the cookie
 const setConsentCookie = (consent: object) => {
@@ -55,7 +56,8 @@ export const CookieBanner = () => {
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-secondary/95 backdrop-blur-sm">
       <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 p-4">
         <p className="text-sm text-secondary-foreground text-center sm:text-left">
-          Utilizamos cookies para analizar el tráfico y mejorar tu experiencia. Puedes aceptarlas todas, rechazarlas o configurar tus preferencias.
+          Este sitio web, propiedad de Morty's Cake, utiliza cookies propias y de terceros para permitir tu navegación, analizar tus hábitos de compra y ofrecerte una experiencia más dulce y personalizada.
+          Puedes obtener más información en nuestra <Link href="/legal/cookies" className="font-bold underline hover:text-white">Política de Cookies</Link>.
         </p>
         <div className="flex-shrink-0 flex items-center gap-2">
           <Button variant="ghost" onClick={handleRejectAll}>Rechazar</Button>
