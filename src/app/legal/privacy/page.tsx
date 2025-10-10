@@ -48,7 +48,7 @@ const PrivacyPolicyPage = () => {
           <ul className="list-none mt-4 p-0 border-l-4 border-primary pl-4">
             <li><strong>Nombre Comercial:</strong> Morty's Cake</li>
             <li><strong>Domicilio Social:</strong> Rúa Valle Inclán, 23, Bajo 11, 32004 Ourense, España</li>
-            <li><strong>Correo Electrónico de Contacto:</strong> <a href="mailto:privacidad@mortyscake.com">privacidad@mortyscake.com</a></li>
+            <li><strong>Correo Electrónico de Contacto:</strong> <a href="mailto:info@mortyscake.com">info@mortyscake.com</a></li>
           </ul>
         </section>
 
@@ -103,7 +103,7 @@ const PrivacyPolicyPage = () => {
             <li><strong>Limitar</strong> el tratamiento de tus datos en determinadas circunstancias.</li>
             <li><strong>Portar</strong> tus datos a otro responsable en un formato estructurado.</li>
           </ul>
-          <p className="mt-4">Para ejercer cualquiera de estos derechos, por favor, contacta con nosotros en <a href="mailto:privacidad@mortyscake.com">privacidad@mortyscake.com</a>.</p>
+          <p className="mt-4">Para ejercer cualquiera de estos derechos, por favor, contacta con nosotros en <a href="mailto:info@mortyscake.com">info@mortyscake.com</a>.</p>
         </section>
 
          <section id="data-security" className="mb-8">
