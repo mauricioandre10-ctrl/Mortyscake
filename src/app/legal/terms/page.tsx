@@ -51,11 +51,17 @@ const TermsPage = () => {
         <section id="payments-refunds" className="mb-8">
           <h2 className="text-3xl font-bold">3. Pedidos, Pagos y Política de Reembolso</h2>
           <p>
-            Todos los pagos se procesan a través de pasarelas de pago seguras. Al realizar un pedido, te comprometes a proporcionar información de pago válida y actual. Una vez confirmado el pago, se te concederá acceso inmediato al contenido digital del curso.
+            Todos los pagos se procesan a través de pasarelas de pago seguras. Al realizar un pedido, te comprometes a proporcionar información de pago válida y actual.
           </p>
-          <h3 className="text-2xl font-semibold mt-4">Política de Reembolso</h3>
+          <h3 className="text-2xl font-semibold mt-4">Política de Reembolso y Desistimiento para Contenido Digital</h3>
           <p>
-            Debido a la naturaleza digital de nuestros productos, que otorgan acceso instantáneo a todo el material del curso, <strong>no se realizarán reembolsos</strong> una vez completada la compra. Todas las ventas son finales. Te recomendamos revisar la descripción del curso detenidamente antes de realizar la compra.
+            Dada la naturaleza digital de nuestros cursos online, que otorgan acceso inmediato a todo el material (vídeos, recetas, etc.), se aplica una excepción legal al derecho de desistimiento.
+          </p>
+          <p>
+            De conformidad con la legislación vigente (Real Decreto Legislativo 1/2007, de 16 de noviembre), el derecho de desistimiento no es aplicable a los contratos de suministro de contenido digital que no se preste en un soporte material cuando la ejecución haya comenzado.
+          </p>
+           <p>
+            Al realizar la compra, <strong>aceptas expresamente y eres consciente de que tu derecho a desistir finaliza en el momento en que se te concede acceso al contenido digital del curso.</strong> Por lo tanto, una vez que se ha completado el pago y se ha otorgado el acceso, <strong>todas las ventas son finales y no se realizarán reembolsos</strong>. Te recomendamos revisar la descripción y el temario del curso detenidamente antes de realizar la compra.
           </p>
         </section>
 
@@ -101,7 +107,7 @@ const TermsPage = () => {
 
         <section id="contact">
           <h2 className="text-3xl font-bold">9. Contacto</h2>
-          <p>Si tienes alguna pregunta sobre estos Términos y Condiciones, por favor contáctanos en <a href="mailto:legal@mortyscake.com">legal@mortyscake.com</a>.</p>
+          <p>Si tienes alguna pregunta sobre estos Términos y Condiciones, por favor contáctanos en <a href="mailto:info@mortyscake.com">info@mortyscake.com</a>.</p>
         </section>
       </article>
     </main>
