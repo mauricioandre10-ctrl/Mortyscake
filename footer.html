@@ -5,28 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pie de Página - Morty's Cake</title>
 
-    <!-- 
-      Instrucciones para WordPress:
-      1. Copia y pega todo el contenido de la etiqueta <style>...</style> en la sección de CSS Adicional de tu tema de WordPress 
-         (Apariencia > Personalizar > CSS Adicional) o dentro de un bloque de HTML personalizado en el constructor de tu pie de página.
-      2. Copia y pega todo el contenido de la etiqueta <footer>...</footer> en un bloque de HTML personalizado en el lugar donde
-         quieras que aparezca el pie de página en tu sitio de WordPress.
-      3. Asegúrate de que las URL de los enlaces (ej. /legal/terms) apunten a las páginas correctas en tu sitio de WordPress.
-    -->
-
-    <!-- 1. BLOQUE DE ESTILOS (CSS) -->
     <style>
-        /* --- Fuentes (Opcional, pero recomendado para que se vea igual) --- */
         @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Pacifico&display=swap');
         
-        /* --- Estilos del Body (Solo para esta vista previa) --- */
         body {
             margin: 0;
             font-family: 'Lato', sans-serif;
             line-height: 1.5;
         }
 
-        /* --- Estilos Generales del Footer --- */
         .morty-footer-embed {
             width: 100%;
             border-top: 1px solid #e5e7eb;
@@ -49,7 +36,6 @@
             margin-bottom: 1rem;
         }
 
-        /* --- Sección Superior (Oscura) --- */
         .footer-top-section {
             background-color: #513938;
             color: #ffffff;
@@ -97,7 +83,7 @@
         }
         
         .footer-logo {
-            height: 6rem; /* 96px */
+            height: 6rem;
             width: auto;
         }
         
@@ -119,10 +105,9 @@
         .footer-social-links svg {
             width: 1.75rem;
             height: 1.75rem;
-            fill: #ffffff; /* Asegura que los iconos sociales sean blancos */
+            fill: #ffffff;
         }
 
-        /* --- Sección Inferior (Clara) --- */
         .footer-bottom-section {
             background-color: #ffffff;
             padding: 1rem 0;
@@ -165,7 +150,6 @@
             color: #F6B1AC;
         }
 
-        /* --- Estilos para pantallas más grandes (Responsive) --- */
         @media (min-width: 768px) {
             .footer-grid {
                 grid-template-columns: repeat(3, 1fr);
@@ -184,12 +168,10 @@
     </style>
 </head>
 <body>
-    <!-- 2. BLOQUE DE CONTENIDO (HTML) -->
     <footer class="morty-footer-embed">
       <div class="footer-top-section">
           <div class="footer-container">
                 <div class="footer-grid">
-                        <!-- Columna de Contacto -->
                         <div class="footer-column">
                                   <h3>Contacto</h3>
                                   <div class="footer-contact-item">
@@ -205,12 +187,9 @@
                                           <span>616 28 44 63</span>
                                   </div>
                         </div>
-                        <!-- Columna del Logo -->
                         <div class="footer-logo-column">
-                                <!-- La URL de la imagen debe ser absoluta para que funcione en WordPress -->
                                 <img src="https://mortyscake.com/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" class="footer-logo">
                         </div>
-                        <!-- Columna de Redes Sociales -->
                         <div class="footer-column footer-social-column">
                                   <h3>Síguenos</h3>
                                   <div class="footer-social-links">
@@ -236,7 +215,6 @@
                     <a href="https://tecnovacenter.es/" target="_blank" rel="noopener noreferrer"> TecnovaCenter </a>. Todos los derechos reservados.
                 </div>
                 <nav class="footer-legal-links">
-                    <!-- Reemplaza estas URLs con las de tu sitio de WordPress -->
                     <a href="/terminos-y-condiciones">Términos de Servicio</a>
                     <a href="/politica-de-privacidad">Política de Privacidad</a>
                     <a href="/politica-de-cookies">Política de Cookies</a>
