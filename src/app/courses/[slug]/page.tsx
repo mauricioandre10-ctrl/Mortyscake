@@ -31,7 +31,7 @@ async function getCourse(slug: string): Promise<Course | null> {
         url.searchParams.set('slug', slug);
         url.searchParams.set('per_page', '1');
         
-        const response = await fetch(url.toString(), { cache: 'no-store' });
+        const response = await fetch(url.toString(), { next: { revalidate: 3600 } }); // Revalidar cada hora
         
         if (!response.ok) {
             console.error(`[SERVER] Failed to fetch course. Status: ${response.status}`);
