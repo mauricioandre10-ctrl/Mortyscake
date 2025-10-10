@@ -1,0 +1,242 @@
+<!-- 
+  Instrucciones para WordPress:
+  1. Copia y pega todo el contenido de la etiqueta <style>...</style> en la sección de CSS Adicional de tu tema de WordPress 
+     (Apariencia > Personalizar > CSS Adicional) o dentro de un bloque de HTML personalizado en el constructor de tu pie de página.
+  2. Copia y pega todo el contenido de la etiqueta <footer>...</footer> en un bloque de HTML personalizado en el lugar donde
+     quieras que aparezca el pie de página en tu sitio de WordPress.
+  3. Asegúrate de que las URL de los enlaces (ej. /legal/terms) apunten a las páginas correctas en tu sitio de WordPress.
+-->
+
+<!-- 1. BLOQUE DE ESTILOS (CSS) -->
+<style>
+    /* --- Fuentes (Opcional, pero recomendado para que se vea igual) --- */
+    @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Pacifico&display=swap');
+
+    /* --- Variables de Color (Coinciden con tu tema) --- */
+    :root {
+        --footer-bg-dark: #513938;
+        --footer-text-light: #ffffff;
+        --footer-bg-light: #ffffff;
+        --footer-text-dark: #6b7280;
+        --footer-link: #F6B1AC;
+        --footer-border: #e5e7eb;
+    }
+
+    /* --- Estilos Generales del Footer --- */
+    .morty-footer-embed {
+        width: 100%;
+        border-top: 1px solid var(--footer-border);
+        font-family: 'Lato', sans-serif;
+        line-height: 1.5;
+        box-sizing: border-box;
+    }
+    .morty-footer-embed *, .morty-footer-embed *:before, .morty-footer-embed *:after {
+        box-sizing: inherit;
+    }
+
+    .morty-footer-embed a {
+        text-decoration: none;
+        transition: color 0.3s, opacity 0.3s;
+    }
+    
+    .morty-footer-embed h3 {
+        font-family: 'Pacifico', cursive;
+        font-weight: 400;
+        font-size: 1.25rem;
+        margin-top: 0;
+        margin-bottom: 1rem;
+    }
+
+    /* --- Sección Superior (Oscura) --- */
+    .footer-top-section {
+        background-color: var(--footer-bg-dark);
+        color: var(--footer-text-light);
+        padding: 2.5rem 0;
+    }
+
+    .footer-container {
+        max-width: 1280px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+
+    .footer-grid {
+        display: grid;
+        gap: 2rem;
+        align-items: center;
+    }
+
+    .footer-column {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .footer-contact-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .footer-contact-item svg {
+        flex-shrink: 0;
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-top: 0.125rem;
+    }
+
+    .footer-logo-column {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .footer-logo {
+        height: 6rem; /* 96px */
+        width: auto;
+    }
+
+    .footer-social-column {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .footer-social-links {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .footer-social-links a:hover {
+        opacity: 0.8;
+    }
+    
+    .footer-social-links svg {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+
+    /* --- Sección Inferior (Clara) --- */
+    .footer-bottom-section {
+        background-color: var(--footer-bg-light);
+        padding: 1rem 0;
+    }
+
+    .footer-bottom-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .footer-copyright {
+        font-size: 0.875rem;
+        color: var(--footer-text-dark);
+    }
+
+    .footer-copyright a {
+        color: var(--footer-link);
+    }
+    .footer-copyright a:hover {
+        text-decoration: underline;
+    }
+
+    .footer-legal-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem 1.5rem;
+    }
+
+    .footer-legal-links a {
+        font-size: 0.875rem;
+        color: var(--footer-text-dark);
+    }
+
+    .footer-legal-links a:hover {
+        color: var(--footer-link);
+    }
+
+    /* --- Estilos para pantallas más grandes (Responsive) --- */
+    @media (min-width: 768px) {
+        .footer-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        .footer-social-column {
+            align-items: flex-end;
+        }
+        .footer-bottom-container {
+            flex-direction: row;
+            text-align: left;
+        }
+        .footer-legal-links {
+            justify-content: flex-end;
+        }
+    }
+</style>
+
+<!-- 2. BLOQUE DE CONTENIDO (HTML) -->
+<footer class="morty-footer-embed">
+  <div class="footer-top-section">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <!-- Columna de Contacto -->
+        <div class="footer-column">
+          <h3>Contacto</h3>
+          <div class="footer-contact-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <span>Rúa Valle Inclán, 23, Bajo 11, 32004 Ourense, Province of Ourense</span>
+          </div>
+          <div class="footer-contact-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+            <span>616 28 44 63</span>
+          </div>
+        </div>
+        <!-- Columna del Logo -->
+        <div class="footer-logo-column">
+            <!-- La URL de la imagen debe ser absoluta para que funcione en WordPress -->
+            <img src="https://mortyscake.com/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" class="footer-logo">
+        </div>
+        <!-- Columna de Redes Sociales -->
+        <div class="footer-column footer-social-column">
+          <h3>Síguenos</h3>
+          <div class="footer-social-links">
+            <a href="https://www.facebook.com/MortysCake/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+              </svg>
+            </a>
+            <a href="https://www.instagram.com/mortyscake.ourense/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom-section">
+    <div class="footer-container footer-bottom-container">
+      <div class="footer-copyright">
+        © 2024
+        <a href="https://tecnovacenter.es/" target="_blank" rel="noopener noreferrer"> TecnovaCenter </a>. Todos los derechos reservados.
+      </div>
+      <nav class="footer-legal-links">
+        <!-- Reemplaza estas URLs con las de tu sitio de WordPress -->
+        <a href="/terminos-y-condiciones">Términos de Servicio</a>
+        <a href="/politica-de-privacidad">Política de Privacidad</a>
+        <a href="/politica-de-cookies">Política de Cookies</a>
+      </nav>
+    </div>
+  </div>
+</footer>
