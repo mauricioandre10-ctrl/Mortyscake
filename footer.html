@@ -12,20 +12,10 @@
     /* --- Fuentes (Opcional, pero recomendado para que se vea igual) --- */
     @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Pacifico&display=swap');
 
-    /* --- Variables de Color (Coinciden con tu tema) --- */
-    :root {
-        --footer-bg-dark: #513938;
-        --footer-text-light: #ffffff;
-        --footer-bg-light: #ffffff;
-        --footer-text-dark: #6b7280;
-        --footer-link: #F6B1AC;
-        --footer-border: #e5e7eb;
-    }
-
     /* --- Estilos Generales del Footer --- */
     .morty-footer-embed {
         width: 100%;
-        border-top: 1px solid var(--footer-border);
+        border-top: 1px solid #e5e7eb;
         font-family: 'Lato', sans-serif;
         line-height: 1.5;
         box-sizing: border-box;
@@ -49,8 +39,8 @@
 
     /* --- Sección Superior (Oscura) --- */
     .footer-top-section {
-        background-color: var(--footer-bg-dark);
-        color: var(--footer-text-light);
+        background-color: #513938;
+        color: #ffffff;
         padding: 2.5rem 0;
     }
 
@@ -117,11 +107,12 @@
     .footer-social-links svg {
         width: 1.75rem;
         height: 1.75rem;
+        fill: #ffffff; /* Asegura que los iconos sociales sean blancos */
     }
 
     /* --- Sección Inferior (Clara) --- */
     .footer-bottom-section {
-        background-color: var(--footer-bg-light);
+        background-color: #ffffff;
         padding: 1rem 0;
     }
 
@@ -136,11 +127,11 @@
 
     .footer-copyright {
         font-size: 0.875rem;
-        color: var(--footer-text-dark);
+        color: #6b7280;
     }
 
     .footer-copyright a {
-        color: var(--footer-link);
+        color: #F6B1AC;
     }
     .footer-copyright a:hover {
         text-decoration: underline;
@@ -155,11 +146,11 @@
 
     .footer-legal-links a {
         font-size: 0.875rem;
-        color: var(--footer-text-dark);
+        color: #6b7280;
     }
 
     .footer-legal-links a:hover {
-        color: var(--footer-link);
+        color: #F6B1AC;
     }
 
     /* --- Estilos para pantallas más grandes (Responsive) --- */
@@ -211,7 +202,7 @@
           <h3>Síguenos</h3>
           <div class="footer-social-links">
             <a href="https://www.facebook.com/MortysCake/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
               </svg>
             </a>
