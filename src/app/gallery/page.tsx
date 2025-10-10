@@ -8,12 +8,14 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog"
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { ShareButton } from '@/components/ShareButton';
 import { cn } from '@/lib/utils';
 
 // Genera una lista de 60 imágenes con nombres consecutivos y alturas variables
 const localGalleryImages = Array.from({ length: 60 }, (_, i) => ({
+  id: `foto${i + 1}`,
   src: `/image/galeria/foto${i + 1}.webp`,
   alt: `Imagen de la galería de repostería ${i + 1}`,
   width: 800, // Ancho base constante
@@ -21,15 +23,20 @@ const localGalleryImages = Array.from({ length: 60 }, (_, i) => ({
 }));
 
 interface GalleryImage {
+    id: string;
     src: string;
     alt: string;
     width: number;
     height: number;
 }
 
-export default function GalleryPage() {
+function GalleryComponent() {
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const imageId = searchParams.get('image');
+
     const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
-    const [isOpen, setIsOpen] = useState(false);
     const [siteUrl, setSiteUrl] = useState('');
     const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
 
@@ -39,13 +46,36 @@ export default function GalleryPage() {
         }
     }, []);
 
+    useEffect(() => {
+        if (imageId) {
+            const image = localGalleryImages.find(img => img.id === imageId);
+            setSelectedImage(image || null);
+        } else {
+            setSelectedImage(null);
+        }
+    }, [imageId]);
+
     const handleImageClick = (image: GalleryImage) => {
-        setSelectedImage(image);
-        setIsOpen(true);
+        const params = new URLSearchParams(searchParams);
+        params.set('image', image.id);
+        router.push(`${pathname}?${params.toString()}`);
+    };
+    
+    const handleDialogClose = () => {
+        const params = new URLSearchParams(searchParams);
+        params.delete('image');
+        router.push(`${pathname}?${params.toString()}`);
     };
 
     const handleImageLoad = (index: number) => {
         setLoadedImages(prev => new Set(prev).add(index));
+    };
+
+    const getShareUrl = () => {
+        if (!siteUrl || !selectedImage) return '';
+        const params = new URLSearchParams();
+        params.set('image', selectedImage.id);
+        return `${siteUrl}${pathname}?${params.toString()}`;
     };
 
     return (
@@ -76,14 +106,14 @@ export default function GalleryPage() {
                             height={image.height}
                             className="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105"
                             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                            priority={index < 12}
+                            priority={index < 8} // Reduce preload priority
                             onLoad={() => handleImageLoad(index)}
                         />
                     </div>
                 ))}
             </div>
 
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <Dialog open={!!selectedImage} onOpenChange={(isOpen) => !isOpen && handleDialogClose()}>
                 <DialogContent className="w-auto max-w-none h-auto max-h-none p-0 bg-transparent border-none">
                 {selectedImage && (
                     <>
@@ -105,7 +135,7 @@ export default function GalleryPage() {
                         <ShareButton
                             title="Mira esta creación de Morty's Cake"
                             text="¡Me encantó esta foto de la galería de Morty's Cake!"
-                            url={siteUrl ? `${siteUrl}${selectedImage.src}` : selectedImage.src}
+                            url={getShareUrl()}
                             className="absolute top-4 right-14 z-20 bg-accent text-accent-foreground hover:bg-accent/90"
                             size="icon"
                         />
@@ -115,4 +145,13 @@ export default function GalleryPage() {
             </Dialog>
         </div>
     );
+}
+
+
+export default function GalleryPage() {
+    return (
+        <Suspense fallback={<div>Loading gallery...</div>}>
+            <GalleryComponent />
+        </Suspense>
+    )
 }
