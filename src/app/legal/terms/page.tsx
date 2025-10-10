@@ -60,7 +60,7 @@ const TermsPage = () => {
           <div className="mt-4 p-4 border rounded-lg bg-muted/30">
             <h4 className="font-bold">Para Cursos Online (Contenido Digital)</h4>
             <p className="mt-2">
-              De conformidad con el Real Decreto Legislativo 1/2007, el derecho de desistimiento no es aplicable a los contratos de suministro de contenido digital que no se preste en un soporte material (como nuestros cursos online) cuando la ejecución haya comenzado.
+              De conformidad con la normativa aplicable (Real Decreto Legislativo 1/2007), el derecho de desistimiento no es aplicable a los contratos de suministro de contenido digital (como nuestros cursos online) cuando la ejecución haya comenzado.
             </p>
             <p className="mt-2 font-semibold">
               Al realizar la compra de un curso, aceptas expresamente y eres consciente de que, una vez que se te concede acceso al contenido digital, pierdes tu derecho de desistimiento. Por lo tanto, no se realizarán reembolsos una vez el acceso haya sido otorgado.
@@ -70,7 +70,7 @@ const TermsPage = () => {
           <div className="mt-4 p-4 border rounded-lg bg-muted/30">
             <h4 className="font-bold">Para Productos Físicos (Tartas, Galletas, etc.)</h4>
             <p className="mt-2">
-              Nuestros productos de repostería son bienes perecederos, elaborados de forma artesanal y, en muchos casos, personalizados bajo pedido. La ley excluye del derecho de desistimiento los bienes "que puedan deteriorarse o caducar con rapidez".
+             Nuestros productos de repostería son bienes perecederos, elaborados de forma artesanal y, en muchos casos, personalizados bajo pedido. La ley excluye del derecho de desistimiento los bienes "que puedan deteriorarse o caducar con rapidez".
             </p>
             <p className="mt-2 font-semibold">
               Por este motivo, una vez que el pedido de un producto físico ha sido confirmado y ha entrado en preparación, no se aceptarán cancelaciones ni se realizarán reembolsos bajo el derecho de desistimiento.
@@ -114,9 +114,12 @@ const TermsPage = () => {
         </section>
 
         <section id="governing-law" className="mb-8">
-          <h2 className="text-3xl font-bold">7. Ley Aplicable y Jurisdicción</h2>
+          <h2 className="text-3xl font-bold">7. Ley Aplicable y Resolución de Conflictos</h2>
           <p>
-            Estos términos se regirán e interpretarán de acuerdo con las leyes de España. Cualquier disputa que surja en relación con estos términos será sometida a la jurisdicción exclusiva de los tribunales de la ciudad de Ourense.
+            Estos términos se regirán e interpretarán de acuerdo con las leyes de España y de la Unión Europea. Para cualquier disputa que surja, las partes se someten a la jurisdicción exclusiva de los tribunales de la ciudad de Ourense.
+          </p>
+          <p className="mt-4">
+            Asimismo, en cumplimiento del Reglamento (UE) nº 524/2013, te informamos de que tienes derecho a solicitar una resolución extrajudicial de controversias en materia de consumo a través de la plataforma de resolución de litigios en línea de la Unión Europea, a la que puedes acceder a través de la siguiente dirección de internet: <Link href="http://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener noreferrer">http://ec.europa.eu/consumers/odr/</Link>.
           </p>
         </section>
 
