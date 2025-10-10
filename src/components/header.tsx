@@ -27,9 +27,9 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
+      <div className="container mx-auto flex h-24 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-           <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width="100" height="36" className="object-contain h-12 w-auto" data-ai-hint="logo" />
+           <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width="100" height="36" className="object-contain h-20 w-auto" data-ai-hint="logo" />
         </Link>
         
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
