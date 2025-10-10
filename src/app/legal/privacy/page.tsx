@@ -83,6 +83,20 @@ const PrivacyPolicyPage = () => {
           </ul>
         </section>
 
+        <section id="legitimation-retention" className="mb-8">
+          <h2 className="text-3xl font-bold">Legitimación y Conservación de los Datos</h2>
+          <p>La base legal para el tratamiento de tus datos es la siguiente:</p>
+          <ul className="list-disc pl-5 mt-4 space-y-2">
+              <li><strong>Ejecución de un contrato:</strong> Para la compra de productos y cursos, el tratamiento es necesario para cumplir con nuestras obligaciones contractuales.</li>
+              <li><strong>Consentimiento del usuario:</strong> Para el envío de comunicaciones comerciales y el uso de cookies no esenciales, nos basamos en tu consentimiento explícito.</li>
+              <li><strong>Cumplimiento de obligaciones legales:</strong> Para la gestión de facturas y cumplimiento de la normativa fiscal.</li>
+              <li><strong>Interés legítimo:</strong> Para la prevención del fraude y la mejora de nuestros servicios.</li>
+          </ul>
+          <p className="mt-4">
+              Conservaremos tus datos personales mientras seas usuario de la plataforma o hasta que solicites su supresión. Posteriormente, los datos se conservarán bloqueados durante los plazos legales establecidos (generalmente, 6 años por normativa contable y fiscal) antes de su eliminación definitiva.
+          </p>
+        </section>
+
         <section id="user-obligations" className="mb-8">
           <h2 className="text-3xl font-bold">Acceso y Utilización del Sitio Web</h2>
           <p>El acceso al sitio web y la contratación de productos y servicios están reservados a personas mayores de 18 años. El usuario garantiza que los datos aportados son verdaderos, exactos y completos, y se compromete a utilizar los servicios y contenidos de conformidad con la ley, la buena fe y el orden público.</p>
