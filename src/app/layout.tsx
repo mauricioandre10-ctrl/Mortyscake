@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     template: '%s | Morty\'s Cake Ourense',
   },
   description: 'Aprende repostería en Ourense con nuestros cursos online y presenciales. Descubre tartas y postres personalizados en Galicia. ¡Transforma tu pasión en arte!',
-  keywords: ['cursos de repostería Ourense', 'repostería online Galicia', 'tartas personalizadas Ourense', 'pastelería gourmet Galicia', 'repostería creativa Galicia', 'tartas de boda Ourense', 'Ourense', 'Galicia'],
+  keywords: ['cursos de repostería Ourense', 'repostería online Galicia', 'tartas personalizadas Ourense', 'pastelería gourmet Galicia', 'repostería creativa Galicia', 'tartas de boda Ourense', 'Ourense', 'Galicia', 'pastel de cumpleaños', 'cumpleaños', 'ideas para cumpleaños', 'eventos', 'cursos de reposteria', 'reposteria', 'orense', 'ourense', 'tartas para eventos Ourense', 'pastelería artesanal', 'dulces para celebraciones', 'talleres de cocina Ourense', 'tartas fondant', 'mesas dulces Galicia', 'regalos originales Ourense', 'pasteles para niños', 'repostería vegana Ourense', 'galletas decoradas'],
   openGraph: {
     title: 'Morty\'s Cake | Cursos de Repostería y Pastelería Gourmet en Ourense y Galicia',
     description: 'Transforma tu pasión por la repostería en arte con nuestros cursos en Ourense. Ofrecemos tartas personalizadas y mucho más en el corazón de Galicia.',
