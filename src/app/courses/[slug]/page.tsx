@@ -78,7 +78,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     openGraph: {
       title: course.name,
       description: cleanDescription,
-      images: imageUrl ? [imageUrl] : [],
+      images: imageUrl ? [{ url: imageUrl }] : [],
     },
     twitter: {
       card: 'summary_large_image',
