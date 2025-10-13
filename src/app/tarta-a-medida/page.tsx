@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -56,7 +55,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 // Opciones para los campos de selección
-const servingsOptions = ["4-6 raciones", "6-8 raciones", "10-12 raciones", "15-20 raciones", "25-30 raciones", "Más de 30"];
+const servingsOptions = ["4-6", "4-6 raciones", "6-8 raciones", "10-12 raciones", "15-20 raciones", "25-30 raciones", "Más de 30"];
 const eventOptions = ["Cumpleaños", "Boda", "Aniversario", "Bautizo", "Comunión", "Evento Corporativo", "Otro"];
 const cakeFlavorOptions = ["Vainilla", "Chocolate Intenso", "Red Velvet", "Limón y Amapolas", "Zanahoria y Especias", "Naranja y Almendra", "Otro (especificar en descripción)"];
 const fillingOptions = ["Crema de queso", "Ganache de chocolate negro", "Ganache de chocolate blanco", "Crema de vainilla", "Dulce de leche", "Crema de pistacho", "Mermelada de frutos rojos", "Otro (especificar en descripción)"];
@@ -86,49 +85,52 @@ export default function TartaAMedidaPage() {
     setFormState({ status: 'loading', message: '' });
     
     const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === 'reference_image' && value) {
-        formData.append(key, value);
-      } else if (value !== undefined && value !== null) {
-        formData.append(key, String(value));
+    // Use optional chaining for 'data' just in case.
+    Object.entries(data)?.forEach(([key, value]) => {
+        if (key === 'reference_image' && value instanceof File) {
+            formData.append(key, value);
+        } else if (value !== undefined && value !== null && !(value instanceof File)) {
+            formData.append(key, String(value));
+        }
+    });
+    
+    startTransition(async () => {
+      try {
+          const response = await fetch('/api/custom-cake-request', {
+              method: 'POST',
+              body: formData,
+          });
+
+          const result = await response.json();
+
+          if (response.ok && result.success) {
+              if (via === 'whatsapp') {
+                  const phoneNumber = "34616284463";
+                  const messageParts = [
+                      `*¡Hola! Acabo de enviar una solicitud para una tarta personalizada a través de la web.*`,
+                      `Mi nombre es ${data.name} y mi solicitud es para el ${format(data.delivery_date, "d 'de' MMMM", { locale: es })}.`,
+                      `Podéis ver los detalles en el correo que os ha llegado. ¡Gracias!`,
+                  ];
+                  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(messageParts.join('\n\n'))}`;
+                  window.open(whatsappUrl, '_blank');
+                  setFormState({ status: 'success', message: '¡Gracias! Tu solicitud ha sido enviada por email. Ahora se abrirá WhatsApp para que puedas iniciar la conversación con nosotros.' });
+              } else {
+                  setFormState({ status: 'success', message: '¡Tu solicitud ha sido enviada con éxito! Nos pondremos en contacto contigo pronto.' });
+              }
+              form.reset();
+          } else {
+              throw new Error(result.message || 'Hubo un error al enviar tu solicitud.');
+          }
+      } catch (error) {
+          const message = error instanceof Error ? error.message : 'Error de conexión. Por favor, inténtalo de nuevo.';
+          setFormState({ status: 'error', message });
       }
     });
-
-    try {
-        const response = await fetch('/api/custom-cake-request', {
-            method: 'POST',
-            body: formData,
-        });
-
-        const result = await response.json();
-
-        if (response.ok && result.success) {
-            if (via === 'whatsapp') {
-                const phoneNumber = "34616284463";
-                const messageParts = [
-                    `*¡Hola! Acabo de enviar una solicitud para una tarta personalizada a través de la web.*`,
-                    `Mi nombre es ${data.name} y mi solicitud es para el ${format(data.delivery_date, "d 'de' MMMM", { locale: es })}.`,
-                    `Podéis ver los detalles en el correo que os ha llegado. ¡Gracias!`,
-                ];
-                const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(messageParts.join('\n\n'))}`;
-                window.open(whatsappUrl, '_blank');
-                 setFormState({ status: 'success', message: '¡Gracias! Tu solicitud ha sido enviada por email. Ahora se abrirá WhatsApp para que puedas iniciar la conversación con nosotros.' });
-            } else {
-                 setFormState({ status: 'success', message: '¡Tu solicitud ha sido enviada con éxito! Nos pondremos en contacto contigo pronto.' });
-            }
-            form.reset();
-        } else {
-            throw new Error(result.message || 'Hubo un error al enviar tu solicitud.');
-        }
-    } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error de conexión. Por favor, inténtalo de nuevo.';
-        setFormState({ status: 'error', message });
-    }
   }
 
 
   const onEmailSubmit = (data: FormValues) => {
-    startTransition(() => handleFormSubmission(data, 'email'));
+    handleFormSubmission(data, 'email');
   };
 
   const onWhatsAppSubmit = async () => {
@@ -138,7 +140,7 @@ export default function TartaAMedidaPage() {
       return;
     }
     setFormState({ status: 'idle', message: '' });
-    startTransition(() => handleFormSubmission(form.getValues(), 'whatsapp'));
+    handleFormSubmission(form.getValues(), 'whatsapp');
   };
 
   if (formState.status === 'success') {
@@ -311,11 +313,11 @@ export default function TartaAMedidaPage() {
 
           <div className="flex flex-col sm:flex-row gap-4">
               <Button type="submit" size="lg" className="w-full" disabled={isPending}>
-                {formState.status === 'loading' && form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />}
+                {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />}
                 Enviar por Email
               </Button>
               <Button type="button" size="lg" variant="secondary" className="w-full bg-green-500 hover:bg-green-600 text-white" onClick={onWhatsAppSubmit} disabled={isPending}>
-                 {formState.status === 'loading' && !form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageCircle className="mr-2 h-4 w-4" />}
+                 {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageCircle className="mr-2 h-4 w-4" />}
                 Contactar por WhatsApp
               </Button>
           </div>
