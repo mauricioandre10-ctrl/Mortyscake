@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Header - Morty's Cake</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Pacifico&display=swap');
+        
+        .morty-header-embed {
+            font-family: 'Lato', sans-serif;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+        }
+        
+        .morty-header-embed *, .morty-header-embed *:before, .morty-header-embed *:after {
+            box-sizing: border-box;
+        }
+
+        .morty-header-container {
+            display: flex;
+            height: 96px;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1280px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .morty-header-logo a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .morty-header-logo img {
+            height: 5rem;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .morty-header-nav {
+            display: none; /* Oculto en móvil */
+        }
+
+        @media (min-width: 768px) {
+            .morty-header-nav {
+                display: flex;
+                align-items: center;
+                gap: 1.5rem;
+                font-size: 0.875rem;
+                font-weight: 500;
+            }
+        }
+
+        .morty-header-nav a {
+            text-decoration: none;
+            color: rgba(107, 114, 128, 1);
+            transition: color 0.2s ease-in-out;
+        }
+
+        .morty-header-nav a:hover {
+            color: rgba(17, 24, 39, 1);
+        }
+        
+        .morty-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .morty-header-actions a {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            height: 40px;
+            width: 40px;
+            border-radius: 9999px;
+            transition: background-color 0.2s ease-in-out;
+            color: #374151; /* Gris */
+        }
+        
+        .morty-header-actions a:hover {
+            background-color: #f3f4f6; /* Gris claro */
+        }
+        
+        .morty-header-actions .user-icon {
+            display: none; /* Ocultar en móvil */
+        }
+        
+        @media (min-width: 768px) {
+            .morty-header-actions .user-icon {
+                display: inline-flex;
+            }
+        }
+
+        .morty-header-actions .cart-icon-wrapper {
+            position: relative;
+        }
+        
+        .morty-header-actions .cart-count {
+            position: absolute;
+            top: -0.25rem;
+            right: -0.25rem;
+            display: flex;
+            height: 20px;
+            width: 20px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            background-color: #F6B1AC; /* Color primario */
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #1a0807; /* Texto primario */
+        }
+
+        .morty-header-menu-btn {
+            display: inline-flex;
+        }
+        
+        @media (min-width: 768px) {
+            .morty-header-menu-btn {
+                display: none;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <header class="morty-header-embed">
+      <div class="morty-header-container">
+        <div class="morty-header-logo">
+          <a href="https://mortyscake.com">
+            <img src="https://mortyscake.com/image/Logo_mortys_cake.webp" alt="Pastelería de Morty">
+          </a>
+        </div>
+        
+        <nav class="morty-header-nav">
+          <a href="https://mortyscake.com/">Inicio</a>
+          <a href="https://mortyscake.com/shop">Tienda</a>
+          <a href="https://mortyscake.com/courses">Cursos</a>
+          <a href="https://mortyscake.com/gallery">Galería</a>
+          <a href="https://mortyscake.com/blog">Blog</a>
+          <a href="https://mortyscake.com/#about">Sobre Nosotros</a>
+          <a href="https://mortyscake.com/#footer">Contacto</a>
+        </nav>
+        
+        <div class="morty-header-actions">
+          <a href="https://cms.mortyscake.es/mi-cuenta" target="_blank" rel="noopener noreferrer" aria-label="Iniciar Sesión" class="user-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </a>
+
+          <a href="https://cms.mortyscake.es/carrito" class="cart-icon-wrapper" aria-label="Ver carrito">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path>
+            </svg>
+            <!-- 
+                Nota: El contador del carrito es dinámico.
+                WordPress/WooCommerce debería encargarse de actualizar este número.
+                Este es un ejemplo estático. Para ocultarlo, elimina el <span>.
+            -->
+            <!-- <span class="cart-count">3</span> -->
+          </a>
+
+          <!-- Botón de menú para móvil. La funcionalidad (abrir/cerrar menú) debe manejarse con JS. -->
+          <a href="#" class="morty-header-menu-btn" aria-label="Abrir Menú">
+             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+               <line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </header>
+</body>
+</html>
