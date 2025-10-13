@@ -18,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
-import { CalendarIcon, Check, ChevronsUpDown, Loader2 } from "lucide-react"
+import { CalendarIcon, Check, ChevronsUpDown, Loader2, Mail, MessageCircle } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { cn } from "@/lib/utils"
@@ -70,21 +70,64 @@ export default function TartaAMedidaPage() {
     },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const processSubmission = async (data: FormValues) => {
+    setFormState({ status: 'loading', message: '' });
+    // Aquí iría la lógica real para enviar el correo (Server Action).
+    // Por ahora, simulamos el éxito.
+    console.log("Simulando envío de formulario por email...", data);
+
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Simulación exitosa
+    return { success: true };
+    // Simulación de error
+    // return { success: false, error: 'Hubo un problema con el servidor.' };
+  };
+
+  const onEmailSubmit = (data: FormValues) => {
     startTransition(async () => {
-      setFormState({ status: 'loading', message: '' });
-      // La lógica de envío ahora se manejará con una Server Action que enviará un email.
-      // Esta es una simulación del comportamiento esperado. La implementación real se hará en el backend.
-      console.log("Simulando envío de formulario por email...", data);
+      const result = await processSubmission(data);
+      if (result.success) {
+        setFormState({ status: 'success', message: '¡Tu solicitud ha sido enviada con éxito! Nos pondremos en contacto contigo pronto.' });
+        form.reset();
+      } else {
+        setFormState({ status: 'error', message: 'Hubo un error al enviar tu solicitud. Por favor, inténtalo de nuevo más tarde.' });
+      }
+    });
+  };
 
-      // Simulación de éxito después de 2 segundos.
-      await new Promise(resolve => setTimeout(resolve, 2000));
+  const onWhatsAppSubmit = async () => {
+    const isValid = await form.trigger();
+    if (!isValid) {
+      setFormState({ status: 'error', message: 'Por favor, completa todos los campos requeridos antes de continuar.' });
+      return;
+    }
+    setFormState({ status: 'idle', message: '' });
+
+    startTransition(async () => {
+      const data = form.getValues();
+      const result = await processSubmission(data); // Envía el correo en segundo plano
       
-      setFormState({ status: 'success', message: '¡Tu solicitud ha sido enviada con éxito! Nos pondremos en contacto contigo pronto.' });
-      form.reset();
-
-      // En un caso de error, el estado se actualizaría así:
-      // setFormState({ status: 'error', message: 'Hubo un error al enviar tu solicitud. Por favor, inténtalo de nuevo más tarde.' });
+      if (result.success) {
+        // Prepara el mensaje de WhatsApp
+        const phoneNumber = "34616284463";
+        const messageParts = [
+          `*¡Hola! Quiero solicitar un presupuesto para una tarta personalizada*`,
+          `*Nombre:* ${data.name}`,
+          `*Evento:* ${data.event_type}`,
+          `*Raciones:* ${data.servings}`,
+          `*Fecha:* ${format(data.delivery_date, "d 'de' MMMM 'de' yyyy", { locale: es })}`,
+          `*Descripción:* ${data.cake_description}`,
+        ];
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(messageParts.join('\n\n'))}`;
+        
+        // Abre WhatsApp y resetea el formulario
+        window.open(whatsappUrl, '_blank');
+        setFormState({ status: 'success', message: '¡Gracias! Se ha abierto WhatsApp para que termines de enviar tu solicitud. También hemos recibido una copia por email.' });
+        form.reset();
+      } else {
+        setFormState({ status: 'error', message: 'No pudimos procesar tu solicitud para WhatsApp. Por favor, inténtalo de nuevo.' });
+      }
     });
   };
 
@@ -93,9 +136,9 @@ export default function TartaAMedidaPage() {
       <div className="container mx-auto py-12 px-4 md:px-6 max-w-2xl text-center">
          <Alert className="border-green-500 bg-green-50 text-green-900">
           <Check className="h-4 w-4 text-green-500" />
-          <AlertTitle className="font-bold">¡Solicitud Recibida!</AlertTitle>
+          <AlertTitle className="font-bold">¡Solicitud en Proceso!</AlertTitle>
           <AlertDescription>
-            {formState.message} Revisaremos los detalles y me pondré en contacto contigo en las próximas 24 horas para darte un presupuesto y finalizar el diseño.
+            {formState.message}
           </AlertDescription>
         </Alert>
          <Button asChild className="mt-8">
@@ -115,7 +158,7 @@ export default function TartaAMedidaPage() {
       </header>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-3xl mx-auto bg-card p-8 rounded-lg shadow-lg">
+        <form onSubmit={form.handleSubmit(onEmailSubmit)} className="space-y-8 max-w-3xl mx-auto bg-card p-8 rounded-lg shadow-lg">
           
           <div className="space-y-4">
               <h2 className="text-2xl font-card-title border-b pb-2">1. Información de Contacto</h2>
@@ -220,10 +263,17 @@ export default function TartaAMedidaPage() {
             </Alert>
           )}
 
-          <Button type="submit" size="lg" className="w-full" disabled={isPending}>
-            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Enviar Solicitud de Presupuesto
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4">
+              <Button type="submit" size="lg" className="w-full" disabled={isPending}>
+                {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />}
+                Enviar por Email
+              </Button>
+              <Button type="button" size="lg" variant="secondary" className="w-full bg-green-500 hover:bg-green-600 text-white" onClick={onWhatsAppSubmit} disabled={isPending}>
+                {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageCircle className="mr-2 h-4 w-4" />}
+                Contactar por WhatsApp
+              </Button>
+          </div>
+          <p className="text-xs text-muted-foreground text-center">Al enviar este formulario, aceptas nuestra <Link href="/legal/privacy" className="underline">Política de Privacidad</Link>.</p>
 
         </form>
       </Form>
