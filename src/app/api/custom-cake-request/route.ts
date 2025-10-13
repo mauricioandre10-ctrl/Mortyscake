@@ -27,13 +27,15 @@ export async function POST(req: NextRequest) {
     const referenceImage = formData.get('reference-image') as File | null;
     const body = Object.fromEntries(formData.entries());
     
-    // Convert checkbox value
-    if (body.privacyPolicy === 'on') {
-        body.privacyPolicy = true;
-    }
+    // Prepare data for validation
+    const dataToValidate = {
+      ...body,
+      // Convert checkbox value from 'on' to boolean for Zod
+      privacyPolicy: body.privacyPolicy === 'on',
+    };
 
     // Validate form data
-    const validatedData = formSchema.parse(body);
+    const validatedData = formSchema.parse(dataToValidate);
     
     // Check for SMTP credentials in environment variables
     const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, ADMIN_EMAIL } = process.env;
