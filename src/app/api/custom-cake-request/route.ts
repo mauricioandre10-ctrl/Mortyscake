@@ -48,8 +48,18 @@ export async function POST(req: NextRequest) {
             imageUrl = mediaDetails.source_url;
             imageId = mediaDetails.id;
         } else {
-            console.error('Error al subir la imagen:', await uploadResponse.text());
-            imageUrl = 'Error al subir la imagen.';
+            const errorText = await uploadResponse.text();
+            console.error('Error al subir la imagen a WordPress:', errorText);
+            // Intenta parsear el error si es JSON
+            try {
+              const errorJson = JSON.parse(errorText);
+              if (errorJson.code === 'invalid_username') {
+                throw new Error('Error de autenticación con WordPress: Nombre de usuario incorrecto.');
+              }
+            } catch (e) {
+              // No era JSON, lanzar error genérico
+            }
+            throw new Error('Error al subir la imagen de referencia.');
         }
     }
     
@@ -79,7 +89,6 @@ export async function POST(req: NextRequest) {
       ${imageUrl ? `<h2>Imagen de Referencia:</h2><p><a href="${imageUrl}">Ver Imagen Adjunta</a></p><img src="${imageUrl}" alt="Imagen de referencia" style="max-width: 400px; height: auto;" />` : ''}
     `;
 
-    // NUEVO: Enviar el correo usando WordPress con Post SMTP
     const mailerHeaders = new Headers({
         'Authorization': `Basic ${btoa(`${wpUser}:${wpPassword}`)}`,
         'Content-Type': 'application/json',
@@ -89,19 +98,9 @@ export async function POST(req: NextRequest) {
         to: adminEmail,
         subject: `Nueva Solicitud de Tarta a Medida de ${formFields.name}`,
         message: emailHtml,
-        // Adjuntamos el ID de la imagen si existe, para que el correo pueda incrustarla
         ...(imageId && { attachments: [imageId] }),
     };
-
-    // Suponiendo que has añadido un endpoint personalizado en tu WordPress
-    // que se encarga de llamar a `wp_mail`.
-    // La URL podría ser algo como `/wp-json/morty/v1/send-email`
-    // Por ahora, usaremos una llamada simulada. La lógica real se implementa en WordPress.
     
-    // Este código ASUME que se ha creado un endpoint personalizado en WordPress
-    // para manejar el envío de correo. Esto es algo que se debe añadir al `functions.php`
-    // del tema de WordPress o en un plugin personalizado.
-
     const mailerResponse = await fetch(`${wpUrl}/wp-json/morty/v1/send-email`, {
         method: 'POST',
         headers: mailerHeaders,
@@ -116,7 +115,8 @@ export async function POST(req: NextRequest) {
     
     const mailerResult = await mailerResponse.json();
     if (!mailerResult.success) {
-        throw new Error('WordPress informó de un error al enviar el correo.');
+      console.error('Respuesta de WordPress (fallida):', mailerResult.data);
+      throw new Error('WordPress informó de un error al enviar el correo.');
     }
     
     return NextResponse.json({ success: true, message: 'Solicitud enviada con éxito.' });
