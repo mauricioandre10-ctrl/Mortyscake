@@ -1,43 +1,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createTransport } from 'nodemailer';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-
-// Función para enviar correo
-async function sendMail({ to, subject, html, attachments }: { to: string; subject: string; html: string; attachments?: any[] }) {
-  try {
-    // Credenciales y configuración del SMTP
-    const smtpConfig = {
-      host: process.env.SMTP_HOST || 'smtp.ionos.es',
-      port: Number(process.env.SMTP_PORT) || 587,
-      secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
-      auth: {
-        user: process.env.SMTP_USER || 'info@mortyscake.com',
-        pass: process.env.SMTP_PASS || 'Ab_123456',
-      },
-      tls: {
-        ciphers:'SSLv3'
-      }
-    };
-    
-    const transporter = createTransport(smtpConfig);
-
-    await transporter.verify();
-
-    await transporter.sendMail({
-      from: `"${process.env.SMTP_FROM_NAME || 'Mortys Cake Web'}" <${process.env.SMTP_FROM_EMAIL || 'info@mortyscake.com'}>`,
-      to,
-      subject,
-      html,
-      attachments,
-    });
-    return true;
-  } catch (error) {
-    console.error('Error sending email:', error);
-    return false;
-  }
-}
 
 // Handler de la API
 export async function POST(req: NextRequest) {
@@ -62,10 +26,10 @@ export async function POST(req: NextRequest) {
     }
     
     let imageUrl = '';
+    let imageId = null;
     const imageFile = formData.get('reference_image') as File;
 
     if (imageFile && imageFile.size > 0) {
-        // Si hay una imagen, subirla a WordPress
         const buffer = await imageFile.arrayBuffer();
         const headers = new Headers({
             'Content-Disposition': `attachment; filename=${imageFile.name}`,
@@ -82,9 +46,9 @@ export async function POST(req: NextRequest) {
         if (uploadResponse.ok) {
             const mediaDetails = await uploadResponse.json();
             imageUrl = mediaDetails.source_url;
+            imageId = mediaDetails.id;
         } else {
             console.error('Error al subir la imagen:', await uploadResponse.text());
-            // No bloqueamos el envío si la imagen falla, pero guardamos el error
             imageUrl = 'Error al subir la imagen.';
         }
     }
@@ -115,16 +79,44 @@ export async function POST(req: NextRequest) {
       ${imageUrl ? `<h2>Imagen de Referencia:</h2><p><a href="${imageUrl}">Ver Imagen Adjunta</a></p><img src="${imageUrl}" alt="Imagen de referencia" style="max-width: 400px; height: auto;" />` : ''}
     `;
 
-    // Enviar el correo
-    const emailSent = await sendMail({
-      to: adminEmail,
-      subject: `Nueva Solicitud de Tarta a Medida de ${formFields.name}`,
-      html: emailHtml,
+    // NUEVO: Enviar el correo usando WordPress con Post SMTP
+    const mailerHeaders = new Headers({
+        'Authorization': `Basic ${btoa(`${wpUser}:${wpPassword}`)}`,
+        'Content-Type': 'application/json',
     });
+
+    const mailerBody = {
+        to: adminEmail,
+        subject: `Nueva Solicitud de Tarta a Medida de ${formFields.name}`,
+        message: emailHtml,
+        // Adjuntamos el ID de la imagen si existe, para que el correo pueda incrustarla
+        ...(imageId && { attachments: [imageId] }),
+    };
+
+    // Suponiendo que has añadido un endpoint personalizado en tu WordPress
+    // que se encarga de llamar a `wp_mail`.
+    // La URL podría ser algo como `/wp-json/morty/v1/send-email`
+    // Por ahora, usaremos una llamada simulada. La lógica real se implementa en WordPress.
     
-    if (!emailSent) {
-      // Si el email falla, devolvemos un error pero la imagen ya podría estar subida
-      return NextResponse.json({ success: false, message: 'El servidor no pudo enviar la notificación por correo.' }, { status: 500 });
+    // Este código ASUME que se ha creado un endpoint personalizado en WordPress
+    // para manejar el envío de correo. Esto es algo que se debe añadir al `functions.php`
+    // del tema de WordPress o en un plugin personalizado.
+
+    const mailerResponse = await fetch(`${wpUrl}/wp-json/morty/v1/send-email`, {
+        method: 'POST',
+        headers: mailerHeaders,
+        body: JSON.stringify(mailerBody),
+    });
+
+    if (!mailerResponse.ok) {
+        const errorResult = await mailerResponse.json();
+        console.error('Error al delegar el envío de correo a WordPress:', errorResult);
+        throw new Error(errorResult.message || 'WordPress no pudo enviar el correo.');
+    }
+    
+    const mailerResult = await mailerResponse.json();
+    if (!mailerResult.success) {
+        throw new Error('WordPress informó de un error al enviar el correo.');
     }
     
     return NextResponse.json({ success: true, message: 'Solicitud enviada con éxito.' });
