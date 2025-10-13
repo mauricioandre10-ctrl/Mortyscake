@@ -49,14 +49,14 @@ export async function POST(req: NextRequest) {
             let errorMessage = 'Error al subir la imagen de referencia.';
             try {
               const errorJson = JSON.parse(errorText);
-              // Proveer un mensaje más específico si está disponible
               if (errorJson.code === 'rest_cannot_create') {
                 errorMessage = 'Error de permisos: La subida de archivos a WordPress está deshabilitada o no tienes permiso.';
+              } else if (errorJson.code === 'incorrect_password') {
+                errorMessage = 'Error de WordPress: La contraseña de aplicación no es correcta.';
               } else if (errorJson.message) {
-                errorMessage = `Error de WordPress: ${errorJson.message}`;
+                 errorMessage = `Error de WordPress: ${errorJson.message}`;
               }
             } catch (e) {
-              // El error no era JSON, usar el texto plano si es corto
               if (errorText.length < 200) {
                 errorMessage = `Error del servidor: ${errorText}`;
               }
@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
     const mailerResult = await mailerResponse.json();
     if (!mailerResult.success) {
       console.error('Respuesta de WordPress (fallida):', mailerResult.data);
-      throw new Error('WordPress informó de un error al enviar el correo.');
+      throw new Error(mailerResult.data.message || 'WordPress informó de un error al enviar el correo.');
     }
     
     return NextResponse.json({ success: true, message: 'Solicitud enviada con éxito.' });

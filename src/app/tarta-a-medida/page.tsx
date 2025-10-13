@@ -41,10 +41,10 @@ const formSchema = z.object({
   cake_text: z.string().optional(),
   reference_image: z.any()
     .optional()
-    .refine(file => !file || file.size <= 2 * 1024 * 1024, 'El archivo no puede superar los 2MB.')
+    .refine(file => !file || file.size <= 5 * 1024 * 1024, 'El archivo no puede superar los 5MB.')
     .refine(
-      file => !file || ['image/jpeg', 'image/png', 'image/webp'].includes(file.type),
-      'Formato de archivo no válido. Aceptamos .jpg, .png, .webp'
+      file => !file || ['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type),
+      'Formato de archivo no válido. Aceptamos .jpg, .png, .webp, .gif'
     ),
   allergies: z.string().optional(),
   privacy_policy: z.boolean().refine(val => val === true, {
@@ -55,7 +55,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 // Opciones para los campos de selección
-const servingsOptions = ["4-6", "4-6 raciones", "6-8 raciones", "10-12 raciones", "15-20 raciones", "25-30 raciones", "Más de 30"];
+const servingsOptions = ["4-6 raciones", "6-8 raciones", "10-12 raciones", "15-20 raciones", "25-30 raciones", "Más de 30"];
 const eventOptions = ["Cumpleaños", "Boda", "Aniversario", "Bautizo", "Comunión", "Evento Corporativo", "Otro"];
 const cakeFlavorOptions = ["Vainilla", "Chocolate Intenso", "Red Velvet", "Limón y Amapolas", "Zanahoria y Especias", "Naranja y Almendra", "Otro (especificar en descripción)"];
 const fillingOptions = ["Crema de queso", "Ganache de chocolate negro", "Ganache de chocolate blanco", "Crema de vainilla", "Dulce de leche", "Crema de pistacho", "Mermelada de frutos rojos", "Otro (especificar en descripción)"];
@@ -85,13 +85,14 @@ export default function TartaAMedidaPage() {
     setFormState({ status: 'loading', message: '' });
     
     const formData = new FormData();
-    // Use optional chaining for 'data' just in case.
-    Object.entries(data)?.forEach(([key, value]) => {
-        if (key === 'reference_image' && value instanceof File) {
-            formData.append(key, value);
-        } else if (value !== undefined && value !== null && !(value instanceof File)) {
-            formData.append(key, String(value));
-        }
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === 'delivery_date' && value instanceof Date) {
+        formData.append(key, value.toISOString());
+      } else if (key === 'reference_image' && value instanceof File) {
+        formData.append(key, value);
+      } else if (value !== undefined && value !== null && !(value instanceof File)) {
+        formData.append(key, String(value));
+      }
     });
     
     startTransition(async () => {
@@ -261,7 +262,7 @@ export default function TartaAMedidaPage() {
                   <FormControl>
                     <Input 
                       type="file" 
-                      accept="image/png, image/jpeg, image/webp"
+                      accept="image/png, image/jpeg, image/webp, image/gif"
                       onChange={(e) => {
                          const file = e.target.files?.[0];
                          onChange(file);
@@ -269,7 +270,7 @@ export default function TartaAMedidaPage() {
                       {...rest}
                      />
                   </FormControl>
-                <FormDescription>Sube una foto que te sirva de inspiración. (Max 2MB)</FormDescription><FormMessage /></FormItem>
+                <FormDescription>Sube una foto que te sirva de inspiración. (Max 5MB)</FormDescription><FormMessage /></FormItem>
               )} />
           </div>
 
@@ -307,7 +308,7 @@ export default function TartaAMedidaPage() {
           {formState.status === 'error' && (
              <Alert variant="destructive">
                 <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{formState.message}</AlertDescription>
+                <AlertDescription dangerouslySetInnerHTML={{ __html: formState.message }} />
             </Alert>
           )}
 
