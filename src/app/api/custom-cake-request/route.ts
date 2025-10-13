@@ -7,18 +7,26 @@ import { es } from 'date-fns/locale';
 // Función para enviar correo
 async function sendMail({ to, subject, html, attachments }: { to: string; subject: string; html: string; attachments?: any[] }) {
   try {
-    const transporter = createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT),
-      secure: process.env.SMTP_SECURE === 'true',
+    // Credenciales y configuración del SMTP
+    const smtpConfig = {
+      host: process.env.SMTP_HOST || 'smtp.ionos.es',
+      port: Number(process.env.SMTP_PORT) || 587,
+      secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user: process.env.SMTP_USER || 'info@mortyscake.com',
+        pass: process.env.SMTP_PASS || 'Ab_123456',
       },
-    });
+      tls: {
+        ciphers:'SSLv3'
+      }
+    };
+    
+    const transporter = createTransport(smtpConfig);
+
+    await transporter.verify();
 
     await transporter.sendMail({
-      from: `"${process.env.SMTP_FROM_NAME}" <${process.env.SMTP_FROM_EMAIL}>`,
+      from: `"${process.env.SMTP_FROM_NAME || 'Mortys Cake Web'}" <${process.env.SMTP_FROM_EMAIL || 'info@mortyscake.com'}>`,
       to,
       subject,
       html,
@@ -100,7 +108,7 @@ export async function POST(req: NextRequest) {
         <li><strong>Sabor de relleno:</strong> ${formFields.filling_flavor}</li>
         <li><strong>Texto en la tarta:</strong> ${formFields.cake_text || 'Ninguno'}</li>
         <li><strong>Alergias/Intolerancias:</strong> ${formFields.allergies || 'Ninguna especificada'}</li>
-        <li><strong>Políticas Aceptadas:</strong> ${formFields.privacy_policy === 'on' ? 'Sí' : 'No'}</li>
+        <li><strong>Políticas Aceptadas:</strong> ${formFields.privacy_policy === 'true' ? 'Sí' : 'No'}</li>
       </ul>
       <h2>Descripción de la Tarta:</h2>
       <p>${formFields.cake_description.replace(/\n/g, '<br>')}</p>
