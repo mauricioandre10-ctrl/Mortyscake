@@ -93,6 +93,9 @@ export async function POST(req: NextRequest) {
         
         <h2>Información Adicional</h2>
         <p><strong>Alergias o intolerancias:</strong><br>${validatedData.allergies || 'No proporcionado'}</p>
+        
+        <hr>
+        <p style="font-size: 12px; color: #777;"><strong>Confirmación Legal:</strong> El usuario aceptó la política de privacidad.</p>
       </div>
     `;
 
@@ -148,3 +151,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: `Error al enviar la solicitud: ${errorMessage}` }, { status: 500 });
   }
 }
+
+    

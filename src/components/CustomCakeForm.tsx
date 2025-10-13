@@ -82,60 +82,7 @@ export function CustomCakeForm() {
     },
   });
 
-  const handleWhatsAppSubmit = () => {
-    const data = form.getValues();
-    const { privacyPolicy, referenceImage, ...whatsAppSafeData } = data;
-    
-    // Check for form validity before proceeding
-    const validationResult = formSchema.safeParse(data);
-    if (!validationResult.success) {
-      // Trigger validation to show error messages
-      form.trigger();
-      toast({
-        variant: 'destructive',
-        title: 'Formulario incompleto',
-        description: 'Por favor, rellena todos los campos obligatorios antes de enviar por WhatsApp.',
-      });
-      return;
-    }
-    
-    const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
-    if (!phoneNumber) {
-        toast({
-            variant: 'destructive',
-            title: 'Error de configuración',
-            description: 'El número de WhatsApp no está configurado.',
-        });
-        return;
-    }
-
-    const messageParts = [
-      `Hola Morty's Cake, esta es mi idea y quiero hacerla realidad:`,
-      `\n*Nombre:* ${data.name}`,
-      `*Email:* ${data.email}`,
-      data.phone && `*Teléfono:* ${data.phone}`,
-      `*Fecha de entrega:* ${data.deliveryDate}`,
-      `*Raciones:* ${data.servings}`,
-      `*Evento:* ${data.eventType}`,
-      `*Sabor bizcocho:* ${data.cakeFlavor}`,
-      `*Sabor relleno:* ${data.fillingFlavor}`,
-      `*Descripción:* ${data.cakeDescription}`,
-      data.cakeText && `*Texto en la tarta:* ${data.cakeText}`,
-      data.allergies && `*Alergias:* ${data.allergies}`,
-    ];
-
-    const message = messageParts.filter(Boolean).join('\n');
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    
-    window.open(whatsappUrl, '_blank');
-    
-    toast({
-        title: '¡Prepara tu mensaje!',
-        description: "Se ha abierto WhatsApp con tu solicitud. Si subiste una imagen, no olvides adjuntarla manualmente en el chat.",
-    });
-  };
-
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: FormData, openWhatsApp = false) => {
     setIsLoading(true);
 
     const formData = new FormData();
@@ -167,6 +114,44 @@ export function CustomCakeForm() {
         title: '¡Solicitud Enviada!',
         description: 'Hemos recibido tu solicitud y te hemos enviado un correo de confirmación. ¡Revisa tu bandeja de entrada!',
       });
+      
+      if (openWhatsApp) {
+        const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
+        if (!phoneNumber) {
+            toast({
+                variant: 'destructive',
+                title: 'Error de configuración',
+                description: 'El número de WhatsApp no está configurado.',
+            });
+            return;
+        }
+
+        const messageParts = [
+          `Hola Morty's Cake, esta es mi idea y quiero hacerla realidad:`,
+          `\n*Nombre:* ${data.name}`,
+          `*Email:* ${data.email}`,
+          data.phone && `*Teléfono:* ${data.phone}`,
+          `*Fecha de entrega:* ${data.deliveryDate}`,
+          `*Raciones:* ${data.servings}`,
+          `*Evento:* ${data.eventType}`,
+          `*Sabor bizcocho:* ${data.cakeFlavor}`,
+          `*Sabor relleno:* ${data.fillingFlavor}`,
+          `*Descripción:* ${data.cakeDescription}`,
+          data.cakeText && `*Texto en la tarta:* ${data.cakeText}`,
+          data.allergies && `*Alergias:* ${data.allergies}`,
+        ];
+
+        const message = messageParts.filter(Boolean).join('\n');
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+        
+        window.open(whatsappUrl, '_blank');
+        
+        toast({
+            title: '¡Prepara tu mensaje!',
+            description: "Se ha abierto WhatsApp con tu solicitud. Si subiste una imagen, no olvides adjuntarla manualmente en el chat.",
+        });
+      }
+
       form.reset();
       setImagePreview(null);
     } catch (error) {
@@ -180,13 +165,18 @@ export function CustomCakeForm() {
     }
   };
 
+  const handleWhatsAppSubmit = () => {
+    form.handleSubmit((data) => onSubmit(data, true))();
+  };
+
+
   const today = new Date();
   today.setDate(today.getDate() + 3); // Mínimo 3 días de antelación
   const minDate = today.toISOString().split('T')[0];
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit((data) => onSubmit(data, false))} className="space-y-8">
         
         <SectionWrapper icon={<User size={24} />} title="Información de Contacto" step={1}>
             <div className="grid md:grid-cols-2 gap-6">
@@ -309,9 +299,9 @@ export function CustomCakeForm() {
                     {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Mail className="mr-2 h-5 w-5"/>}
                     {isLoading ? 'Enviando...' : 'Enviar por Email'}
                 </Button>
-                <Button type="button" variant="secondary" onClick={handleWhatsAppSubmit} className="w-full bg-green-500 hover:bg-green-600 text-white" size="lg">
-                    <MessageCircle className="mr-2 h-5 w-5"/>
-                    Enviar por WhatsApp
+                <Button type="button" variant="secondary" onClick={handleWhatsAppSubmit} disabled={isLoading} className="w-full bg-green-500 hover:bg-green-600 text-white" size="lg">
+                    {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <MessageCircle className="mr-2 h-5 w-5"/>}
+                    {isLoading ? 'Enviando...' : 'Enviar por WhatsApp'}
                 </Button>
             </div>
         </div>
@@ -319,5 +309,6 @@ export function CustomCakeForm() {
     </Form>
   );
 }
+
 
     
