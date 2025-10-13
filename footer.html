@@ -39,41 +39,38 @@
         .footer-top-section {
             background-color: #513938;
             color: #ffffff;
-            padding: 2.5rem 0;
+            padding: 2.5rem 1rem;
         }
         
         .footer-container {
             max-width: 1280px;
             margin-left: auto;
             margin-right: auto;
-            padding-left: 1.5rem;
-            padding-right: 1.5rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
         }
         
         .footer-grid {
             display: grid;
             gap: 2rem;
-            align-items: center;
         }
         
         .footer-column {
             display: flex;
             flex-direction: column;
         }
-
+        
         .footer-contact-item {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             gap: 0.75rem;
-            margin-bottom: 0.75rem;
-            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
         }
-
+        
         .footer-contact-item svg {
             flex-shrink: 0;
             width: 1.25rem;
             height: 1.25rem;
-            margin-top: 0.125rem;
         }
 
         .footer-logo-column {
@@ -85,12 +82,13 @@
         .footer-logo {
             height: 6rem;
             width: auto;
+            object-fit: contain;
         }
         
         .footer-social-column {
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
         }
         
         .footer-social-links {
@@ -105,12 +103,12 @@
         .footer-social-links svg {
             width: 1.75rem;
             height: 1.75rem;
-            fill: #ffffff;
+            fill: currentColor;
         }
 
         .footer-bottom-section {
             background-color: #ffffff;
-            padding: 1rem 0;
+            padding: 1rem 1.5rem;
         }
         
         .footer-bottom-container {
@@ -157,12 +155,19 @@
             .footer-social-column {
                 align-items: flex-end;
             }
+             .footer-column.footer-contact-column {
+                align-items: flex-start;
+            }
             .footer-bottom-container {
                 flex-direction: row;
                 text-align: left;
             }
             .footer-legal-links {
                 justify-content: flex-end;
+            }
+            .footer-container {
+              padding-left: 1.5rem;
+              padding-right: 1.5rem;
             }
         }
     </style>
@@ -172,7 +177,7 @@
       <div class="footer-top-section">
           <div class="footer-container">
                 <div class="footer-grid">
-                        <div class="footer-column">
+                        <div class="footer-column footer-contact-column">
                                   <h3>Contacto</h3>
                                   <div class="footer-contact-item">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -194,12 +199,12 @@
                                   <h3>Síguenos</h3>
                                   <div class="footer-social-links">
                                       <a href="https://www.facebook.com/MortysCake/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
                                             </svg>
                                       </a>
                                       <a href="https://www.instagram.com/mortyscake.ourense/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
                                                     <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
                                             </svg>
                                       </a>
@@ -215,12 +220,14 @@
                     <a href="https://tecnovacenter.es/" target="_blank" rel="noopener noreferrer"> TecnovaCenter </a>. Todos los derechos reservados.
                 </div>
                 <nav class="footer-legal-links">
-                    <a href="/terminos-y-condiciones">Términos de Servicio</a>
-                    <a href="/politica-de-privacidad">Política de Privacidad</a>
-                    <a href="/politica-de-cookies">Política de Cookies</a>
+                    <a href="https://mortyscake.com/legal/terms">Términos de Servicio</a>
+                    <a href="https://mortyscake.com/legal/privacy">Política de Privacidad</a>
+                    <a href="https://mortyscake.com/legal/cookies">Política de Cookies</a>
                 </nav>
             </div>
         </div>
     </footer>
 </body>
 </html>
+
+    
