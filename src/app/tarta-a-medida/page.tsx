@@ -45,7 +45,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 // Opciones para los campos de selección
-const servingsOptions = ["6-8 raciones", "10-12 raciones", "15-20 raciones", "25-30 raciones", "Más de 30"];
+const servingsOptions = ["4-6 raciones", "6-8 raciones", "10-12 raciones", "15-20 raciones", "25-30 raciones", "Más de 30"];
 const eventOptions = ["Cumpleaños", "Boda", "Aniversario", "Bautizo", "Comunión", "Evento Corporativo", "Otro"];
 const cakeFlavorOptions = ["Vainilla", "Chocolate Intenso", "Red Velvet", "Limón y Amapolas", "Zanahoria y Especias", "Naranja y Almendra", "Otro (especificar en descripción)"];
 const fillingOptions = ["Crema de queso", "Ganache de chocolate negro", "Ganache de chocolate blanco", "Crema de vainilla", "Dulce de leche", "Crema de pistacho", "Mermelada de frutos rojos", "Otro (especificar en descripción)"];
