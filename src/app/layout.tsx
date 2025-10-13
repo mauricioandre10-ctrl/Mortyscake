@@ -1,5 +1,4 @@
 
-
 import { Suspense } from 'react';
 import type { Metadata, Viewport } from 'next';
 import { Lato as FontSans, Pacifico as FontHeadline, Playfair_Display as FontCardTitle } from 'next/font/google';
@@ -42,7 +41,7 @@ export const metadata: Metadata = {
     default: 'Morty\'s Cake | Repostería Creativa y Cursos en Ourense, Galicia',
     template: '%s | Morty\'s Cake Ourense',
   },
-  description: 'Aprende repostería en Ourense con nuestros cursos online y presenciales. Descubre tartas y postres personalizados en Galicia. ¡Transforma tu pasión en arte!',
+  description: 'Repostería Gourmet y tienda online en Ourense. Descubre productos únicos y aprende con nuestros cursos de pastelería para toda Galicia. ¡Crea magia dulce!',
   keywords: ['repostería creativa', 'tartas personalizadas', 'decoración de pasteles', 'cursos de repostería', 'pastelería artesanal', 'bizcochos decorados', 'cupcakes creativos', 'galletas decoradas', 'pasteles temáticos', 'tartas fondant', 'tienda de repostería online', 'comprar tartas personalizadas', 'productos de repostería', 'utensilios de repostería', 'moldes para tartas', 'ingredientes para pasteles', 'decoración comestible', 'toppers para tartas', 'papel de azúcar personalizado', 'envíos de tartas a domicilio', 'cursos de repostería en Galicia', 'clases de pastelería creativa', 'formación en decoración de tartas', 'taller de repostería en Ourense', 'curso online de repostería', 'aprender a decorar pasteles', 'iniciación a la repostería', 'curso de fondant', 'curso de galletas decoradas', 'curso de cupcakes creativos', 'repostería en Ourense', 'pastelería en Galicia', 'tartas personalizadas Ourense', 'cursos de repostería Ourense', 'tienda de repostería Galicia', 'repostería creativa Galicia', 'pasteles a medida Ourense', 'repostería artesanal Ourense', 'tartas temáticas Galicia', 'cursos presenciales Ourense', 'mortys cake', 'mortyscake.com', 'repostería con estilo', 'tartas únicas', 'experiencia dulce', 'diseño de tartas', 'repostería emocional', 'creatividad en pastelería', 'repostería para eventos', 'tartas para celebraciones', 'pastel de cumpleaños', 'cumpleaños', 'ideas para cumpleaños', 'eventos', 'reposteria', 'orense', 'ourense', 'tartas para eventos Ourense', 'dulces para celebraciones', 'talleres de cocina Ourense', 'mesas dulces Galicia', 'regalos originales Ourense', 'pasteles para niños', 'repostería vegana Ourense'],
   openGraph: {
     title: 'Morty\'s Cake | Cursos de Repostería y Pastelería Gourmet en Ourense y Galicia',
