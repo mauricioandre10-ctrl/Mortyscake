@@ -31,6 +31,7 @@ export function GalleryClient({ images, initialImageId }: GalleryClientProps) {
     const pathname = usePathname();
 
     const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(() => {
+        if (!initialImageId) return null;
         return images.find(img => img.id === initialImageId) || null;
     });
     const [siteUrl, setSiteUrl] = useState('');
@@ -133,4 +134,3 @@ export function GalleryClient({ images, initialImageId }: GalleryClientProps) {
         </div>
     );
 }
-
