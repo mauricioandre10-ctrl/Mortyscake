@@ -1,3 +1,4 @@
+
 /** @type {import('next').NextConfig} */
 
 // Define la Content Security Policy (CSP)
@@ -89,13 +90,9 @@ const nextConfig = {
     WP_USER: 'Tienda mortyscake',
     WP_APP_PASSWORD: 'UOSY OxwW rNb7 xauP D0Lf D9D7',
     ADMIN_EMAIL: 'info@mortyscake.com',
-    SMTP_HOST: 'smtp.ionos.es',
-    SMTP_PORT: '587',
-    SMTP_USER: 'info@mortyscake.com',
-    SMTP_PASS: 'Ab_123456',
-    SMTP_FROM_NAME: 'Mortys Cake Web',
-    SMTP_FROM_EMAIL: 'info@mortyscake.com',
-    SMTP_SECURE: 'true',
+    NEXT_PUBLIC_WOOCOMMERCE_STORE_URL: 'https://cms.mortyscake.es',
+    NEXT_PUBLIC_WOOCOMMERCE_CHECKOUT_URL: 'https://cms.mortyscake.es/checkout',
+    NEXT_PUBLIC_SITE_URL: 'https://mortyscake.com'
   }
 };
 
