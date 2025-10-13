@@ -41,6 +41,7 @@
     "embla-carousel-react": "^8.6.0",
     "lucide-react": "^0.475.0",
     "next": "^14.2.33",
+    "nodemailer": "^6.9.14",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.3.1",
@@ -54,6 +55,7 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.13",
     "@types/node": "^20",
+    "@types/nodemailer": "^6.4.15",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "postcss": "^8",

@@ -82,9 +82,21 @@ const nextConfig = {
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: '2mb',
+      bodySizeLimit: '5mb',
     },
   },
+  env: {
+    WP_USER: 'Tienda mortyscake',
+    WP_APP_PASSWORD: 'UOSY OxwW rNb7 xauP D0Lf D9D7',
+    ADMIN_EMAIL: 'info@mortyscake.com',
+    SMTP_HOST: 'smtp.ionos.es',
+    SMTP_PORT: '587',
+    SMTP_USER: 'info@mortyscake.com',
+    SMTP_PASS: 'Ab_123456',
+    SMTP_FROM_NAME: 'Mortys Cake Web',
+    SMTP_FROM_EMAIL: 'info@mortyscake.com',
+    SMTP_SECURE: 'true',
+  }
 };
 
 module.exports = nextConfig;

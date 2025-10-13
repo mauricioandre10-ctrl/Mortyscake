@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -18,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
-import { CalendarIcon, Check, ChevronsUpDown, Loader2, Mail, MessageCircle } from "lucide-react"
+import { CalendarIcon, Check, Loader2, Mail, MessageCircle } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { cn } from "@/lib/utils"
@@ -39,7 +40,13 @@ const formSchema = z.object({
   filling_flavor: z.string().min(1, { message: "Selecciona un sabor de relleno." }),
   cake_description: z.string().min(20, { message: "Describe tu tarta con un poco más de detalle (mín. 20 caracteres)." }),
   cake_text: z.string().optional(),
-  reference_image: z.any().optional(),
+  reference_image: z.any()
+    .optional()
+    .refine(file => !file || file.size <= 2 * 1024 * 1024, 'El archivo no puede superar los 2MB.')
+    .refine(
+      file => !file || ['image/jpeg', 'image/png', 'image/webp'].includes(file.type),
+      'Formato de archivo no válido. Aceptamos .jpg, .png, .webp'
+    ),
   allergies: z.string().optional(),
   privacy_policy: z.boolean().refine(val => val === true, {
     message: "Debes aceptar las políticas de privacidad para continuar."
@@ -75,30 +82,53 @@ export default function TartaAMedidaPage() {
     },
   });
 
-  const processSubmission = async (data: FormValues) => {
+  const handleFormSubmission = async (data: FormValues, via: 'email' | 'whatsapp') => {
     setFormState({ status: 'loading', message: '' });
-    // Aquí iría la lógica real para enviar el correo (Server Action).
-    // Por ahora, simulamos el éxito.
-    console.log("Simulando envío de formulario por email...", data);
-
-    await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // Simulación exitosa
-    return { success: true };
-    // Simulación de error
-    // return { success: false, error: 'Hubo un problema con el servidor.' };
-  };
-
-  const onEmailSubmit = (data: FormValues) => {
-    startTransition(async () => {
-      const result = await processSubmission(data);
-      if (result.success) {
-        setFormState({ status: 'success', message: '¡Tu solicitud ha sido enviada con éxito! Nos pondremos en contacto contigo pronto.' });
-        form.reset();
-      } else {
-        setFormState({ status: 'error', message: 'Hubo un error al enviar tu solicitud. Por favor, inténtalo de nuevo más tarde.' });
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === 'reference_image' && value) {
+        formData.append(key, value);
+      } else if (value !== undefined && value !== null) {
+        formData.append(key, String(value));
       }
     });
+
+    try {
+        const response = await fetch('/api/custom-cake-request', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            if (via === 'whatsapp') {
+                const phoneNumber = "34616284463";
+                const messageParts = [
+                    `*¡Hola! Acabo de enviar una solicitud para una tarta personalizada a través de la web.*`,
+                    `Mi nombre es ${data.name} y mi solicitud es para el ${format(data.delivery_date, "d 'de' MMMM", { locale: es })}.`,
+                    `Podéis ver los detalles en el correo que os ha llegado. ¡Gracias!`,
+                ];
+                const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(messageParts.join('\n\n'))}`;
+                window.open(whatsappUrl, '_blank');
+                 setFormState({ status: 'success', message: '¡Gracias! Tu solicitud ha sido enviada por email. Ahora se abrirá WhatsApp para que puedas iniciar la conversación con nosotros.' });
+            } else {
+                 setFormState({ status: 'success', message: '¡Tu solicitud ha sido enviada con éxito! Nos pondremos en contacto contigo pronto.' });
+            }
+            form.reset();
+        } else {
+            throw new Error(result.message || 'Hubo un error al enviar tu solicitud.');
+        }
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Error de conexión. Por favor, inténtalo de nuevo.';
+        setFormState({ status: 'error', message });
+    }
+  }
+
+
+  const onEmailSubmit = (data: FormValues) => {
+    startTransition(() => handleFormSubmission(data, 'email'));
   };
 
   const onWhatsAppSubmit = async () => {
@@ -108,32 +138,7 @@ export default function TartaAMedidaPage() {
       return;
     }
     setFormState({ status: 'idle', message: '' });
-
-    startTransition(async () => {
-      const data = form.getValues();
-      const result = await processSubmission(data); // Envía el correo en segundo plano
-      
-      if (result.success) {
-        // Prepara el mensaje de WhatsApp
-        const phoneNumber = "34616284463";
-        const messageParts = [
-          `*¡Hola! Quiero solicitar un presupuesto para una tarta personalizada*`,
-          `*Nombre:* ${data.name}`,
-          `*Evento:* ${data.event_type}`,
-          `*Raciones:* ${data.servings}`,
-          `*Fecha:* ${format(data.delivery_date, "d 'de' MMMM 'de' yyyy", { locale: es })}`,
-          `*Descripción:* ${data.cake_description}`,
-        ];
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(messageParts.join('\n\n'))}`;
-        
-        // Abre WhatsApp y resetea el formulario
-        window.open(whatsappUrl, '_blank');
-        setFormState({ status: 'success', message: '¡Gracias! Se ha abierto WhatsApp para que termines de enviar tu solicitud. También hemos recibido una copia por email.' });
-        form.reset();
-      } else {
-        setFormState({ status: 'error', message: 'No pudimos procesar tu solicitud para WhatsApp. Por favor, inténtalo de nuevo.' });
-      }
-    });
+    startTransition(() => handleFormSubmission(form.getValues(), 'whatsapp'));
   };
 
   if (formState.status === 'success') {
@@ -141,7 +146,7 @@ export default function TartaAMedidaPage() {
       <div className="container mx-auto py-12 px-4 md:px-6 max-w-2xl text-center">
          <Alert className="border-green-500 bg-green-50 text-green-900">
           <Check className="h-4 w-4 text-green-500" />
-          <AlertTitle className="font-bold">¡Solicitud en Proceso!</AlertTitle>
+          <AlertTitle className="font-bold">¡Solicitud Enviada!</AlertTitle>
           <AlertDescription>
             {formState.message}
           </AlertDescription>
@@ -249,8 +254,20 @@ export default function TartaAMedidaPage() {
               <FormField control={form.control} name="cake_text" render={({ field }) => (
                 <FormItem><FormLabel>Texto en la tarta (Opcional)</FormLabel><FormControl><Input placeholder="Ej: ¡Felicidades, Ana!" {...field} /></FormControl><FormMessage /></FormItem>
               )} />
-              <FormField control={form.control} name="reference_image" render={({ field }) => (
-                <FormItem><FormLabel>Imagen de referencia (Opcional)</FormLabel><FormControl><Input type="file" accept="image/png, image/jpeg, image/webp" {...form.register('reference_image')} /></FormControl><FormDescription>Sube una foto que te sirva de inspiración. (Max 2MB)</FormDescription><FormMessage /></FormItem>
+              <FormField control={form.control} name="reference_image" render={({ field: { onChange, value, ...rest } }) => (
+                <FormItem><FormLabel>Imagen de referencia (Opcional)</FormLabel>
+                  <FormControl>
+                    <Input 
+                      type="file" 
+                      accept="image/png, image/jpeg, image/webp"
+                      onChange={(e) => {
+                         const file = e.target.files?.[0];
+                         onChange(file);
+                      }}
+                      {...rest}
+                     />
+                  </FormControl>
+                <FormDescription>Sube una foto que te sirva de inspiración. (Max 2MB)</FormDescription><FormMessage /></FormItem>
               )} />
           </div>
 
@@ -294,11 +311,11 @@ export default function TartaAMedidaPage() {
 
           <div className="flex flex-col sm:flex-row gap-4">
               <Button type="submit" size="lg" className="w-full" disabled={isPending}>
-                {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />}
+                {formState.status === 'loading' && form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />}
                 Enviar por Email
               </Button>
               <Button type="button" size="lg" variant="secondary" className="w-full bg-green-500 hover:bg-green-600 text-white" onClick={onWhatsAppSubmit} disabled={isPending}>
-                {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageCircle className="mr-2 h-4 w-4" />}
+                 {formState.status === 'loading' && !form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageCircle className="mr-2 h-4 w-4" />}
                 Contactar por WhatsApp
               </Button>
           </div>
@@ -307,5 +324,3 @@ export default function TartaAMedidaPage() {
     </div>
   );
 }
-
-    
