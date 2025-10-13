@@ -28,7 +28,7 @@ interface Product {
 export function ProductDetails({ product }: { product: Product }) {
   const fullDescription = product.description || product.short_description || 'No hay descripción disponible.';
   const productAttributes = Array.isArray(product.attributes) ? product.attributes : Object.values(product.attributes);
-  const googleReviewUrl = "https://share.google/5iGt1ltt2KUW5eejD"; // Direct link to leave a review
+  const googleReviewUrl = "https://search.google.com/local/writereview?placeid=ChIJR8mR-xH_Lw0RQZ-CfPwZD-Q&source=g.page.m._&laa=merchant-review-solicitation"; // Direct link to leave a review
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
