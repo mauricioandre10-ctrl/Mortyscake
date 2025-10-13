@@ -134,8 +134,8 @@ export function CustomCakeForm() {
             return;
         }
         
-        const finalCakeFlavor = data.cakeFlavor === 'Otro (especificar)' ? data.otherCakeFlavor : data.cakeFlavor;
-        const finalFillingFlavor = data.fillingFlavor === 'Otro (especificar)' ? data.otherFillingFlavor : data.fillingFlavor;
+        const finalCakeFlavor = data.cakeFlavor === 'Otro (especificar)' && data.otherCakeFlavor ? data.otherCakeFlavor : data.cakeFlavor;
+        const finalFillingFlavor = data.fillingFlavor === 'Otro (especificar)' && data.otherFillingFlavor ? data.otherFillingFlavor : data.fillingFlavor;
 
         const messageParts = [
           `Hola Morty's Cake, esta es mi idea y quiero hacerla realidad:`,
@@ -206,7 +206,7 @@ export function CustomCakeForm() {
         <SectionWrapper icon={<Calendar size={24} />} title="Detalles del Evento" step={2}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FormField control={form.control} name="deliveryDate" render={({ field }) => (
-                    <FormItem><FormLabel>Fecha de entrega *</FormLabel><FormControl><Input type="date" min={minDate} {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem className="flex flex-col"><FormLabel>Fecha de entrega *</FormLabel><FormControl><Input type="date" min={minDate} {...field} className="w-full" /></FormControl><FormMessage /></FormItem>
                 )}/>
                 <FormField control={form.control} name="servings" render={({ field }) => (
                     <FormItem><FormLabel>Raciones *</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Selecciona" /></SelectTrigger></FormControl><SelectContent><SelectItem value="4-6 raciones">4-6</SelectItem><SelectItem value="6-8 raciones">6-8</SelectItem><SelectItem value="10-12 raciones">10-12</SelectItem><SelectItem value="15-20 raciones">15-20</SelectItem><SelectItem value="25-30 raciones">25-30</SelectItem><SelectItem value="Más de 30">Más de 30</SelectItem></SelectContent></Select><FormMessage /></FormItem>
