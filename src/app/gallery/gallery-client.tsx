@@ -9,7 +9,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog"
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { ShareButton } from '@/components/ShareButton';
 import { cn } from '@/lib/utils';
 
@@ -29,11 +29,9 @@ interface GalleryClientProps {
 export function GalleryClient({ images, initialImageId }: GalleryClientProps) {
     const router = useRouter();
     const pathname = usePathname();
+    const searchParams = useSearchParams();
 
-    const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(() => {
-        if (!initialImageId) return null;
-        return images.find(img => img.id === initialImageId) || null;
-    });
+    const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
     const [siteUrl, setSiteUrl] = useState('');
     const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
 
@@ -41,7 +39,17 @@ export function GalleryClient({ images, initialImageId }: GalleryClientProps) {
         if (typeof window !== 'undefined') {
             setSiteUrl(window.location.origin);
         }
-    }, []);
+        
+        // Sincronizar el estado con el ID de la URL al cargar y cuando cambia
+        const imageIdFromUrl = searchParams.get('image');
+        if (imageIdFromUrl) {
+            const imageToSelect = images.find(img => img.id === imageIdFromUrl);
+            setSelectedImage(imageToSelect || null);
+        } else {
+            setSelectedImage(null);
+        }
+    }, [searchParams, images]);
+
 
     const handleDialogClose = useCallback(() => {
         setSelectedImage(null);
