@@ -12,7 +12,9 @@ const formSchema = z.object({
   servings: z.string().min(1, 'El número de raciones es obligatorio'),
   eventType: z.string().min(1, 'El tipo de evento es obligatorio'),
   cakeFlavor: z.string().min(1, 'El sabor del bizcocho es obligatorio'),
+  otherCakeFlavor: z.string().optional(),
   fillingFlavor: z.string().min(1, 'El sabor del relleno es obligatorio'),
+  otherFillingFlavor: z.string().optional(),
   cakeDescription: z.string().min(1, 'La descripción es obligatoria'),
   cakeText: z.string().optional(),
   allergies: z.string().optional(),
@@ -66,6 +68,9 @@ export async function POST(req: NextRequest) {
             content: buffer,
         });
     }
+
+    const finalCakeFlavor = validatedData.cakeFlavor === 'Otro (especificar)' && validatedData.otherCakeFlavor ? validatedData.otherCakeFlavor : validatedData.cakeFlavor;
+    const finalFillingFlavor = validatedData.fillingFlavor === 'Otro (especificar)' && validatedData.otherFillingFlavor ? validatedData.otherFillingFlavor : validatedData.fillingFlavor;
     
     const adminEmailHtml = `
       <div style="font-family: sans-serif; line-height: 1.6;">
@@ -84,8 +89,8 @@ export async function POST(req: NextRequest) {
         <p><strong>Tipo de evento:</strong> ${validatedData.eventType}</p>
         
         <h2>Sabores</h2>
-        <p><strong>Bizcocho:</strong> ${validatedData.cakeFlavor}</p>
-        <p><strong>Relleno:</strong> ${validatedData.fillingFlavor}</p>
+        <p><strong>Bizcocho:</strong> ${finalCakeFlavor}</p>
+        <p><strong>Relleno:</strong> ${finalFillingFlavor}</p>
         
         <h2>Visión Creativa</h2>
         <p><strong>Descripción de la tarta:</strong><br>${validatedData.cakeDescription.replace(/\n/g, '<br>')}</p>

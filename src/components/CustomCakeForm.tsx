@@ -26,7 +26,9 @@ const formSchema = z.object({
   servings: z.string().min(1, 'Debes seleccionar el número de raciones.'),
   eventType: z.string().min(1, 'Debes seleccionar el tipo de evento.'),
   cakeFlavor: z.string().min(1, 'Debes seleccionar un sabor de bizcocho.'),
+  otherCakeFlavor: z.string().optional(),
   fillingFlavor: z.string().min(1, 'Debes seleccionar un sabor de relleno.'),
+  otherFillingFlavor: z.string().optional(),
   cakeDescription: z.string().min(10, 'La descripción debe tener al menos 10 caracteres.'),
   cakeText: z.string().optional(),
   referenceImage: z
@@ -74,13 +76,18 @@ export function CustomCakeForm() {
       servings: '',
       eventType: '',
       cakeFlavor: '',
+      otherCakeFlavor: '',
       fillingFlavor: '',
+      otherFillingFlavor: '',
       cakeDescription: '',
       cakeText: '',
       allergies: '',
       privacyPolicy: false,
     },
   });
+
+  const cakeFlavorValue = form.watch('cakeFlavor');
+  const fillingFlavorValue = form.watch('fillingFlavor');
 
   const onSubmit = async (data: FormData, openWhatsApp = false) => {
     setIsLoading(true);
@@ -126,6 +133,9 @@ export function CustomCakeForm() {
             setIsLoading(false);
             return;
         }
+        
+        const finalCakeFlavor = data.cakeFlavor === 'Otro (especificar)' ? data.otherCakeFlavor : data.cakeFlavor;
+        const finalFillingFlavor = data.fillingFlavor === 'Otro (especificar)' ? data.otherFillingFlavor : data.fillingFlavor;
 
         const messageParts = [
           `Hola Morty's Cake, esta es mi idea y quiero hacerla realidad:`,
@@ -135,8 +145,8 @@ export function CustomCakeForm() {
           `*Fecha de entrega:* ${data.deliveryDate}`,
           `*Raciones:* ${data.servings}`,
           `*Evento:* ${data.eventType}`,
-          `*Sabor bizcocho:* ${data.cakeFlavor}`,
-          `*Sabor relleno:* ${data.fillingFlavor}`,
+          `*Sabor bizcocho:* ${finalCakeFlavor}`,
+          `*Sabor relleno:* ${finalFillingFlavor}`,
           `*Descripción:* ${data.cakeDescription}`,
           data.cakeText && `*Texto en la tarta:* ${data.cakeText}`,
           data.allergies && `*Alergias:* ${data.allergies}`,
@@ -212,10 +222,20 @@ export function CustomCakeForm() {
                 <FormField control={form.control} name="cakeFlavor" render={({ field }) => (
                     <FormItem><FormLabel>Sabor del bizcocho *</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Elige un sabor" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Vainilla">Vainilla</SelectItem><SelectItem value="Chocolate Intenso">Chocolate Intenso</SelectItem><SelectItem value="Red Velvet">Red Velvet</SelectItem><SelectItem value="Limón y Amapolas">Limón y Amapolas</SelectItem><SelectItem value="Zanahoria y Especias">Zanahoria y Especias</SelectItem><SelectItem value="Naranja y Almendra">Naranja y Almendra</SelectItem><SelectItem value="Otro (especificar)">Otro (especificar)</SelectItem></SelectContent></Select><FormMessage /></FormItem>
                 )}/>
-                <FormField control={form.control} name="fillingFlavor" render={({ field }) => (
+                 <FormField control={form.control} name="fillingFlavor" render={({ field }) => (
                     <FormItem><FormLabel>Sabor del relleno *</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Elige un sabor" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Crema de queso">Crema de queso</SelectItem><SelectItem value="Ganache de chocolate negro">Ganache de chocolate negro</SelectItem><SelectItem value="Ganache de chocolate blanco">Ganache de chocolate blanco</SelectItem><SelectItem value="Crema de vainilla">Crema de vainilla</SelectItem><SelectItem value="Dulce de leche">Dulce de leche</SelectItem><SelectItem value="Crema de pistacho">Crema de pistacho</SelectItem><SelectItem value="Mermelada de frutos rojos">Mermelada de frutos rojos</SelectItem><SelectItem value="Otro (especificar)">Otro (especificar)</SelectItem></SelectContent></Select><FormMessage /></FormItem>
                 )}/>
             </div>
+            {cakeFlavorValue === 'Otro (especificar)' && (
+                <FormField control={form.control} name="otherCakeFlavor" render={({ field }) => (
+                    <FormItem><FormLabel>Especifica el sabor del bizcocho</FormLabel><FormControl><Input placeholder="Ej: Coco y lima" {...field} /></FormControl><FormMessage /></FormItem>
+                )}/>
+            )}
+            {fillingFlavorValue === 'Otro (especificar)' && (
+                <FormField control={form.control} name="otherFillingFlavor" render={({ field }) => (
+                    <FormItem><FormLabel>Especifica el sabor del relleno</FormLabel><FormControl><Input placeholder="Ej: Crema de avellanas" {...field} /></FormControl><FormMessage /></FormItem>
+                )}/>
+            )}
         </SectionWrapper>
 
         <SectionWrapper icon={<Palette size={24} />} title="Tu Visión Creativa" step={4}>
@@ -302,7 +322,7 @@ export function CustomCakeForm() {
                 </Button>
                 <Button type="button" variant="secondary" onClick={handleWhatsAppSubmit} disabled={isLoading} className="w-full bg-green-500 hover:bg-green-600 text-white" size="lg">
                     {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <MessageCircle className="mr-2 h-5 w-5"/>}
-                    {isLoading ? 'Enviando...' : 'Enviar por WhatsApp'}
+                    {isLoading ? 'Procesando...' : 'Enviar por WhatsApp'}
                 </Button>
             </div>
         </div>
@@ -310,3 +330,5 @@ export function CustomCakeForm() {
     </Form>
   );
 }
+
+    
