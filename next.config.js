@@ -86,14 +86,6 @@ const nextConfig = {
       bodySizeLimit: '5mb',
     },
   },
-  env: {
-    WP_USER: 'Tienda mortyscake',
-    WP_APP_PASSWORD: 'UOSY OxwW rNb7 xauP D0Lf D9D7',
-    ADMIN_EMAIL: 'info@mortyscake.com',
-    NEXT_PUBLIC_WOOCOMMERCE_STORE_URL: 'https://cms.mortyscake.es',
-    NEXT_PUBLIC_WOOCOMMERCE_CHECKOUT_URL: 'https://cms.mortyscake.es/checkout',
-    NEXT_PUBLIC_SITE_URL: 'https://mortyscake.com'
-  }
 };
 
 module.exports = nextConfig;
