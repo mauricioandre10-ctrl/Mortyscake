@@ -16,7 +16,9 @@ const formSchema = z.object({
   cakeDescription: z.string().min(1, 'La descripción es obligatoria'),
   cakeText: z.string().optional(),
   allergies: z.string().optional(),
-  privacyPolicy: z.literal('on', { errorMap: () => ({ message: 'Debes aceptar la política de privacidad' }) }),
+  privacyPolicy: z.union([z.literal('on'), z.boolean()]).refine(val => val === 'on' || val === true, {
+    message: 'Debes aceptar la política de privacidad',
+  }),
 });
 
 export async function POST(req: NextRequest) {
@@ -24,6 +26,11 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
     const referenceImage = formData.get('reference-image') as File | null;
     const body = Object.fromEntries(formData.entries());
+    
+    // Convert checkbox value
+    if (body.privacyPolicy === 'on') {
+        body.privacyPolicy = true;
+    }
 
     // Validate form data
     const validatedData = formSchema.parse(body);
