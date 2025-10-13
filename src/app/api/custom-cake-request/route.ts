@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { z, ZodError } from 'zod';
+import { htmlToText } from 'html-to-text';
 
 // Define the schema for form validation
 const formSchema = z.object({
@@ -33,7 +34,7 @@ export async function POST(req: NextRequest) {
     // Prepare data for validation
     const dataToValidate = {
       ...body,
-      privacyPolicy: body.privacyPolicy === 'on' || body.privacyPolicy === 'true',
+      privacyPolicy: body.privacyPolicy === 'on' || body.privacyPolicy === true,
     };
 
     // Validate form data
@@ -106,6 +107,10 @@ export async function POST(req: NextRequest) {
       </div>
     `;
 
+    // Generate plain text version for admin email
+    const adminEmailText = htmlToText(adminEmailHtml);
+    const messageId = `<${Date.now()}.${Math.random().toString(36).substring(2)}@mortyscake.com>`;
+
     // Send mail to Admin
     await transporter.sendMail({
       from: `"Formulario Web Morty's Cake" <${SMTP_USER}>`,
@@ -113,7 +118,11 @@ export async function POST(req: NextRequest) {
       replyTo: validatedData.email,
       subject: `Nueva solicitud de tarta a medida de: ${validatedData.name}`,
       html: adminEmailHtml,
+      text: adminEmailText,
       attachments: attachments,
+      headers: {
+        'Message-ID': messageId
+      }
     });
     
     // --- Send Confirmation Email to Customer ---
@@ -137,11 +146,20 @@ export async function POST(req: NextRequest) {
         </div>
     `;
 
+    // Generate plain text version for customer email
+    const customerEmailText = htmlToText(customerEmailHtml);
+    const customerMessageId = `<${Date.now()}.${Math.random().toString(36).substring(2)}@mortyscake.com>`;
+
     await transporter.sendMail({
         from: `"Morty's Cake" <${SMTP_USER}>`,
         to: validatedData.email,
+        replyTo: ADMIN_EMAIL,
         subject: "🧁 Confirmación de tu solicitud de tarta a medida",
         html: customerEmailHtml,
+        text: customerEmailText,
+        headers: {
+            'Message-ID': customerMessageId
+        }
     });
 
 
@@ -158,3 +176,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: `Error al enviar la solicitud: ${errorMessage}` }, { status: 500 });
   }
 }
+
+    
