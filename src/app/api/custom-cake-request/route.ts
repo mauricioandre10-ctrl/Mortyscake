@@ -52,13 +52,15 @@ export async function POST(req: NextRequest) {
               if (errorJson.code === 'rest_cannot_create') {
                 errorMessage = 'Error de permisos: La subida de archivos a WordPress está deshabilitada o no tienes permiso.';
               } else if (errorJson.code === 'incorrect_password') {
-                errorMessage = 'Error de WordPress: La contraseña de aplicación no es correcta.';
+                errorMessage = '<strong>Error de WordPress:</strong> La contraseña de aplicación no es correcta. Vuelve a generarla y a configurarla en las variables de entorno.';
+              } else if (errorJson.code === 'unknown_user') {
+                errorMessage = '<strong>Error de WordPress:</strong> Nombre de usuario desconocido. Vuelve a comprobarlo o prueba con tu dirección de correo electrónico.';
               } else if (errorJson.message) {
-                 errorMessage = `Error de WordPress: ${errorJson.message}`;
+                 errorMessage = `<strong>Error de WordPress:</strong> ${errorJson.message}`;
               }
             } catch (e) {
               if (errorText.length < 200) {
-                errorMessage = `Error del servidor: ${errorText}`;
+                errorMessage = `<strong>Error del servidor:</strong> ${errorText}`;
               }
             }
             throw new Error(errorMessage);
