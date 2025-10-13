@@ -43,24 +43,30 @@ export async function POST(req: NextRequest) {
             body: buffer,
         });
 
-        if (uploadResponse.ok) {
-            const mediaDetails = await uploadResponse.json();
-            imageUrl = mediaDetails.source_url;
-            imageId = mediaDetails.id;
-        } else {
+        if (!uploadResponse.ok) {
             const errorText = await uploadResponse.text();
             console.error('Error al subir la imagen a WordPress:', errorText);
-            // Intenta parsear el error si es JSON
+            let errorMessage = 'Error al subir la imagen de referencia.';
             try {
               const errorJson = JSON.parse(errorText);
-              if (errorJson.code === 'invalid_username') {
-                throw new Error('Error de autenticación con WordPress: Nombre de usuario incorrecto.');
+              // Proveer un mensaje más específico si está disponible
+              if (errorJson.code === 'rest_cannot_create') {
+                errorMessage = 'Error de permisos: La subida de archivos a WordPress está deshabilitada o no tienes permiso.';
+              } else if (errorJson.message) {
+                errorMessage = `Error de WordPress: ${errorJson.message}`;
               }
             } catch (e) {
-              // No era JSON, lanzar error genérico
+              // El error no era JSON, usar el texto plano si es corto
+              if (errorText.length < 200) {
+                errorMessage = `Error del servidor: ${errorText}`;
+              }
             }
-            throw new Error('Error al subir la imagen de referencia.');
+            throw new Error(errorMessage);
         }
+        
+        const mediaDetails = await uploadResponse.json();
+        imageUrl = mediaDetails.source_url;
+        imageId = mediaDetails.id;
     }
     
     // Preparar el cuerpo del email en HTML
