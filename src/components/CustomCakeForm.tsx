@@ -123,6 +123,7 @@ export function CustomCakeForm() {
                 title: 'Error de configuración',
                 description: 'El número de WhatsApp no está configurado.',
             });
+            setIsLoading(false);
             return;
         }
 
@@ -193,7 +194,7 @@ export function CustomCakeForm() {
         </SectionWrapper>
         
         <SectionWrapper icon={<Calendar size={24} />} title="Detalles del Evento" step={2}>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FormField control={form.control} name="deliveryDate" render={({ field }) => (
                     <FormItem><FormLabel>Fecha de entrega *</FormLabel><FormControl><Input type="date" min={minDate} {...field} /></FormControl><FormMessage /></FormItem>
                 )}/>
@@ -309,6 +310,3 @@ export function CustomCakeForm() {
     </Form>
   );
 }
-
-
-    
