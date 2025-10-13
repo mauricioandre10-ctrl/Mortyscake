@@ -181,7 +181,17 @@ export function CustomCakeForm() {
   };
 
   const handleWhatsAppSubmit = () => {
-    form.handleSubmit((data) => onSubmit(data, true))();
+    form.trigger().then(isValid => {
+      if (isValid) {
+        onSubmit(form.getValues(), true);
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Formulario incompleto",
+          description: "Por favor, rellena todos los campos obligatorios antes de continuar.",
+        });
+      }
+    });
   };
 
 
@@ -252,7 +262,7 @@ export function CustomCakeForm() {
                 <FormItem><FormLabel>Describe tu tarta ideal *</FormLabel><FormControl><Textarea placeholder="Danos todos los detalles sobre el diseño, colores, temática, etc. ¡No te cortes!" className="resize-y min-h-[120px]" {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="cakeText" render={({ field }) => (
-                <FormItem><FormLabel>Texto en la tarta (Opcional)</FormLabel><FormControl><Input placeholder="Ej: Felicidades, María" {...field} /></FormControl><FormMessage /></Formİtem>
+                <FormItem><FormLabel>Texto en la tarta (Opcional)</FormLabel><FormControl><Input placeholder="Ej: Felicidades, María" {...field} /></FormControl></FormItem>
             )}/>
              <FormField
                 control={form.control}
@@ -339,3 +349,5 @@ export function CustomCakeForm() {
     </Form>
   );
 }
+
+    
