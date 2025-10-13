@@ -17,6 +17,7 @@
             width: 100%;
             background-color: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
         
         .morty-header-embed *, .morty-header-embed *:before, .morty-header-embed *:after {
@@ -49,27 +50,27 @@
         }
 
         .morty-header-nav {
-            display: none; /* Oculto en móvil */
+            display: none; /* Oculto en móvil por defecto */
         }
 
         @media (min-width: 768px) {
             .morty-header-nav {
                 display: flex;
                 align-items: center;
-                gap: 1.5rem;
-                font-size: 0.875rem;
+                gap: 1.5rem; /* Aumentado de 1rem a 1.5rem */
+                font-size: 0.875rem; /* 14px */
                 font-weight: 500;
             }
         }
 
         .morty-header-nav a {
             text-decoration: none;
-            color: rgba(107, 114, 128, 1);
+            color: #6b7280; /* Gris-500 */
             transition: color 0.2s ease-in-out;
         }
 
         .morty-header-nav a:hover {
-            color: rgba(17, 24, 39, 1);
+            color: #111827; /* Gris-900 */
         }
         
         .morty-header-actions {
@@ -86,15 +87,15 @@
             width: 40px;
             border-radius: 9999px;
             transition: background-color 0.2s ease-in-out;
-            color: #374151; /* Gris */
+            color: #374151; /* Gris-700 */
         }
         
         .morty-header-actions a:hover {
-            background-color: #f3f4f6; /* Gris claro */
+            background-color: #f3f4f6; /* Gris-100 */
         }
         
         .morty-header-actions .user-icon {
-            display: none; /* Ocultar en móvil */
+            display: none; /* Oculto en móvil por defecto */
         }
         
         @media (min-width: 768px) {
@@ -120,16 +121,16 @@
             background-color: #F6B1AC; /* Color primario */
             font-size: 0.75rem;
             font-weight: bold;
-            color: #1a0807; /* Texto primario */
+            color: #1a0807; /* Texto primario foreground */
         }
 
         .morty-header-menu-btn {
-            display: inline-flex;
+            display: inline-flex; /* Visible en móvil */
         }
         
         @media (min-width: 768px) {
             .morty-header-menu-btn {
-                display: none;
+                display: none; /* Oculto en escritorio */
             }
         }
 
