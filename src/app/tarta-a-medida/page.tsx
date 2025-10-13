@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils"
 import { useState, useTransition } from "react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import Link from 'next/link';
+import { Checkbox } from "@/components/ui/checkbox"
 
 // Esquema de validación del formulario
 const formSchema = z.object({
@@ -40,6 +41,9 @@ const formSchema = z.object({
   cake_text: z.string().optional(),
   reference_image: z.any().optional(),
   allergies: z.string().optional(),
+  privacy_policy: z.boolean().refine(val => val === true, {
+    message: "Debes aceptar las políticas de privacidad para continuar."
+  }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -67,6 +71,7 @@ export default function TartaAMedidaPage() {
       cake_description: "",
       cake_text: "",
       allergies: "",
+      privacy_policy: false,
     },
   });
 
@@ -255,6 +260,30 @@ export default function TartaAMedidaPage() {
                 <FormItem><FormLabel>Alergias o intolerancias (Opcional)</FormLabel><FormControl><Textarea placeholder="Indica aquí si necesitas que la tarta sea sin gluten, sin lactosa, etc." {...field} /></FormControl><FormMessage /></FormItem>
               )} />
           </div>
+          
+           <FormField
+            control={form.control}
+            name="privacy_policy"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>
+                    Acepto las políticas de privacidad y cookies *
+                  </FormLabel>
+                  <FormDescription>
+                    Para continuar, debes aceptar nuestra <Link href="/legal/privacy" className="underline hover:text-primary">Política de Privacidad</Link> y <Link href="/legal/cookies" className="underline hover:text-primary">Política de Cookies</Link>.
+                  </FormDescription>
+                   <FormMessage />
+                </div>
+              </FormItem>
+            )}
+          />
 
           {formState.status === 'error' && (
              <Alert variant="destructive">
@@ -273,10 +302,10 @@ export default function TartaAMedidaPage() {
                 Contactar por WhatsApp
               </Button>
           </div>
-          <p className="text-xs text-muted-foreground text-center">Al enviar este formulario, aceptas nuestra <Link href="/legal/privacy" className="underline">Política de Privacidad</Link>.</p>
-
         </form>
       </Form>
     </div>
   );
 }
+
+    
