@@ -62,7 +62,6 @@ const fillingOptions = ["Crema de queso", "Ganache de chocolate negro", "Ganache
 
 export default function TartaAMedidaPage() {
   const [formState, setFormState] = useState<{ status: 'idle' | 'loading' | 'success' | 'error', message: string }>({ status: 'idle', message: '' });
-  const [isPending, startTransition] = useTransition();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -81,68 +80,11 @@ export default function TartaAMedidaPage() {
     },
   });
 
-  const handleFormSubmission = async (data: FormValues, via: 'email' | 'whatsapp') => {
-    setFormState({ status: 'loading', message: '' });
-    
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === 'delivery_date' && value instanceof Date) {
-        formData.append(key, value.toISOString());
-      } else if (key === 'reference_image' && value instanceof File) {
-        formData.append(key, value);
-      } else if (value !== undefined && value !== null && !(value instanceof File)) {
-        formData.append(key, String(value));
-      }
-    });
-    
-    startTransition(async () => {
-      try {
-          const response = await fetch('/api/custom-cake-request', {
-              method: 'POST',
-              body: formData,
-          });
-
-          const result = await response.json();
-
-          if (response.ok && result.success) {
-              if (via === 'whatsapp') {
-                  const phoneNumber = "34616284463";
-                  const messageParts = [
-                      `*¡Hola! Acabo de enviar una solicitud para una tarta personalizada a través de la web.*`,
-                      `Mi nombre es ${data.name} y mi solicitud es para el ${format(data.delivery_date, "d 'de' MMMM", { locale: es })}.`,
-                      `Podéis ver los detalles en el correo que os ha llegado. ¡Gracias!`,
-                  ];
-                  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(messageParts.join('\n\n'))}`;
-                  window.open(whatsappUrl, '_blank');
-                  setFormState({ status: 'success', message: '¡Gracias! Tu solicitud ha sido enviada por email. Ahora se abrirá WhatsApp para que puedas iniciar la conversación con nosotros.' });
-              } else {
-                  setFormState({ status: 'success', message: '¡Tu solicitud ha sido enviada con éxito! Nos pondremos en contacto contigo pronto.' });
-              }
-              form.reset();
-          } else {
-              throw new Error(result.message || 'Hubo un error al enviar tu solicitud.');
-          }
-      } catch (error) {
-          const message = error instanceof Error ? error.message : 'Error de conexión. Por favor, inténtalo de nuevo.';
-          setFormState({ status: 'error', message });
-      }
-    });
+  const onFormSubmit = async (data: FormValues) => {
+    // La lógica de envío ha sido eliminada temporalmente.
+    // Se implementará una nueva solución usando un plugin de WordPress.
+    setFormState({ status: 'error', message: 'La funcionalidad de envío está en mantenimiento. Por favor, contacta directamente por WhatsApp o email.' });
   }
-
-
-  const onEmailSubmit = (data: FormValues) => {
-    handleFormSubmission(data, 'email');
-  };
-
-  const onWhatsAppSubmit = async () => {
-    const isValid = await form.trigger();
-    if (!isValid) {
-      setFormState({ status: 'error', message: 'Por favor, completa todos los campos requeridos antes de continuar.' });
-      return;
-    }
-    setFormState({ status: 'idle', message: '' });
-    handleFormSubmission(form.getValues(), 'whatsapp');
-  };
 
   if (formState.status === 'success') {
     return (
@@ -171,7 +113,7 @@ export default function TartaAMedidaPage() {
       </header>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onEmailSubmit)} className="space-y-8 max-w-3xl mx-auto bg-card p-8 rounded-lg shadow-lg">
+        <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-8 max-w-3xl mx-auto bg-card p-8 rounded-lg shadow-lg">
           
           <div className="space-y-4">
               <h2 className="text-2xl font-card-title border-b pb-2">1. Información de Contacto</h2>
@@ -313,12 +255,12 @@ export default function TartaAMedidaPage() {
           )}
 
           <div className="flex flex-col sm:flex-row gap-4">
-              <Button type="submit" size="lg" className="w-full" disabled={isPending}>
-                {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />}
+              <Button type="submit" size="lg" className="w-full" disabled={formState.status === 'loading'}>
+                {formState.status === 'loading' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mail className="mr-2 h-4 w-4" />}
                 Enviar por Email
               </Button>
-              <Button type="button" size="lg" variant="secondary" className="w-full bg-green-500 hover:bg-green-600 text-white" onClick={onWhatsAppSubmit} disabled={isPending}>
-                 {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MessageCircle className="mr-2 h-4 w-4" />}
+              <Button type="button" size="lg" variant="secondary" className="w-full bg-green-500 hover:bg-green-600 text-white" disabled>
+                 <MessageCircle className="mr-2 h-4 w-4" />
                 Contactar por WhatsApp
               </Button>
           </div>
