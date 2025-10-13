@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, User, Calendar, Cake, Palette, Sparkles, Heart, Upload, FileCheck } from 'lucide-react';
+import { Loader2, User, Calendar, Cake, Palette, Sparkles, Heart, Upload, FileCheck, Mail, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -82,6 +82,59 @@ export function CustomCakeForm() {
     },
   });
 
+  const handleWhatsAppSubmit = () => {
+    const data = form.getValues();
+    const { privacyPolicy, referenceImage, ...whatsAppSafeData } = data;
+    
+    // Check for form validity before proceeding
+    const validationResult = formSchema.safeParse(data);
+    if (!validationResult.success) {
+      // Trigger validation to show error messages
+      form.trigger();
+      toast({
+        variant: 'destructive',
+        title: 'Formulario incompleto',
+        description: 'Por favor, rellena todos los campos obligatorios antes de enviar por WhatsApp.',
+      });
+      return;
+    }
+    
+    const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
+    if (!phoneNumber) {
+        toast({
+            variant: 'destructive',
+            title: 'Error de configuración',
+            description: 'El número de WhatsApp no está configurado.',
+        });
+        return;
+    }
+
+    const messageParts = [
+      `*Nueva Solicitud de Tarta a Medida* 🎂`,
+      `*Nombre:* ${data.name}`,
+      `*Email:* ${data.email}`,
+      data.phone && `*Teléfono:* ${data.phone}`,
+      `*Fecha de entrega:* ${data.deliveryDate}`,
+      `*Raciones:* ${data.servings}`,
+      `*Evento:* ${data.eventType}`,
+      `*Sabor bizcocho:* ${data.cakeFlavor}`,
+      `*Sabor relleno:* ${data.fillingFlavor}`,
+      `*Descripción:* ${data.cakeDescription}`,
+      data.cakeText && `*Texto en la tarta:* ${data.cakeText}`,
+      data.allergies && `*Alergias:* ${data.allergies}`,
+    ];
+
+    const message = messageParts.filter(Boolean).join('\n');
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    
+    window.open(whatsappUrl, '_blank');
+    
+    toast({
+        title: '¡Prepara tu mensaje!',
+        description: "Se ha abierto WhatsApp con tu solicitud. Si subiste una imagen, no olvides adjuntarla manualmente en el chat.",
+    });
+  };
+
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
 
@@ -112,7 +165,7 @@ export function CustomCakeForm() {
 
       toast({
         title: '¡Solicitud Enviada!',
-        description: 'Hemos recibido tu solicitud. Nos pondremos en contacto contigo pronto para darle forma a tu dulce idea.',
+        description: 'Hemos recibido tu solicitud y te hemos enviado un correo de confirmación. ¡Revisa tu bandeja de entrada!',
       });
       form.reset();
       setImagePreview(null);
@@ -251,10 +304,16 @@ export function CustomCakeForm() {
                 )}
             />
 
-            <Button type="submit" disabled={isLoading} className="w-full" size="lg">
-            {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
-            {isLoading ? 'Enviando...' : 'Enviar Solicitud'}
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4">
+                <Button type="submit" disabled={isLoading} className="w-full" size="lg">
+                    {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Mail className="mr-2 h-5 w-5"/>}
+                    {isLoading ? 'Enviando...' : 'Enviar por Email'}
+                </Button>
+                <Button type="button" variant="secondary" onClick={handleWhatsAppSubmit} className="w-full bg-green-500 hover:bg-green-600 text-white" size="lg">
+                    <MessageCircle className="mr-2 h-5 w-5"/>
+                    Enviar por WhatsApp
+                </Button>
+            </div>
         </div>
       </form>
     </Form>

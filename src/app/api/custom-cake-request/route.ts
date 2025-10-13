@@ -30,8 +30,7 @@ export async function POST(req: NextRequest) {
     // Prepare data for validation
     const dataToValidate = {
       ...body,
-      // Convert checkbox value from 'on' to boolean for Zod
-      privacyPolicy: body.privacyPolicy === 'on',
+      privacyPolicy: body.privacyPolicy === 'on' || body.privacyPolicy === 'true',
     };
 
     // Validate form data
@@ -53,6 +52,9 @@ export async function POST(req: NextRequest) {
         user: SMTP_USER,
         pass: SMTP_PASS,
       },
+       tls: {
+        rejectUnauthorized: false
+      }
     });
 
     // Prepare attachments
@@ -65,7 +67,7 @@ export async function POST(req: NextRequest) {
         });
     }
     
-    const emailHtml = `
+    const adminEmailHtml = `
       <div style="font-family: sans-serif; line-height: 1.6;">
         <h1 style="color: #D87093;">Nueva Solicitud de Tarta a Medida</h1>
         <p>Has recibido una nueva solicitud a través del formulario de la web.</p>
@@ -94,15 +96,44 @@ export async function POST(req: NextRequest) {
       </div>
     `;
 
-    // Send mail with defined transport object
+    // Send mail to Admin
     await transporter.sendMail({
       from: `"Formulario Web Morty's Cake" <${SMTP_USER}>`,
       to: ADMIN_EMAIL,
       replyTo: validatedData.email,
       subject: `Nueva solicitud de tarta a medida de: ${validatedData.name}`,
-      html: emailHtml,
+      html: adminEmailHtml,
       attachments: attachments,
     });
+    
+    // --- Send Confirmation Email to Customer ---
+    const customerEmailHtml = `
+        <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 12px; overflow: hidden;">
+            <div style="background-color: #513938; padding: 20px; text-align: center;">
+                <img src="https://mortyscake.com/image/Logo_mortys_cake.webp" alt="Morty's Cake Logo" style="height: 60px; width: auto;">
+            </div>
+            <div style="padding: 30px 20px; line-height: 1.6;">
+                <h1 style="color: #D87093; font-family: 'Pacifico', cursive;">¡Hemos recibido tu solicitud, ${validatedData.name}!</h1>
+                <p>Muchas gracias por pensar en Morty's Cake para tu celebración. Hemos recibido correctamente los detalles de tu tarta soñada y estamos muy emocionados por la posibilidad de crear algo mágico para ti.</p>
+                <p>Nos pondremos en contacto contigo a la mayor brevedad posible para revisar todos los detalles, darte un presupuesto y responder cualquier duda que puedas tener.</p>
+                <p>Mientras tanto, si necesitas cualquier cosa, no dudes en responder a este correo.</p>
+                <br>
+                <p>Con mucho cariño,<br><strong>El equipo de Morty's Cake</strong></p>
+            </div>
+            <div style="background-color: #f7f7f7; padding: 20px; text-align: center; font-size: 12px; color: #777;">
+                <p>Rúa Valle Inclán, 23, Bajo 11, 32004 Ourense</p>
+                <p>&copy; ${new Date().getFullYear()} Morty's Cake. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    `;
+
+    await transporter.sendMail({
+        from: `"Morty's Cake" <${SMTP_USER}>`,
+        to: validatedData.email,
+        subject: "🧁 Confirmación de tu solicitud de tarta a medida",
+        html: customerEmailHtml,
+    });
+
 
     return NextResponse.json({ message: 'Solicitud enviada con éxito. ¡Gracias por contactarnos!' });
 
