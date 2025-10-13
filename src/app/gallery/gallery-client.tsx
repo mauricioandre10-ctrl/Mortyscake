@@ -56,12 +56,14 @@ export function GalleryClient({ images, initialImageId }: GalleryClientProps) {
 
     const handleDialogClose = useCallback(() => {
         setSelectedImage(null);
-        router.push(pathname, { scroll: false });
-    }, [pathname, router]);
+        const params = new URLSearchParams(searchParams?.toString());
+        params.delete('image');
+        router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    }, [pathname, router, searchParams]);
 
     const handleImageClick = (image: GalleryImage) => {
         setSelectedImage(image);
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(searchParams?.toString());
         params.set('image', image.id);
         router.push(`${pathname}?${params.toString()}`, { scroll: false });
     };
@@ -71,11 +73,14 @@ export function GalleryClient({ images, initialImageId }: GalleryClientProps) {
     };
 
     const getShareUrl = () => {
-        if (!siteUrl || !selectedImage) return '';
+        if (!siteUrl || !selectedImage) {
+            return '';
+        }
         const params = new URLSearchParams();
         params.set('image', selectedImage.id);
         return `${siteUrl}${pathname}?${params.toString()}`;
     };
+
 
     return (
         <div className="container mx-auto py-12 px-4 md:px-6">
