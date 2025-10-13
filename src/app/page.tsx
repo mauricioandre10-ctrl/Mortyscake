@@ -443,16 +443,6 @@ export default function Home() {
       <section id="custom-cake" className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4 md:px-6">
             <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center bg-muted/30 rounded-lg p-8 md:p-12">
-                <div className="relative w-full aspect-square md:aspect-[4/5] rounded-lg overflow-hidden shadow-lg -m-4 md:-m-16">
-                    <Image 
-                        src="https://picsum.photos/seed/custom-cake/800/1000"
-                        alt="Tarta de boda espectacular con varias capas y flores"
-                        fill
-                        className="object-cover"
-                        data-ai-hint="wedding cake flowers"
-                        unoptimized
-                    />
-                </div>
                 <div className="text-center md:text-left">
                     <CakeSlice className="w-12 h-12 text-primary mx-auto md:mx-0 mb-4" />
                     <h2 className="font-headline text-3xl md:text-4xl">¿Tienes una idea para una Tarta?</h2>
@@ -467,6 +457,16 @@ export default function Home() {
                             Pide tu Tarta a Medida
                         </Link>
                     </Button>
+                </div>
+                <div className="relative w-full aspect-square md:aspect-[4/5] rounded-lg overflow-hidden shadow-lg -m-4 md:-m-16">
+                    <Image 
+                        src="https://picsum.photos/seed/custom-cake/800/1000"
+                        alt="Tarta de boda espectacular con varias capas y flores"
+                        fill
+                        className="object-cover"
+                        data-ai-hint="wedding cake flowers"
+                        unoptimized
+                    />
                 </div>
             </div>
         </div>
@@ -659,3 +659,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
