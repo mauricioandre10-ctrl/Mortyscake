@@ -25,6 +25,7 @@ const formSchema = z.object({
   deliveryDate: z.string().min(1, 'La fecha es obligatoria.'),
   servings: z.string().min(1, 'Debes seleccionar el número de raciones.'),
   eventType: z.string().min(1, 'Debes seleccionar el tipo de evento.'),
+  otherEventType: z.string().optional(),
   cakeFlavor: z.string().min(1, 'Debes seleccionar un sabor de bizcocho.'),
   otherCakeFlavor: z.string().optional(),
   fillingFlavor: z.string().min(1, 'Debes seleccionar un sabor de relleno.'),
@@ -75,6 +76,7 @@ export function CustomCakeForm() {
       deliveryDate: '',
       servings: '',
       eventType: '',
+      otherEventType: '',
       cakeFlavor: '',
       otherCakeFlavor: '',
       fillingFlavor: '',
@@ -86,6 +88,7 @@ export function CustomCakeForm() {
     },
   });
 
+  const eventTypeValue = form.watch('eventType');
   const cakeFlavorValue = form.watch('cakeFlavor');
   const fillingFlavorValue = form.watch('fillingFlavor');
 
@@ -134,6 +137,7 @@ export function CustomCakeForm() {
             return;
         }
         
+        const finalEventType = data.eventType === 'Otro' && data.otherEventType ? data.otherEventType : data.eventType;
         const finalCakeFlavor = data.cakeFlavor === 'Otro (especificar)' && data.otherCakeFlavor ? data.otherCakeFlavor : data.cakeFlavor;
         const finalFillingFlavor = data.fillingFlavor === 'Otro (especificar)' && data.otherFillingFlavor ? data.otherFillingFlavor : data.fillingFlavor;
 
@@ -144,7 +148,7 @@ export function CustomCakeForm() {
           data.phone && `*Teléfono:* ${data.phone}`,
           `*Fecha de entrega:* ${data.deliveryDate}`,
           `*Raciones:* ${data.servings}`,
-          `*Evento:* ${data.eventType}`,
+          `*Evento:* ${finalEventType}`,
           `*Sabor bizcocho:* ${finalCakeFlavor}`,
           `*Sabor relleno:* ${finalFillingFlavor}`,
           `*Descripción:* ${data.cakeDescription}`,
@@ -215,6 +219,11 @@ export function CustomCakeForm() {
                     <FormItem><FormLabel>Evento *</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Selecciona" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Cumpleaños">Cumpleaños</SelectItem><SelectItem value="Boda">Boda</SelectItem><SelectItem value="Aniversario">Aniversario</SelectItem><SelectItem value="Bautizo">Bautizo</SelectItem><SelectItem value="Comunión">Comunión</SelectItem><SelectItem value="Evento Corporativo">Evento Corporativo</SelectItem><SelectItem value="Otro">Otro</SelectItem></SelectContent></Select><FormMessage /></FormItem>
                 )}/>
             </div>
+             {eventTypeValue === 'Otro' && (
+                <FormField control={form.control} name="otherEventType" render={({ field }) => (
+                    <FormItem><FormLabel>Especifica el tipo de evento</FormLabel><FormControl><Input placeholder="Ej: Baby Shower" {...field} /></FormControl><FormMessage /></FormItem>
+                )}/>
+            )}
         </SectionWrapper>
 
         <SectionWrapper icon={<Cake size={24} />} title="El Sabor de tus Sueños" step={3}>
@@ -243,7 +252,7 @@ export function CustomCakeForm() {
                 <FormItem><FormLabel>Describe tu tarta ideal *</FormLabel><FormControl><Textarea placeholder="Danos todos los detalles sobre el diseño, colores, temática, etc. ¡No te cortes!" className="resize-y min-h-[120px]" {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
             <FormField control={form.control} name="cakeText" render={({ field }) => (
-                <FormItem><FormLabel>Texto en la tarta (Opcional)</FormLabel><FormControl><Input placeholder="Ej: Felicidades, María" {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Texto en la tarta (Opcional)</FormLabel><FormControl><Input placeholder="Ej: Felicidades, María" {...field} /></FormControl><FormMessage /></Formİtem>
             )}/>
              <FormField
                 control={form.control}
@@ -330,5 +339,3 @@ export function CustomCakeForm() {
     </Form>
   );
 }
-
-    

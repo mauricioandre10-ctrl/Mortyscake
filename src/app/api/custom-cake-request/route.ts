@@ -11,6 +11,7 @@ const formSchema = z.object({
   deliveryDate: z.string().min(1, 'La fecha es obligatoria'),
   servings: z.string().min(1, 'El número de raciones es obligatorio'),
   eventType: z.string().min(1, 'El tipo de evento es obligatorio'),
+  otherEventType: z.string().optional(),
   cakeFlavor: z.string().min(1, 'El sabor del bizcocho es obligatorio'),
   otherCakeFlavor: z.string().optional(),
   fillingFlavor: z.string().min(1, 'El sabor del relleno es obligatorio'),
@@ -69,6 +70,7 @@ export async function POST(req: NextRequest) {
         });
     }
 
+    const finalEventType = validatedData.eventType === 'Otro' && validatedData.otherEventType ? validatedData.otherEventType : validatedData.eventType;
     const finalCakeFlavor = validatedData.cakeFlavor === 'Otro (especificar)' && validatedData.otherCakeFlavor ? validatedData.otherCakeFlavor : validatedData.cakeFlavor;
     const finalFillingFlavor = validatedData.fillingFlavor === 'Otro (especificar)' && validatedData.otherFillingFlavor ? validatedData.otherFillingFlavor : validatedData.fillingFlavor;
     
@@ -86,7 +88,7 @@ export async function POST(req: NextRequest) {
         <h2>Detalles del Evento</h2>
         <p><strong>Fecha de entrega:</strong> ${validatedData.deliveryDate}</p>
         <p><strong>Raciones:</strong> ${validatedData.servings}</p>
-        <p><strong>Tipo de evento:</strong> ${validatedData.eventType}</p>
+        <p><strong>Tipo de evento:</strong> ${finalEventType}</p>
         
         <h2>Sabores</h2>
         <p><strong>Bizcocho:</strong> ${finalCakeFlavor}</p>
@@ -156,5 +158,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: `Error al enviar la solicitud: ${errorMessage}` }, { status: 500 });
   }
 }
-
-    
