@@ -31,7 +31,10 @@ export function GalleryClient({ images, initialImageId }: GalleryClientProps) {
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
+    const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(() => {
+        if (!initialImageId) return null;
+        return images.find(img => img.id === initialImageId) || null;
+    });
     const [siteUrl, setSiteUrl] = useState('');
     const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
 
@@ -41,7 +44,7 @@ export function GalleryClient({ images, initialImageId }: GalleryClientProps) {
         }
         
         // Sincronizar el estado con el ID de la URL al cargar y cuando cambia
-        const imageIdFromUrl = searchParams.get('image');
+        const imageIdFromUrl = searchParams?.get('image'); // Optional chaining
         if (imageIdFromUrl) {
             const imageToSelect = images.find(img => img.id === imageIdFromUrl);
             setSelectedImage(imageToSelect || null);
