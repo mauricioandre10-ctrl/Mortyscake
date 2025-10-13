@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     // Prepare data for validation
     const dataToValidate = {
       ...body,
-      privacyPolicy: body.privacyPolicy === 'on' || body.privacyPolicy === true,
+      privacyPolicy: body.privacyPolicy === 'on',
     };
 
     // Validate form data
