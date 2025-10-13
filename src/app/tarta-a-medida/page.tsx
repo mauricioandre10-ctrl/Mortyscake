@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -74,32 +73,18 @@ export default function TartaAMedidaPage() {
   const onSubmit = (data: FormValues) => {
     startTransition(async () => {
       setFormState({ status: 'loading', message: '' });
+      // La lógica de envío ahora se manejará con una Server Action que enviará un email.
+      // Esta es una simulación del comportamiento esperado. La implementación real se hará en el backend.
+      console.log("Simulando envío de formulario por email...", data);
 
-      const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        if (key === 'reference_image') {
-          if (value && value.length > 0) {
-            formData.append(key, value[0]);
-          }
-        } else if (value instanceof Date) {
-          formData.append(key, value.toISOString());
-        } else if (value) {
-          formData.append(key, String(value));
-        }
-      });
+      // Simulación de éxito después de 2 segundos.
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Aquí simulamos el envío. La lógica real se conectaría con WordPress.
-      // En un caso real, aquí iría la llamada a la Server Action que a su vez llama a la API de WordPress.
-      try {
-        // Simulación de éxito
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        console.log("Formulario enviado (simulado):", data);
-        setFormState({ status: 'success', message: '¡Tu solicitud ha sido enviada con éxito! Nos pondremos en contacto contigo pronto.' });
-        form.reset();
-        
-      } catch (error) {
-        setFormState({ status: 'error', message: 'Hubo un error al enviar tu solicitud. Por favor, inténtalo de nuevo más tarde.' });
-      }
+      setFormState({ status: 'success', message: '¡Tu solicitud ha sido enviada con éxito! Nos pondremos en contacto contigo pronto.' });
+      form.reset();
+
+      // En un caso de error, el estado se actualizaría así:
+      // setFormState({ status: 'error', message: 'Hubo un error al enviar tu solicitud. Por favor, inténtalo de nuevo más tarde.' });
     });
   };
 
@@ -217,7 +202,7 @@ export default function TartaAMedidaPage() {
                 <FormItem><FormLabel>Texto en la tarta (Opcional)</FormLabel><FormControl><Input placeholder="Ej: ¡Felicidades, Ana!" {...field} /></FormControl><FormMessage /></FormItem>
               )} />
               <FormField control={form.control} name="reference_image" render={({ field }) => (
-                <FormItem><FormLabel>Imagen de referencia (Opcional)</FormLabel><FormControl><Input type="file" accept="image/png, image/jpeg, image/webp" onChange={(e) => field.onChange(e.target.files)} /></FormControl><FormDescription>Sube una foto que te sirva de inspiración. (Max 2MB)</FormDescription><FormMessage /></FormItem>
+                <FormItem><FormLabel>Imagen de referencia (Opcional)</FormLabel><FormControl><Input type="file" accept="image/png, image/jpeg, image/webp" {...form.register('reference_image')} /></FormControl><FormDescription>Sube una foto que te sirva de inspiración. (Max 2MB)</FormDescription><FormMessage /></FormItem>
               )} />
           </div>
 
@@ -235,8 +220,8 @@ export default function TartaAMedidaPage() {
             </Alert>
           )}
 
-          <Button type="submit" size="lg" className="w-full" disabled={formState.status === 'loading'}>
-            {formState.status === 'loading' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Button type="submit" size="lg" className="w-full" disabled={isPending}>
+            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Enviar Solicitud de Presupuesto
           </Button>
 
