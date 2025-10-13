@@ -110,8 +110,8 @@ export function CustomCakeForm() {
     }
 
     const messageParts = [
-      `*Nueva Solicitud de Tarta a Medida* 🎂`,
-      `*Nombre:* ${data.name}`,
+      `Hola Morty's Cake, esta es mi idea y quiero hacerla realidad:`,
+      `\n*Nombre:* ${data.name}`,
       `*Email:* ${data.email}`,
       data.phone && `*Teléfono:* ${data.phone}`,
       `*Fecha de entrega:* ${data.deliveryDate}`,
@@ -319,3 +319,5 @@ export function CustomCakeForm() {
     </Form>
   );
 }
+
+    
