@@ -29,11 +29,14 @@ export async function POST(req: NextRequest) {
     let imageId = null;
     const imageFile = formData.get('reference_image') as File;
 
+    // Eliminar espacios de la contraseña de aplicación para mayor robustez
+    const sanitizedWpPassword = wpPassword.replace(/\s/g, '');
+
     if (imageFile && imageFile.size > 0) {
         const buffer = await imageFile.arrayBuffer();
         const headers = new Headers({
             'Content-Disposition': `attachment; filename=${imageFile.name}`,
-            'Authorization': `Basic ${btoa(`${wpUser}:${wpPassword}`)}`,
+            'Authorization': `Basic ${btoa(`${wpUser}:${sanitizedWpPassword}`)}`,
             'Content-Type': imageFile.type,
         });
 
@@ -98,7 +101,7 @@ export async function POST(req: NextRequest) {
     `;
 
     const mailerHeaders = new Headers({
-        'Authorization': `Basic ${btoa(`${wpUser}:${wpPassword}`)}`,
+        'Authorization': `Basic ${btoa(`${wpUser}:${sanitizedWpPassword}`)}`,
         'Content-Type': 'application/json',
     });
 
