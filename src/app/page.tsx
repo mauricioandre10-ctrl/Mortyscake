@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import { ArrowRight, Star, CakeSlice } from 'lucide-react';
+import { ArrowRight, Star } from 'lucide-react';
 import Link from 'next/link';
 import { testimonials } from '@/lib/testimonials';
 import { useEffect, useState, useRef } from 'react';
@@ -442,9 +442,8 @@ export default function Home() {
       {/* New Custom Cake Section */}
       <section id="custom-cake" className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4 md:px-6">
-            <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center bg-muted/30 rounded-lg p-8 md:p-12">
-                <div className="text-center md:text-left">
-                    <CakeSlice className="w-12 h-12 text-primary mx-auto md:mx-0 mb-4" />
+            <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center bg-muted/30 rounded-lg p-8 md:p-12 overflow-hidden">
+                <div className="text-center md:text-left order-2 md:order-1">
                     <h2 className="font-headline text-3xl md:text-4xl">¿Tienes una idea para una Tarta?</h2>
                     <p className="mt-4 text-muted-foreground text-lg">
                         Creamos la tarta de tus sueños, totalmente a medida para tu evento especial. Cada detalle, desde el sabor hasta el último adorno, está hecho para ti.
@@ -458,7 +457,7 @@ export default function Home() {
                         </Link>
                     </Button>
                 </div>
-                <div className="relative w-full aspect-square md:aspect-[4/5] rounded-lg overflow-hidden shadow-lg -m-4 md:-m-16">
+                <div className="relative w-full aspect-square md:aspect-[4/5] rounded-lg overflow-hidden shadow-lg order-1 md:order-2">
                     <Image 
                         src="https://picsum.photos/seed/custom-cake/800/1000"
                         alt="Tarta de boda espectacular con varias capas y flores"
@@ -476,7 +475,7 @@ export default function Home() {
       <section id="about" className="py-16 md:py-24 bg-background">
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-            <div className="relative w-full aspect-square md:aspect-[4/5] rounded-lg overflow-hidden shadow-lg">
+            <div className="relative w-full aspect-square md:aspect-[4/5] rounded-lg overflow-hidden shadow-lg order-2 md:order-1">
                 <Image 
                     src="https://picsum.photos/seed/chef/800/1000"
                     alt="Retrato de Morty, la chef de repostería"
@@ -486,7 +485,7 @@ export default function Home() {
                     unoptimized
                 />
             </div>
-            <div className="text-center md:text-left">
+            <div className="text-center md:text-left order-1 md:order-2">
               <h2 className="font-headline text-3xl md:text-4xl">La Magia detrás de Morty's Cake</h2>
               <p className="mt-4 text-muted-foreground text-lg">
                 Hola, soy Morty. Mi viaje en la repostería comenzó como una forma de expresión, un lienzo en blanco donde azúcar, harina y pasión se encuentran.
@@ -659,5 +658,7 @@ export default function Home() {
     </div>
   );
 }
+
+    
 
     
