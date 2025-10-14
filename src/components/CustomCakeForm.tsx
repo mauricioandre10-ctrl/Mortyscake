@@ -244,7 +244,7 @@ export function CustomCakeForm() {
         </SectionWrapper>
         
         <SectionWrapper icon={<CalendarDays size={24} />} title="Detalles del Evento" step={2}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FormField
                     control={form.control}
                     name="deliveryDate"
