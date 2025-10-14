@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import { ArrowLeft, FileText, Info, MessageSquarePlus } from 'lucide-react';
 import Link from 'next/link';
@@ -16,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ShareButton } from './ShareButton';
 import { AddToCart } from './AddToCart';
 import { Badge } from '@/components/ui/badge';
+import { QuantitySelector } from './QuantitySelector';
 
 interface Course {
   id: number;
@@ -32,6 +34,7 @@ interface Course {
 }
 
 export function CourseDetails({ course }: { course: Course }) {
+  const [quantity, setQuantity] = useState(1);
   const fullDescription = course.description || course.short_description || 'No hay descripción disponible.';
   const courseAttributes = Array.isArray(course.attributes) ? course.attributes : Object.values(course.attributes);
   const googleReviewUrl = "https://search.google.com/local/writereview?placeid=ChIJR8mR-xH_Lw0RQZ-CfPwZD-Q&source=g.page.m._&laa=merchant-review-solicitation"; // Direct link to leave a review
@@ -101,10 +104,11 @@ export function CourseDetails({ course }: { course: Course }) {
           />
 
           <div className="mt-auto pt-6 bg-muted/30 p-6 rounded-lg shadow-inner">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <span className="text-4xl font-bold text-primary text-center sm:text-left">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+                <span className="text-4xl font-bold text-primary text-center sm:text-left shrink-0">
                     {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
                 </span>
+                <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
                 <AddToCart
                     name={course.name}
                     id={course.id.toString()}
@@ -114,6 +118,7 @@ export function CourseDetails({ course }: { course: Course }) {
                     description={course.short_description}
                     sku={course.sku}
                     isCourse={true}
+                    quantity={quantity}
                 />
             </div>
           </div>

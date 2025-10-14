@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import { ArrowLeft, Info, FileText, MessageSquarePlus } from 'lucide-react';
 import Link from 'next/link';
@@ -10,6 +11,7 @@ import { ShareButton } from '@/components/ShareButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 import { AddToCart } from './AddToCart';
+import { QuantitySelector } from './QuantitySelector';
 
 interface Product {
   id: number;
@@ -26,6 +28,7 @@ interface Product {
 }
 
 export function ProductDetails({ product }: { product: Product }) {
+  const [quantity, setQuantity] = useState(1);
   const fullDescription = product.description || product.short_description || 'No hay descripción disponible.';
   const productAttributes = Array.isArray(product.attributes) ? product.attributes : Object.values(product.attributes);
   const googleReviewUrl = "https://search.google.com/local/writereview?placeid=ChIJR8mR-xH_Lw0RQZ-CfPwZD-Q&source=g.page.m._&laa=merchant-review-solicitation"; // Direct link to leave a review
@@ -95,10 +98,11 @@ export function ProductDetails({ product }: { product: Product }) {
           />
 
           <div className="mt-auto pt-6 bg-muted/30 p-6 rounded-lg shadow-inner">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <span className="text-4xl font-bold text-primary text-center sm:text-left">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+                <span className="text-4xl font-bold text-primary text-center sm:text-left shrink-0">
                     €{product.price}
                 </span>
+                <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
                 <AddToCart
                     name={product.name}
                     id={product.id.toString()}
@@ -108,6 +112,7 @@ export function ProductDetails({ product }: { product: Product }) {
                     description={product.short_description}
                     sku={product.sku}
                     isCourse={false}
+                    quantity={quantity}
                 />
             </div>
           </div>
