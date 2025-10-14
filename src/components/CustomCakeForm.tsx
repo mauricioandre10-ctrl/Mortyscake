@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -12,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, User, Calendar, Cake, Palette, Sparkles, Heart, Upload, FileCheck, Mail, MessageCircle } from 'lucide-react';
+import { Loader2, User, CalendarDays, Cake, Palette, Sparkles, Heart, Upload, FileCheck, Mail, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -227,17 +226,14 @@ export function CustomCakeForm() {
             )}/>
         </SectionWrapper>
         
-        <SectionWrapper icon={<Calendar size={24} />} title="Detalles del Evento" step={2}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <SectionWrapper icon={<CalendarDays size={24} />} title="Detalles del Evento" step={2}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
                 <FormField control={form.control} name="deliveryDate" render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem>
                         <FormLabel>Fecha de entrega *</FormLabel>
                         <FormControl>
-                            <Input type="date" min={minDate} {...field} className="w-full" />
+                            <Input type="date" min={minDate} {...field} />
                         </FormControl>
-                        <FormDescription>
-                            Los pedidos necesitan un mínimo de 5 días hábiles de antelación.
-                        </FormDescription>
                         <FormMessage />
                     </FormItem>
                 )}/>
@@ -248,6 +244,9 @@ export function CustomCakeForm() {
                     <FormItem><FormLabel>Evento *</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Selecciona" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Cumpleaños">Cumpleaños</SelectItem><SelectItem value="Boda">Boda</SelectItem><SelectItem value="Aniversario">Aniversario</SelectItem><SelectItem value="Bautizo">Bautizo</SelectItem><SelectItem value="Comunión">Comunión</SelectItem><SelectItem value="Evento Corporativo">Evento Corporativo</SelectItem><SelectItem value="Otro">Otro</SelectItem></SelectContent></Select><FormMessage /></FormItem>
                 )}/>
             </div>
+            <FormDescription className="w-full text-center mt-2">
+                Los pedidos necesitan un mínimo de 5 días hábiles de antelación.
+            </FormDescription>
              {eventTypeValue === 'Otro' && (
                 <FormField control={form.control} name="otherEventType" render={({ field }) => (
                     <FormItem><FormLabel>Especifica el tipo de evento</FormLabel><FormControl><Input placeholder="Ej: Baby Shower" {...field} /></FormControl><FormMessage /></FormItem>
@@ -368,5 +367,3 @@ export function CustomCakeForm() {
     </Form>
   );
 }
-
-    
