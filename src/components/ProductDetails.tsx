@@ -38,10 +38,10 @@ export function ProductDetails({ product }: { product: Product }) {
   const productAttributes = Array.isArray(product.attributes) ? product.attributes : Object.values(product.attributes);
   const googleReviewUrl = "https://search.google.com/local/writereview?placeid=ChIJR8mR-xH_Lw0RQZ-CfPwZD-Q&source=g.page.m._&laa=merchant-review-solicitation";
   
-  const priceAsNumber = parseFloat(product.price);
-  const totalPrice = !isNaN(priceAsNumber) ? priceAsNumber * quantity : 0;
-  
   const isOnSale = product.sale_price && parseFloat(product.sale_price) < parseFloat(product.regular_price || product.price);
+  const priceToUse = isOnSale && product.sale_price ? product.sale_price : product.price;
+  const priceAsNumber = parseFloat(priceToUse);
+  const totalPrice = !isNaN(priceAsNumber) ? priceAsNumber * quantity : 0;
 
   const handleImageClick = (image: { src: string; alt: string }) => {
     setSelectedImage(image);
@@ -164,7 +164,7 @@ export function ProductDetails({ product }: { product: Product }) {
                 <AddToCart
                     name={product.name}
                     id={product.id.toString()}
-                    price={parseFloat(product.price)}
+                    price={parseFloat(priceToUse)}
                     currency="EUR"
                     image={product.images?.[0]?.src}
                     description={product.short_description}
