@@ -38,6 +38,10 @@ export function CourseDetails({ course }: { course: Course }) {
   const fullDescription = course.description || course.short_description || 'No hay descripción disponible.';
   const courseAttributes = Array.isArray(course.attributes) ? course.attributes : Object.values(course.attributes);
   const googleReviewUrl = "https://search.google.com/local/writereview?placeid=ChIJR8mR-xH_Lw0RQZ-CfPwZD-Q&source=g.page.m._&laa=merchant-review-solicitation"; // Direct link to leave a review
+  
+  const priceAsNumber = parseFloat(course.price);
+  const totalPrice = !isNaN(priceAsNumber) ? priceAsNumber * quantity : 0;
+
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -106,7 +110,7 @@ export function CourseDetails({ course }: { course: Course }) {
           <div className="mt-auto pt-6 bg-muted/30 p-6 rounded-lg shadow-inner">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
                 <span className="text-4xl font-bold text-primary text-center sm:text-left shrink-0">
-                    {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
+                    {course.price === "0.00" ? 'Gratis' : `€${totalPrice.toFixed(2)}`}
                 </span>
                 <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
                 <AddToCart
