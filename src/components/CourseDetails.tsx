@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -19,7 +18,7 @@ import { ShareButton } from './ShareButton';
 import { AddToCart } from './AddToCart';
 import { Badge } from '@/components/ui/badge';
 import { QuantitySelector } from './QuantitySelector';
-import { cn } from '@/lib/utils';
+import { RelatedProducts } from './RelatedProducts';
 
 interface Course {
   id: number;
@@ -231,6 +230,12 @@ export function CourseDetails({ course }: { course: Course }) {
           </TabsContent>
         </Tabs>
       </div>
+
+      <RelatedProducts
+        currentProductId={course.id}
+        categories={course.category_names}
+        productType='courses'
+      />
     </div>
   )
 }

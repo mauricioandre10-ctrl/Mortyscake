@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 import { AddToCart } from './AddToCart';
 import { QuantitySelector } from './QuantitySelector';
-import { cn } from '@/lib/utils';
+import { RelatedProducts } from './RelatedProducts';
 
 interface Product {
   id: number;
@@ -223,6 +223,12 @@ export function ProductDetails({ product }: { product: Product }) {
           </TabsContent>
         </Tabs>
       </div>
+
+      <RelatedProducts
+        currentProductId={product.id}
+        categories={product.category_names}
+        productType='shop'
+      />
     </div>
   );
 }
