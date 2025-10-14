@@ -14,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ShareButton } from '@/components/ShareButton';
 import { trackViewDetails } from '@/lib/events';
 import { apiUrl, siteUrl as configSiteUrl } from '@/lib/config';
+import placeholderImages from '@/app/lib/placeholder-images.json';
 
 interface Product {
   id: number;
@@ -356,6 +357,8 @@ export default function Home() {
   const plugin = useRef(
     Autoplay({ delay: 10000, stopOnInteraction: true })
   )
+  const customCakeImage = placeholderImages.find(p => p.id === 'custom-cake-home');
+  const chefImage = placeholderImages.find(p => p.id === 'chef-portrait');
 
   return (
     <div className="w-full">
@@ -440,14 +443,15 @@ export default function Home() {
                     </Button>
                 </div>
                 <div className="relative w-full aspect-square md:aspect-[4/5] rounded-lg overflow-hidden shadow-lg order-1 md:order-2">
-                    <Image 
-                        src="https://picsum.photos/seed/custom-cake/800/1000"
-                        alt="Tarta de boda espectacular con varias capas y flores"
-                        fill
-                        className="object-cover"
-                        data-ai-hint="wedding cake flowers"
-                        unoptimized
-                    />
+                    {customCakeImage && (
+                        <Image 
+                            src={customCakeImage.src}
+                            alt={customCakeImage.alt}
+                            fill
+                            className="object-cover"
+                            data-ai-hint={customCakeImage.hint}
+                        />
+                    )}
                 </div>
             </div>
         </div>
@@ -458,14 +462,15 @@ export default function Home() {
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
             <div className="relative w-full aspect-square md:aspect-[4/5] rounded-lg overflow-hidden shadow-lg order-2 md:order-1">
-                <Image 
-                    src="https://picsum.photos/seed/chef/800/1000"
-                    alt="Retrato de Morty, la chef de repostería"
-                    fill
-                    className="object-cover"
-                    data-ai-hint="chef portrait"
-                    unoptimized
-                />
+                {chefImage && (
+                    <Image 
+                        src={chefImage.src}
+                        alt={chefImage.alt}
+                        fill
+                        className="object-cover"
+                        data-ai-hint={chefImage.hint}
+                    />
+                )}
             </div>
             <div className="text-center md:text-left order-1 md:order-2">
               <h2 className="font-headline text-3xl md:text-4xl">La Magia detrás de Morty's Cake</h2>
@@ -517,13 +522,12 @@ export default function Home() {
                               </CardContent>
                               <CardFooter className="p-6 flex items-center gap-4 bg-muted/30">
                                   <Image
-                                      src={testimonial.avatar}
+                                      src={testimonial.avatarSrc}
                                       alt={`Avatar de ${testimonial.name}`}
                                       width={48}
                                       height={48}
                                       className="rounded-full object-cover h-12 w-12"
-                                      data-ai-hint="person avatar"
-                                      unoptimized
+                                      data-ai-hint={testimonial.avatarHint}
                                   />
                                   <div>
                                       <p className="font-semibold">{testimonial.name}</p>
@@ -640,3 +644,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
