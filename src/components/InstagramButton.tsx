@@ -20,8 +20,8 @@ const InstagramButton = () => {
         <Image 
             src="/image/instagram.webp" 
             alt="Instagram" 
-            width={35} 
-            height={35} 
+            width={25} 
+            height={25} 
         />
       </Link>
     </Button>
