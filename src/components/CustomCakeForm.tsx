@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, User, Calendar, Cake, Palette, Sparkles, Heart, Upload, FileCheck, Mail, MessageCircle } from 'lucide-react';
@@ -196,7 +196,7 @@ export function CustomCakeForm() {
 
 
   const today = new Date();
-  today.setDate(today.getDate() + 3); // Mínimo 3 días de antelación
+  today.setDate(today.getDate() + 5); // Mínimo 5 días de antelación
   const minDate = today.toISOString().split('T')[0];
 
   return (
@@ -220,7 +220,16 @@ export function CustomCakeForm() {
         <SectionWrapper icon={<Calendar size={24} />} title="Detalles del Evento" step={2}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FormField control={form.control} name="deliveryDate" render={({ field }) => (
-                    <FormItem className="flex flex-col"><FormLabel>Fecha de entrega *</FormLabel><FormControl><Input type="date" min={minDate} {...field} className="w-full" /></FormControl><FormMessage /></FormItem>
+                    <FormItem className="flex flex-col">
+                        <FormLabel>Fecha de entrega *</FormLabel>
+                        <FormControl>
+                            <Input type="date" min={minDate} {...field} className="w-full" />
+                        </FormControl>
+                        <FormDescription>
+                            Los pedidos necesitan un mínimo de 5 días hábiles de antelación.
+                        </FormDescription>
+                        <FormMessage />
+                    </FormItem>
                 )}/>
                 <FormField control={form.control} name="servings" render={({ field }) => (
                     <FormItem><FormLabel>Raciones *</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Selecciona" /></SelectTrigger></FormControl><SelectContent><SelectItem value="4-6 raciones">4-6</SelectItem><SelectItem value="6-8 raciones">6-8</SelectItem><SelectItem value="10-12 raciones">10-12</SelectItem><SelectItem value="15-20 raciones">15-20</SelectItem><SelectItem value="25-30 raciones">25-30</SelectItem><SelectItem value="Más de 30">Más de 30</SelectItem></SelectContent></Select><FormMessage /></FormItem>
