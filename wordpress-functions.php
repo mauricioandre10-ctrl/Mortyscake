@@ -8,10 +8,13 @@ add_action('rest_api_init', function () {
     remove_filter('rest_pre_serve_request', 'rest_send_cors_headers');
     add_filter('rest_pre_serve_request', function ($value) {
         $allowed_origins = [
-            'https://mortyscake-website.vercel.app',
-            'https://mortyscake-website-git-main-mauricio-s-projects-bb335663.vercel.app',
+            'https://mortyscake.vercel.app',
+            'https://mortyscake-git-main-mauricioandre10-9000s-projects.vercel.app',
             'http://localhost:3000',
+			'https://9000-firebase-studio-1757332496117.cluster-lu4mup47g5gm4rtyvhzpwbfadi.cloudworkstations.dev',
             'http://localhost:9002',
+			'https://mortyscake.com',
+			'https://www.mortyscake.com',
             'https://studiodev.page',
             'https://6000-firebase-studio-1757332496117.cluster-lu4mup47g5gm4rtyvhzpwbfadi.cloudworkstations.dev'
         ];
