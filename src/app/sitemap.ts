@@ -15,9 +15,9 @@ interface Post {
 
 // Función para obtener todos los productos y cursos de la API
 async function getAllProducts(): Promise<Product[]> {
-    const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_API_URL;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     if (!apiUrl) {
-        console.error("[Sitemap] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_API_URL no está configurada.");
+        console.error("[Sitemap] Error: La variable de entorno NEXT_PUBLIC_API_URL no está configurada.");
         return [];
     }
     try {
@@ -50,9 +50,9 @@ async function getAllProducts(): Promise<Product[]> {
 
 // Función para obtener todos los posts del blog
 async function getAllPosts(): Promise<Post[]> {
-    const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_API_URL;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     if (!apiUrl) {
-        console.error("[Sitemap] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_API_URL no está configurada.");
+        console.error("[Sitemap] Error: La variable de entorno NEXT_PUBLIC_API_URL no está configurada.");
         return [];
     }
     try {

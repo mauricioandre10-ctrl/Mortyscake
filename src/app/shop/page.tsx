@@ -73,7 +73,7 @@ function ProductsList() {
 
     useEffect(() => {
         async function getProducts() {
-            const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_API_URL;
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL;
             if (!apiUrl) {
                 setError('La configuración del sitio no es correcta.');
                 setLoading(false);

@@ -34,7 +34,7 @@ export function CartSheet() {
 
   const handleCheckout = async () => {
     setIsRedirecting(true);
-    const storeUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_API_URL;
+    const storeUrl = process.env.NEXT_PUBLIC_API_URL;
 
     if (!storeUrl) {
       toast({

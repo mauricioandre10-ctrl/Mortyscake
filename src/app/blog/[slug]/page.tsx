@@ -1,5 +1,4 @@
 
-
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Image from 'next/image';
@@ -24,9 +23,9 @@ interface Post {
 
 // Función para obtener los datos de una entrada específica
 async function getPost(slug: string): Promise<Post | null> {
-    const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_API_URL;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     if (!apiUrl) {
-        console.error("[SERVER] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_API_URL no está configurada.");
+        console.error("[SERVER] Error: La variable de entorno NEXT_PUBLIC_API_URL no está configurada.");
         return null;
     }
 

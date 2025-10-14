@@ -54,7 +54,7 @@ function FeaturedCourses() {
     }
     
     async function fetchCourses() {
-      const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_API_URL;
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       if (!apiUrl) {
         setLoading(false);
         return;
@@ -139,7 +139,7 @@ function FeaturedCourses() {
                     )}
                   </div>
               </div>
-              <CardContent className="flex flex-col flex-grow p-6">
+              <CardContent className="p-6 flex flex-col flex-grow">
                 <CardTitle className="font-card-title text-xl mb-2">{course.name}</CardTitle>
                 <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: course.short_description || '' }} />
               </CardContent>
@@ -168,7 +168,7 @@ function FeaturedProducts() {
     }
     
     async function fetchProducts() {
-      const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_API_URL;
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       if (!apiUrl) {
         setLoading(false);
         return;
@@ -281,7 +281,7 @@ function FeaturedBlogPosts() {
 
   useEffect(() => {
     async function fetchPosts() {
-      const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_API_URL;
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       if (!apiUrl) {
         setLoading(false);
         return;

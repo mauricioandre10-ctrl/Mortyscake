@@ -11,7 +11,7 @@ import { Separator } from './ui/separator';
 import { useShoppingCart } from 'use-shopping-cart';
 
 const Header = () => {
-  const storeUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_API_URL;
+  const storeUrl = process.env.NEXT_PUBLIC_API_URL;
   const accountUrl = storeUrl ? `${storeUrl}/mi-cuenta` : '#';
   const { handleCartClick, cartCount } = useShoppingCart();
 
