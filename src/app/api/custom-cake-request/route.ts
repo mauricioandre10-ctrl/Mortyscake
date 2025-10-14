@@ -15,8 +15,10 @@ const formSchema = z.object({
   otherEventType: z.string().optional(),
   cakeFlavor: z.string().min(1, 'El sabor del bizcocho es obligatorio'),
   otherCakeFlavor: z.string().optional(),
-  fillingFlavor: z.string().min(1, 'El sabor del relleno es obligatorio'),
-  otherFillingFlavor: z.string().optional(),
+  fillingFlavor1: z.string().min(1, 'El sabor del primer relleno es obligatorio'),
+  otherFillingFlavor1: z.string().optional(),
+  fillingFlavor2: z.string().optional().refine(val => val !== 'Ninguno', { message: "Selecciona un sabor o déjalo vacío" }),
+  otherFillingFlavor2: z.string().optional(),
   cakeDescription: z.string().min(1, 'La descripción es obligatoria'),
   cakeText: z.string().optional(),
   allergies: z.string().optional(),
@@ -73,8 +75,14 @@ export async function POST(req: NextRequest) {
 
     const finalEventType = validatedData.eventType === 'Otro' && validatedData.otherEventType ? validatedData.otherEventType : validatedData.eventType;
     const finalCakeFlavor = validatedData.cakeFlavor === 'Otro (especificar)' && validatedData.otherCakeFlavor ? validatedData.otherCakeFlavor : validatedData.cakeFlavor;
-    const finalFillingFlavor = validatedData.fillingFlavor === 'Otro (especificar)' && validatedData.otherFillingFlavor ? validatedData.otherFillingFlavor : validatedData.fillingFlavor;
     
+    const finalFillingFlavor1 = validatedData.fillingFlavor1 === 'Otro (especificar)' && validatedData.otherFillingFlavor1 ? validatedData.otherFillingFlavor1 : validatedData.fillingFlavor1;
+    const finalFillingFlavor2 = validatedData.fillingFlavor2 && validatedData.fillingFlavor2 !== 'Ninguno' 
+        ? (validatedData.fillingFlavor2 === 'Otro (especificar)' && validatedData.otherFillingFlavor2 ? validatedData.otherFillingFlavor2 : validatedData.fillingFlavor2)
+        : null;
+
+    const fillingFlavors = [finalFillingFlavor1, finalFillingFlavor2].filter(Boolean).join(' y ');
+
     const adminEmailHtml = `
       <div style="font-family: sans-serif; line-height: 1.6;">
         <h1 style="color: #D87093;">Nueva Solicitud de Tarta a Medida</h1>
@@ -93,7 +101,7 @@ export async function POST(req: NextRequest) {
         
         <h2>Sabores</h2>
         <p><strong>Bizcocho:</strong> ${finalCakeFlavor}</p>
-        <p><strong>Relleno:</strong> ${finalFillingFlavor}</p>
+        <p><strong>Relleno(s):</strong> ${fillingFlavors}</p>
         
         <h2>Visión Creativa</h2>
         <p><strong>Descripción de la tarta:</strong><br>${validatedData.cakeDescription.replace(/\n/g, '<br>')}</p>
@@ -176,5 +184,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: `Error al enviar la solicitud: ${errorMessage}` }, { status: 500 });
   }
 }
-
-    

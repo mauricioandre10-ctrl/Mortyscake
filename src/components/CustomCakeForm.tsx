@@ -34,8 +34,10 @@ const formSchema = z.object({
   otherEventType: z.string().optional(),
   cakeFlavor: z.string().min(1, 'Debes seleccionar un sabor de bizcocho.'),
   otherCakeFlavor: z.string().optional(),
-  fillingFlavor: z.string().min(1, 'Debes seleccionar un sabor de relleno.'),
-  otherFillingFlavor: z.string().optional(),
+  fillingFlavor1: z.string().min(1, 'Debes seleccionar al menos un sabor de relleno.'),
+  otherFillingFlavor1: z.string().optional(),
+  fillingFlavor2: z.string().optional(),
+  otherFillingFlavor2: z.string().optional(),
   cakeDescription: z.string().min(10, 'La descripción debe tener al menos 10 caracteres.'),
   cakeText: z.string().optional(),
   referenceImage: z
@@ -84,8 +86,10 @@ export function CustomCakeForm() {
       otherEventType: '',
       cakeFlavor: '',
       otherCakeFlavor: '',
-      fillingFlavor: '',
-      otherFillingFlavor: '',
+      fillingFlavor1: '',
+      otherFillingFlavor1: '',
+      fillingFlavor2: '',
+      otherFillingFlavor2: '',
       cakeDescription: '',
       cakeText: '',
       allergies: '',
@@ -95,7 +99,8 @@ export function CustomCakeForm() {
 
   const eventTypeValue = form.watch('eventType');
   const cakeFlavorValue = form.watch('cakeFlavor');
-  const fillingFlavorValue = form.watch('fillingFlavor');
+  const fillingFlavor1Value = form.watch('fillingFlavor1');
+  const fillingFlavor2Value = form.watch('fillingFlavor2');
 
   const onSubmit = async (data: FormData, openWhatsApp = false) => {
     setIsLoading(true);
@@ -146,7 +151,10 @@ export function CustomCakeForm() {
         
         const finalEventType = data.eventType === 'Otro' && data.otherEventType ? data.otherEventType : data.eventType;
         const finalCakeFlavor = data.cakeFlavor === 'Otro (especificar)' && data.otherCakeFlavor ? data.otherCakeFlavor : data.cakeFlavor;
-        const finalFillingFlavor = data.fillingFlavor === 'Otro (especificar)' && data.otherFillingFlavor ? data.otherFillingFlavor : data.fillingFlavor;
+        const finalFillingFlavor1 = data.fillingFlavor1 === 'Otro (especificar)' && data.otherFillingFlavor1 ? data.otherFillingFlavor1 : data.fillingFlavor1;
+        const finalFillingFlavor2 = data.fillingFlavor2 === 'Otro (especificar)' && data.otherFillingFlavor2 ? data.otherFillingFlavor2 : data.fillingFlavor2;
+
+        const fillingFlavors = [finalFillingFlavor1, finalFillingFlavor2].filter(Boolean).join(' y ');
 
         const messageParts = [
           `Hola Morty's Cake, esta es mi idea y quiero hacerla realidad:`,
@@ -157,7 +165,7 @@ export function CustomCakeForm() {
           `*Raciones:* ${data.servings}`,
           `*Evento:* ${finalEventType}`,
           `*Sabor bizcocho:* ${finalCakeFlavor}`,
-          `*Sabor relleno:* ${finalFillingFlavor}`,
+          `*Sabor relleno:* ${fillingFlavors}`,
           `*Descripción:* ${data.cakeDescription}`,
           data.cakeText && `*Texto en la tarta:* ${data.cakeText}`,
           data.allergies && `*Alergias:* ${data.allergies}`,
@@ -295,22 +303,31 @@ export function CustomCakeForm() {
         </SectionWrapper>
 
         <SectionWrapper icon={<Cake size={24} />} title="El Sabor de tus Sueños" step={3}>
-            <div className="grid md:grid-cols-2 gap-6">
-                <FormField control={form.control} name="cakeFlavor" render={({ field }) => (
-                    <FormItem><FormLabel>Sabor del bizcocho *</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Elige un sabor" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Vainilla">Vainilla</SelectItem><SelectItem value="Chocolate Intenso">Chocolate Intenso</SelectItem><SelectItem value="Red Velvet">Red Velvet</SelectItem><SelectItem value="Limón y Amapolas">Limón y Amapolas</SelectItem><SelectItem value="Zanahoria y Especias">Zanahoria y Especias</SelectItem><SelectItem value="Naranja y Almendra">Naranja y Almendra</SelectItem><SelectItem value="Otro (especificar)">Otro (especificar)</SelectItem></SelectContent></Select><FormMessage /></FormItem>
-                )}/>
-                 <FormField control={form.control} name="fillingFlavor" render={({ field }) => (
-                    <FormItem><FormLabel>Sabor del relleno *</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Elige un sabor" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Crema de queso">Crema de queso</SelectItem><SelectItem value="Ganache de chocolate negro">Ganache de chocolate negro</SelectItem><SelectItem value="Ganache de chocolate blanco">Ganache de chocolate blanco</SelectItem><SelectItem value="Crema de vainilla">Crema de vainilla</SelectItem><SelectItem value="Dulce de leche">Dulce de leche</SelectItem><SelectItem value="Crema de pistacho">Crema de pistacho</SelectItem><SelectItem value="Mermelada de frutos rojos">Mermelada de frutos rojos</SelectItem><SelectItem value="Otro (especificar)">Otro (especificar)</SelectItem></SelectContent></Select><FormMessage /></FormItem>
-                )}/>
-            </div>
+            <FormField control={form.control} name="cakeFlavor" render={({ field }) => (
+                <FormItem><FormLabel>Sabor del bizcocho *</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Elige un sabor" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Vainilla">Vainilla</SelectItem><SelectItem value="Chocolate Intenso">Chocolate Intenso</SelectItem><SelectItem value="Red Velvet">Red Velvet</SelectItem><SelectItem value="Limón y Amapolas">Limón y Amapolas</SelectItem><SelectItem value="Zanahoria y Especias">Zanahoria y Especias</SelectItem><SelectItem value="Naranja y Almendra">Naranja y Almendra</SelectItem><SelectItem value="Otro (especificar)">Otro (especificar)</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+            )}/>
             {cakeFlavorValue === 'Otro (especificar)' && (
                 <FormField control={form.control} name="otherCakeFlavor" render={({ field }) => (
                     <FormItem><FormLabel>Especifica el sabor del bizcocho</FormLabel><FormControl><Input placeholder="Ej: Coco y lima" {...field} /></FormControl><FormMessage /></FormItem>
                 )}/>
             )}
-            {fillingFlavorValue === 'Otro (especificar)' && (
-                <FormField control={form.control} name="otherFillingFlavor" render={({ field }) => (
-                    <FormItem><FormLabel>Especifica el sabor del relleno</FormLabel><FormControl><Input placeholder="Ej: Crema de avellanas" {...field} /></FormControl><FormMessage /></FormItem>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+                <FormField control={form.control} name="fillingFlavor1" render={({ field }) => (
+                    <FormItem><FormLabel>Sabor del relleno 1 *</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Elige un sabor" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Crema de queso">Crema de queso</SelectItem><SelectItem value="Ganache de chocolate negro">Ganache de chocolate negro</SelectItem><SelectItem value="Ganache de chocolate blanco">Ganache de chocolate blanco</SelectItem><SelectItem value="Crema de vainilla">Crema de vainilla</SelectItem><SelectItem value="Dulce de leche">Dulce de leche</SelectItem><SelectItem value="Crema de pistacho">Crema de pistacho</SelectItem><SelectItem value="Mermelada de frutos rojos">Mermelada de frutos rojos</SelectItem><SelectItem value="Otro (especificar)">Otro (especificar)</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                )}/>
+                <FormField control={form.control} name="fillingFlavor2" render={({ field }) => (
+                    <FormItem><FormLabel>Sabor del relleno 2 (Opcional)</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Elige un segundo sabor" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Ninguno">Ninguno</SelectItem><SelectItem value="Crema de queso">Crema de queso</SelectItem><SelectItem value="Ganache de chocolate negro">Ganache de chocolate negro</SelectItem><SelectItem value="Ganache de chocolate blanco">Ganache de chocolate blanco</SelectItem><SelectItem value="Crema de vainilla">Crema de vainilla</SelectItem><SelectItem value="Dulce de leche">Dulce de leche</SelectItem><SelectItem value="Crema de pistacho">Crema de pistacho</SelectItem><SelectItem value="Mermelada de frutos rojos">Mermelada de frutos rojos</SelectItem><SelectItem value="Otro (especificar)">Otro (especificar)</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                )}/>
+            </div>
+            {fillingFlavor1Value === 'Otro (especificar)' && (
+                <FormField control={form.control} name="otherFillingFlavor1" render={({ field }) => (
+                    <FormItem><FormLabel>Especifica el sabor del relleno 1</FormLabel><FormControl><Input placeholder="Ej: Crema de avellanas" {...field} /></FormControl><FormMessage /></FormItem>
+                )}/>
+            )}
+            {fillingFlavor2Value === 'Otro (especificar)' && (
+                <FormField control={form.control} name="otherFillingFlavor2" render={({ field }) => (
+                    <FormItem><FormLabel>Especifica el sabor del relleno 2</FormLabel><FormControl><Input placeholder="Ej: Crema de maracuyá" {...field} /></FormControl><FormMessage /></FormItem>
                 )}/>
             )}
         </SectionWrapper>
