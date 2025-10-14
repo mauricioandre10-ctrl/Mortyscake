@@ -194,10 +194,20 @@ export function CustomCakeForm() {
     });
   };
 
+  const addBusinessDays = (startDate: Date, days: number): Date => {
+    let currentDate = new Date(startDate);
+    let addedDays = 0;
+    while (addedDays < days) {
+        currentDate.setDate(currentDate.getDate() + 1);
+        const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 6 = Saturday
+        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+            addedDays++;
+        }
+    }
+    return currentDate;
+  };
 
-  const today = new Date();
-  today.setDate(today.getDate() + 5); // Mínimo 5 días de antelación
-  const minDate = today.toISOString().split('T')[0];
+  const minDate = addBusinessDays(new Date(), 5).toISOString().split('T')[0];
 
   return (
     <Form {...form}>
