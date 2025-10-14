@@ -38,8 +38,8 @@ export function ProductDetails({ product }: { product: Product }) {
   const productAttributes = Array.isArray(product.attributes) ? product.attributes : Object.values(product.attributes);
   const googleReviewUrl = "https://search.google.com/local/writereview?placeid=ChIJR8mR-xH_Lw0RQZ-CfPwZD-Q&source=g.page.m._&laa=merchant-review-solicitation";
   
-  const isOnSale = product.sale_price && parseFloat(product.sale_price) < parseFloat(product.regular_price || product.price);
-  const priceToUse = isOnSale && product.sale_price ? product.sale_price : product.price;
+  const isOnSale = product.sale_price && product.regular_price && parseFloat(product.sale_price) < parseFloat(product.regular_price);
+  const priceToUse = isOnSale ? product.sale_price : product.price;
   const priceAsNumber = parseFloat(priceToUse);
   const totalPrice = !isNaN(priceAsNumber) ? priceAsNumber * quantity : 0;
 
@@ -152,9 +152,9 @@ export function ProductDetails({ product }: { product: Product }) {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
                 <div className="flex items-baseline gap-2 text-center sm:text-left shrink-0">
                     {isOnSale && product.regular_price && (
-                        <span className="text-3xl text-muted-foreground line-through">
-                            €{product.regular_price}
-                        </span>
+                      <span className="text-3xl text-muted-foreground line-through">
+                        €{parseFloat(product.regular_price).toFixed(2)}
+                      </span>
                     )}
                     <span className="text-4xl font-bold text-primary">
                         €{totalPrice.toFixed(2)}
@@ -164,7 +164,7 @@ export function ProductDetails({ product }: { product: Product }) {
                 <AddToCart
                     name={product.name}
                     id={product.id.toString()}
-                    price={parseFloat(priceToUse)}
+                    price={priceAsNumber}
                     currency="EUR"
                     image={product.images?.[0]?.src}
                     description={product.short_description}

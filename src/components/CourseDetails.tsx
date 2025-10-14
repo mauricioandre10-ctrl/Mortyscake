@@ -44,8 +44,8 @@ export function CourseDetails({ course }: { course: Course }) {
   const courseAttributes = Array.isArray(course.attributes) ? course.attributes : Object.values(course.attributes);
   const googleReviewUrl = "https://search.google.com/local/writereview?placeid=ChIJR8mR-xH_Lw0RQZ-CfPwZD-Q&source=g.page.m._&laa=merchant-review-solicitation";
 
-  const isOnSale = course.sale_price && parseFloat(course.sale_price) < parseFloat(course.regular_price || course.price);
-  const priceToUse = isOnSale && course.sale_price ? course.sale_price : course.price;
+  const isOnSale = course.sale_price && course.regular_price && parseFloat(course.sale_price) < parseFloat(course.regular_price);
+  const priceToUse = isOnSale ? course.sale_price : course.price;
   const priceAsNumber = parseFloat(priceToUse);
   const totalPrice = !isNaN(priceAsNumber) ? priceAsNumber * quantity : 0;
 
@@ -160,7 +160,7 @@ export function CourseDetails({ course }: { course: Course }) {
                 <div className="flex items-baseline gap-2 text-center sm:text-left shrink-0">
                     {isOnSale && course.regular_price && (
                         <span className="text-3xl text-muted-foreground line-through">
-                            €{course.regular_price}
+                            €{parseFloat(course.regular_price).toFixed(2)}
                         </span>
                     )}
                     <span className="text-4xl font-bold text-primary">
@@ -172,7 +172,7 @@ export function CourseDetails({ course }: { course: Course }) {
                 <AddToCart
                     name={course.name}
                     id={course.id.toString()}
-                    price={parseFloat(priceToUse)}
+                    price={priceAsNumber}
                     currency="EUR"
                     image={course.images?.[0]?.src}
                     description={course.short_description}
