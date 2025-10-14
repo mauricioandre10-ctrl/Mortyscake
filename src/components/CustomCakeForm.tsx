@@ -243,15 +243,14 @@ export function CustomCakeForm() {
             )}/>
         </SectionWrapper>
         
-        <SectionWrapper icon={<CalendarDays size={24} />} title="Detalles del Evento" step={2}>
+        <SectionWrapper icon={<Cake size={24} />} title="Detalles del Evento" step={2}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FormField
                     control={form.control}
                     name="deliveryDate"
                     render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="flex flex-col">
                           <FormLabel>Fecha de entrega *</FormLabel>
-                          <div className="h-1 invisible"></div> {/* Spacer for alignment */}
                           <Popover>
                               <PopoverTrigger asChild>
                               <FormControl>
@@ -303,7 +302,7 @@ export function CustomCakeForm() {
             )}
         </SectionWrapper>
 
-        <SectionWrapper icon={<Cake size={24} />} title="El Sabor de tus Sueños" step={3}>
+        <SectionWrapper icon={<Palette size={24} />} title="El Sabor de tus Sueños" step={3}>
             <FormField control={form.control} name="cakeFlavor" render={({ field }) => (
                 <FormItem><FormLabel>Sabor del bizcocho *</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Elige un sabor" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Vainilla">Vainilla</SelectItem><SelectItem value="Chocolate Intenso">Chocolate Intenso</SelectItem><SelectItem value="Red Velvet">Red Velvet</SelectItem><SelectItem value="Limón y Amapolas">Limón y Amapolas</SelectItem><SelectItem value="Zanahoria y Especias">Zanahoria y Especias</SelectItem><SelectItem value="Naranja y Almendra">Naranja y Almendra</SelectItem><SelectItem value="Otro (especificar)">Otro (especificar)</SelectItem></SelectContent></Select><FormMessage /></FormItem>
             )}/>
@@ -333,7 +332,7 @@ export function CustomCakeForm() {
             )}
         </SectionWrapper>
 
-        <SectionWrapper icon={<Palette size={24} />} title="Tu Visión Creativa" step={4}>
+        <SectionWrapper icon={<Sparkles size={24} />} title="Tu Visión Creativa" step={4}>
             <FormField control={form.control} name="cakeDescription" render={({ field }) => (
                 <FormItem><FormLabel>Describe tu tarta ideal *</FormLabel><FormControl><Textarea placeholder="Danos todos los detalles sobre el diseño, colores, temática, etc. ¡No te cortes!" className="resize-y min-h-[120px]" {...field} /></FormControl><FormMessage /></FormItem>
             )}/>
@@ -377,7 +376,7 @@ export function CustomCakeForm() {
             />
         </SectionWrapper>
 
-        <SectionWrapper icon={<Sparkles size={24} />} title="Información Adicional" step={5}>
+        <SectionWrapper icon={<Heart size={24} />} title="Información Adicional" step={5}>
              <FormField control={form.control} name="allergies" render={({ field }) => (
                 <FormItem><FormLabel>Alergias o intolerancias (Opcional)</FormLabel><FormControl><Textarea placeholder="Indícanos aquí si debemos tener en cuenta alguna alergia o intolerancia (gluten, lactosa, frutos secos, etc.)." className="resize-y" {...field} /></FormControl><FormMessage /></FormItem>
              )}/>
