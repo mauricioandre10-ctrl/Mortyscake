@@ -9,6 +9,8 @@ interface Course {
   name: string;
   slug: string;
   price: string;
+  regular_price?: string;
+  sale_price?: string;
   short_description: string;
   description: string;
   images: { id: number; src: string; alt: string }[];
@@ -70,7 +72,17 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 
   const cleanDescription = course.short_description.replace(/<[^>]*>?/gm, '');
-  const imageUrl = course.images?.[0]?.src;
+
+  const getAbsoluteImageUrl = (src: string | undefined): string | undefined => {
+    if (!src) return undefined;
+    if (src.startsWith('http')) {
+      return src;
+    }
+    // Assuming apiUrl contains the base URL of the CMS
+    return apiUrl ? new URL(src, apiUrl).href : src;
+  };
+  
+  const imageUrl = getAbsoluteImageUrl(course.images?.[0]?.src);
 
   return {
     title: course.name,
