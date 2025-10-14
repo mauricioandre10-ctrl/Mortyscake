@@ -13,6 +13,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, User, CalendarDays, Cake, Palette, Sparkles, Heart, Upload, FileCheck, Mail, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { Calendar } from './ui/calendar';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"];
@@ -21,7 +26,9 @@ const formSchema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres.'),
   email: z.string().email('Por favor, introduce un email válido.'),
   phone: z.string().optional(),
-  deliveryDate: z.string().min(1, 'La fecha es obligatoria.'),
+  deliveryDate: z.date({
+    required_error: 'La fecha de entrega es obligatoria.',
+  }),
   servings: z.string().min(1, 'Debes seleccionar el número de raciones.'),
   eventType: z.string().min(1, 'Debes seleccionar el tipo de evento.'),
   otherEventType: z.string().optional(),
@@ -72,7 +79,6 @@ export function CustomCakeForm() {
       name: '',
       email: '',
       phone: '',
-      deliveryDate: '',
       servings: '',
       eventType: '',
       otherEventType: '',
@@ -99,6 +105,8 @@ export function CustomCakeForm() {
       if (value !== undefined && value !== null) {
         if (key === 'referenceImage' && value instanceof File) {
             formData.append('reference-image', value);
+        } else if (key === 'deliveryDate' && value instanceof Date) {
+            formData.append(key, format(value, 'yyyy-MM-dd'));
         } else if (typeof value === 'boolean') {
             formData.append(key, value ? 'on' : 'off');
         } else {
@@ -145,7 +153,7 @@ export function CustomCakeForm() {
           `\n*Nombre:* ${data.name}`,
           `*Email:* ${data.email}`,
           data.phone && `*Teléfono:* ${data.phone}`,
-          `*Fecha de entrega:* ${data.deliveryDate}`,
+          `*Fecha de entrega:* ${format(data.deliveryDate, 'dd/MM/yyyy')}`,
           `*Raciones:* ${data.servings}`,
           `*Evento:* ${finalEventType}`,
           `*Sabor bizcocho:* ${finalCakeFlavor}`,
@@ -205,8 +213,9 @@ export function CustomCakeForm() {
     }
     return currentDate;
   };
+  
+  const minDate = addBusinessDays(new Date(), 4);
 
-  const minDate = addBusinessDays(new Date(), 5).toISOString().split('T')[0];
 
   return (
     <Form {...form}>
@@ -228,15 +237,46 @@ export function CustomCakeForm() {
         
         <SectionWrapper icon={<CalendarDays size={24} />} title="Detalles del Evento" step={2}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-                <FormField control={form.control} name="deliveryDate" render={({ field }) => (
-                    <FormItem>
+                <FormField
+                    control={form.control}
+                    name="deliveryDate"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-col">
                         <FormLabel>Fecha de entrega *</FormLabel>
-                        <FormControl>
-                            <Input type="date" min={minDate} {...field} />
-                        </FormControl>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                            <FormControl>
+                                <Button
+                                variant={"outline"}
+                                className={cn(
+                                    "w-full pl-3 text-left font-normal",
+                                    !field.value && "text-muted-foreground"
+                                )}
+                                >
+                                {field.value ? (
+                                    format(field.value, "PPP", { locale: es })
+                                ) : (
+                                    <span>Elige una fecha</span>
+                                )}
+                                <CalendarDays className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                            </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) => date < minDate}
+                                initialFocus
+                                locale={es}
+                            />
+                            </PopoverContent>
+                        </Popover>
                         <FormMessage />
-                    </FormItem>
-                )}/>
+                        </FormItem>
+                    )}
+                />
                 <FormField control={form.control} name="servings" render={({ field }) => (
                     <FormItem><FormLabel>Raciones *</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Selecciona" /></SelectTrigger></FormControl><SelectContent><SelectItem value="4-6 raciones">4-6</SelectItem><SelectItem value="6-8 raciones">6-8</SelectItem><SelectItem value="10-12 raciones">10-12</SelectItem><SelectItem value="15-20 raciones">15-20</SelectItem><SelectItem value="25-30 raciones">25-30</SelectItem><SelectItem value="Más de 30">Más de 30</SelectItem></SelectContent></Select><FormMessage /></FormItem>
                 )}/>
@@ -244,7 +284,7 @@ export function CustomCakeForm() {
                     <FormItem><FormLabel>Evento *</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Selecciona" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Cumpleaños">Cumpleaños</SelectItem><SelectItem value="Boda">Boda</SelectItem><SelectItem value="Aniversario">Aniversario</SelectItem><SelectItem value="Bautizo">Bautizo</SelectItem><SelectItem value="Comunión">Comunión</SelectItem><SelectItem value="Evento Corporativo">Evento Corporativo</SelectItem><SelectItem value="Otro">Otro</SelectItem></SelectContent></Select><FormMessage /></FormItem>
                 )}/>
             </div>
-            <FormDescription className="w-full text-center mt-2">
+            <FormDescription className="w-full text-center">
                 Los pedidos necesitan un mínimo de 5 días hábiles de antelación.
             </FormDescription>
              {eventTypeValue === 'Otro' && (
