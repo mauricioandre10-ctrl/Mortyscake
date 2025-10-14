@@ -19,7 +19,7 @@ interface AddToCartProps {
 }
 
 export function AddToCart({ name, id, price, currency, image, description, isCourse = false, quantity }: AddToCartProps) {
-  const { addItem } = useShoppingCart();
+  const { addItem, setItemQuantity, cartDetails } = useShoppingCart();
   const { toast } = useToast();
 
   const handleAddToCart = () => {
@@ -32,11 +32,25 @@ export function AddToCart({ name, id, price, currency, image, description, isCou
       description,
       sku: id, // Use product id as SKU for cart uniqueness
     };
-    addItem(item, { count: quantity });
-    toast({
-      title: `${isCourse ? 'Curso añadido' : 'Producto añadido'}`,
-      description: `"${name}" (x${quantity}) se ha añadido a tu carrito.`,
-    });
+    
+    const isInCart = cartDetails?.[item.id];
+
+    if (isInCart) {
+        // If the item is already in the cart, update its quantity
+        setItemQuantity(item.id, quantity);
+        toast({
+            title: `Cantidad actualizada`,
+            description: `Has actualizado "${name}" a ${quantity} unidad(es) en tu carrito.`,
+        });
+    } else {
+        // If it's a new item, add it
+        addItem(item, { count: quantity });
+        toast({
+            title: `${isCourse ? 'Curso añadido' : 'Producto añadido'}`,
+            description: `"${name}" (x${quantity}) se ha añadido a tu carrito.`,
+        });
+    }
+
     trackAddToCart(name, isCourse ? 'Curso' : 'Producto', price.toString());
   };
 
