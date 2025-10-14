@@ -58,7 +58,7 @@ export function PostsList() {
 
     useEffect(() => {
         async function fetchPosts() {
-            const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+            const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_API_URL;
             if (!apiUrl) {
                 setError('La configuración del sitio no es correcta.');
                 setLoading(false);

@@ -20,9 +20,9 @@ interface Product {
 }
 
 async function getProduct(slug: string): Promise<Product | null> {
-    const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+    const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_API_URL;
     if (!apiUrl) {
-        console.error("[SERVER] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_STORE_URL no está configurada.");
+        console.error("[SERVER] Error: La variable de entorno NEXT_PUBLIC_WOOCOMMERCE_API_URL no está configurada.");
         return null;
     }
 

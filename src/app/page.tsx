@@ -54,7 +54,7 @@ function FeaturedCourses() {
     }
     
     async function fetchCourses() {
-      const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+      const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_API_URL;
       if (!apiUrl) {
         setLoading(false);
         return;
@@ -168,7 +168,7 @@ function FeaturedProducts() {
     }
     
     async function fetchProducts() {
-      const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+      const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_API_URL;
       if (!apiUrl) {
         setLoading(false);
         return;
@@ -281,7 +281,7 @@ function FeaturedBlogPosts() {
 
   useEffect(() => {
     async function fetchPosts() {
-      const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_STORE_URL;
+      const apiUrl = process.env.NEXT_PUBLIC_WOOCOMMERCE_API_URL;
       if (!apiUrl) {
         setLoading(false);
         return;
