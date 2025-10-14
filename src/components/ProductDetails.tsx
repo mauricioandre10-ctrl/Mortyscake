@@ -38,7 +38,7 @@ export function ProductDetails({ product }: { product: Product }) {
   const productAttributes = Array.isArray(product.attributes) ? product.attributes : Object.values(product.attributes);
   const googleReviewUrl = "https://search.google.com/local/writereview?placeid=ChIJR8mR-xH_Lw0RQZ-CfPwZD-Q&source=g.page.m._&laa=merchant-review-solicitation";
   
-  const isOnSale = !!(product.sale_price && product.regular_price && parseFloat(product.sale_price) < parseFloat(product.regular_price));
+  const isOnSale = product.sale_price && product.regular_price && parseFloat(product.sale_price) < parseFloat(product.regular_price);
   const priceToUse = isOnSale ? (product.sale_price || product.price) : product.price;
   const priceAsNumber = parseFloat(priceToUse);
   const totalPrice = !isNaN(priceAsNumber) ? priceAsNumber * quantity : 0;
