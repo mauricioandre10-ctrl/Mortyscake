@@ -10,12 +10,15 @@ import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { trackViewDetails } from '@/lib/events';
 import { apiUrl, siteUrl as configSiteUrl } from '@/lib/config';
+import { Badge } from '@/components/ui/badge';
 
 interface Product {
   id: number;
   name: string;
   slug: string;
   price: string;
+  regular_price?: string;
+  sale_price?: string;
   short_description: string;
   description: string;
   images: { id: number; src: string; alt: string }[];
@@ -25,9 +28,13 @@ interface Product {
 
 function ProductCard({ product, siteUrl }: { product: Product, siteUrl: string | undefined }) {
   const imageUrl = product.images?.[0]?.src;
+  const isOnSale = product.sale_price && parseFloat(product.sale_price) < parseFloat(product.regular_price || product.price);
   return (
     <Card className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
         <div className="relative">
+            {isOnSale && (
+              <Badge variant="destructive" className="absolute top-2 left-2 z-10">Oferta</Badge>
+            )}
             <ShareButton 
                 title={product.name} 
                 text={`Echa un vistazo a este producto: ${product.name}`} 
@@ -59,9 +66,16 @@ function ProductCard({ product, siteUrl }: { product: Product, siteUrl: string |
                 <CardDescription className="text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
             </CardContent>
             <CardFooter className="flex-col items-center gap-2 bg-muted/30 p-4 mt-auto">
-                <span className="text-2xl font-bold text-primary">
-                €{product.price}
-                </span>
+                 <div className="flex items-baseline gap-2">
+                    {isOnSale && product.regular_price && (
+                      <span className="text-lg text-muted-foreground line-through">
+                        €{product.regular_price}
+                      </span>
+                    )}
+                    <span className="text-2xl font-bold text-primary">
+                        €{product.price}
+                    </span>
+                 </div>
                 <Button variant="secondary" size="sm" className="w-full">Ver Detalles</Button>
             </CardFooter>
         </Link>

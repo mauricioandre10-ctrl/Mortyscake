@@ -18,6 +18,8 @@ interface Product {
   name: string;
   slug: string;
   price: string;
+  regular_price?: string;
+  sale_price?: string;
   short_description: string;
   description: string;
   images: { id: number; src: string; alt: string }[];
@@ -35,7 +37,8 @@ export function ProductDetails({ product }: { product: Product }) {
   
   const priceAsNumber = parseFloat(product.price);
   const totalPrice = !isNaN(priceAsNumber) ? priceAsNumber * quantity : 0;
-
+  
+  const isOnSale = product.sale_price && parseFloat(product.sale_price) < parseFloat(product.regular_price || product.price);
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -56,6 +59,9 @@ export function ProductDetails({ product }: { product: Product }) {
                 product.images.map((image) => (
                   <CarouselItem key={image.id}>
                     <div className="aspect-square relative rounded-lg overflow-hidden border">
+                       {isOnSale && (
+                          <Badge variant="destructive" className="absolute top-2 left-2 z-10">Oferta</Badge>
+                       )}
                        <Image
                           src={image.src}
                           alt={image.alt || product.name}
@@ -103,9 +109,16 @@ export function ProductDetails({ product }: { product: Product }) {
 
           <div className="mt-auto pt-6 bg-muted/30 p-6 rounded-lg shadow-inner">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-                <span className="text-4xl font-bold text-primary text-center sm:text-left shrink-0">
-                    €{totalPrice.toFixed(2)}
-                </span>
+                <div className="flex items-baseline gap-2 text-center sm:text-left shrink-0">
+                    {isOnSale && product.regular_price && (
+                        <span className="text-3xl text-muted-foreground line-through">
+                            €{(parseFloat(product.regular_price) * quantity).toFixed(2)}
+                        </span>
+                    )}
+                    <span className="text-4xl font-bold text-primary">
+                        €{totalPrice.toFixed(2)}
+                    </span>
+                </div>
                 <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
                 <AddToCart
                     name={product.name}

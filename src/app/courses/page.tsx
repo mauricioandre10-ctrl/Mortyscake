@@ -10,12 +10,15 @@ import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { trackViewDetails } from '@/lib/events';
 import { apiUrl, siteUrl as configSiteUrl } from '@/lib/config';
+import { Badge } from '@/components/ui/badge';
 
 interface Course {
   id: number;
   name: string;
   slug: string;
   price: string;
+  regular_price?: string;
+  sale_price?: string;
   short_description: string;
   description: string;
   images: { id: number; src: string; alt: string }[];
@@ -26,10 +29,14 @@ interface Course {
 
 function CourseCard({ course, siteUrl }: { course: Course, siteUrl: string | undefined}) {
   const imageUrl = course.images?.[0]?.src;
+  const isOnSale = course.sale_price && parseFloat(course.sale_price) < parseFloat(course.regular_price || course.price);
   
   return (
     <Card className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
         <div className="relative">
+           {isOnSale && (
+            <Badge variant="destructive" className="absolute top-2 left-2 z-10">Oferta</Badge>
+           )}
            <ShareButton 
               title={course.name} 
               text={`Echa un vistazo a este curso: ${course.name}`} 
@@ -59,9 +66,16 @@ function CourseCard({ course, siteUrl }: { course: Course, siteUrl: string | und
             <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: course.short_description || '' }} />
           </CardContent>
           <CardFooter className="flex-col items-center gap-2 bg-muted/30 p-4 mt-auto">
-            <span className="text-2xl font-bold text-primary">
-               {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
-            </span>
+            <div className="flex items-baseline gap-2">
+                {isOnSale && course.regular_price && (
+                  <span className="text-lg text-muted-foreground line-through">
+                    €{course.regular_price}
+                  </span>
+                )}
+                <span className="text-2xl font-bold text-primary">
+                   {course.price === "0.00" ? 'Gratis' : `€${course.price}`}
+                </span>
+            </div>
             <Button variant="secondary" size="sm" className="w-full">Ver Detalles</Button>
           </CardFooter>
         </Link>

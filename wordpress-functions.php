@@ -40,6 +40,8 @@ function morty_get_product_details($product) {
         'name' => $product->get_name(),
         'slug' => $product->get_slug(),
         'price' => wc_format_decimal($product->get_price(), 2),
+        'regular_price' => wc_format_decimal($product->get_regular_price(), 2),
+        'sale_price' => $product->get_sale_price() ? wc_format_decimal($product->get_sale_price(), 2) : null,
         'date_created' => $product->get_date_created() ? $product->get_date_created()->getTimestamp() * 1000 : null,
         'short_description' => $product->get_short_description(),
         'description' => $product->get_description(),
