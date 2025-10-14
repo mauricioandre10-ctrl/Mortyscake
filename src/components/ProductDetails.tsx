@@ -7,11 +7,13 @@ import { ArrowLeft, Info, FileText, MessageSquarePlus } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '@/components/ui/carousel';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { ShareButton } from '@/components/ShareButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from '@/components/ui/badge';
 import { AddToCart } from './AddToCart';
 import { QuantitySelector } from './QuantitySelector';
+import { cn } from '@/lib/utils';
 
 interface Product {
   id: number;
@@ -31,14 +33,26 @@ interface Product {
 
 export function ProductDetails({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
+  const [selectedImage, setSelectedImage] = useState<{ src: string; alt: string } | null>(null);
   const fullDescription = product.description || product.short_description || 'No hay descripción disponible.';
   const productAttributes = Array.isArray(product.attributes) ? product.attributes : Object.values(product.attributes);
-  const googleReviewUrl = "https://search.google.com/local/writereview?placeid=ChIJR8mR-xH_Lw0RQZ-CfPwZD-Q&source=g.page.m._&laa=merchant-review-solicitation"; // Direct link to leave a review
+  const googleReviewUrl = "https://search.google.com/local/writereview?placeid=ChIJR8mR-xH_Lw0RQZ-CfPwZD-Q&source=g.page.m._&laa=merchant-review-solicitation";
   
   const priceAsNumber = parseFloat(product.price);
   const totalPrice = !isNaN(priceAsNumber) ? priceAsNumber * quantity : 0;
   
   const isOnSale = product.sale_price && parseFloat(product.sale_price) < parseFloat(product.regular_price || product.price);
+
+  const handleImageClick = (image: { src: string; alt: string }) => {
+    setSelectedImage(image);
+  };
+
+  const getShareUrl = () => {
+    if (typeof window !== 'undefined') {
+        return window.location.href;
+    }
+    return '';
+  };
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6">
@@ -53,40 +67,67 @@ export function ProductDetails({ product }: { product: Product }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
         <div className="lg:col-span-1">
-          <Carousel className="w-full">
-            <CarouselContent>
-              {product.images?.length > 0 ? (
-                product.images.map((image) => (
-                  <CarouselItem key={image.id}>
-                    <div className="aspect-square relative rounded-lg overflow-hidden border">
-                       {isOnSale && (
-                          <Badge variant="destructive" className="absolute top-2 left-2 z-10">Oferta</Badge>
-                       )}
-                       <Image
-                          src={image.src}
-                          alt={image.alt || product.name}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 1024px) 100vw, 50vw"
-                       />
+          <Dialog>
+            <Carousel className="w-full">
+                <CarouselContent>
+                {product.images?.length > 0 ? (
+                    product.images.map((image) => (
+                    <CarouselItem key={image.id}>
+                        <DialogTrigger asChild>
+                            <div className="aspect-square relative rounded-lg overflow-hidden border cursor-pointer" onClick={() => handleImageClick(image)}>
+                                {isOnSale && (
+                                    <Badge variant="destructive" className="absolute top-2 left-2 z-10">Oferta</Badge>
+                                )}
+                                <Image
+                                    src={image.src}
+                                    alt={image.alt || product.name}
+                                    fill
+                                    className="object-cover"
+                                    sizes="(max-width: 1024px) 100vw, 50vw"
+                                />
+                            </div>
+                        </DialogTrigger>
+                    </CarouselItem>
+                    ))
+                ) : (
+                    <CarouselItem>
+                    <div className="aspect-square relative rounded-lg overflow-hidden border bg-muted flex items-center justify-center">
+                        <div className="w-full h-full bg-muted"></div>
                     </div>
-                  </CarouselItem>
-                ))
-              ) : (
-                <CarouselItem>
-                  <div className="aspect-square relative rounded-lg overflow-hidden border bg-muted flex items-center justify-center">
-                    <div className="w-full h-full bg-muted"></div>
+                    </CarouselItem>
+                )}
+                </CarouselContent>
+                {product.images?.length > 1 && (
+                <>
+                    <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10" />
+                    <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10" />
+                </>
+                )}
+            </Carousel>
+
+             <DialogContent className="w-auto max-w-none h-auto max-h-none p-0 bg-transparent border-none">
+              {selectedImage && (
+                <>
+                  <div className="relative w-[95vw] h-[95vh]">
+                    <Image
+                      src={selectedImage.src}
+                      alt={selectedImage.alt}
+                      fill
+                      className="object-contain"
+                      sizes="95vw"
+                    />
                   </div>
-                </CarouselItem>
+                  <ShareButton
+                    title={`Mira este producto: ${product.name}`}
+                    text="¡Me encantó este producto de Morty's Cake!"
+                    url={getShareUrl()}
+                    className="absolute top-4 right-14 z-20 bg-accent text-accent-foreground hover:bg-accent/90"
+                    size="icon"
+                  />
+                </>
               )}
-            </CarouselContent>
-            {product.images?.length > 1 && (
-              <>
-                <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 z-10" />
-                <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 z-10" />
-              </>
-            )}
-          </Carousel>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <div className="flex flex-col lg:col-span-1">
@@ -112,7 +153,7 @@ export function ProductDetails({ product }: { product: Product }) {
                 <div className="flex items-baseline gap-2 text-center sm:text-left shrink-0">
                     {isOnSale && product.regular_price && (
                         <span className="text-3xl text-muted-foreground line-through">
-                            €{(parseFloat(product.regular_price) * quantity).toFixed(2)}
+                            €{product.regular_price}
                         </span>
                     )}
                     <span className="text-4xl font-bold text-primary">
