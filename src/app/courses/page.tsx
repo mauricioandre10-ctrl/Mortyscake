@@ -25,31 +25,35 @@ interface Course {
 }
 
 function CourseCard({ course, siteUrl }: { course: Course, siteUrl: string | undefined}) {
+  const imageUrl = course.images?.[0]?.src;
+  
   return (
     <Card className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
-      <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(course.name, 'Curso')}>
-          <div className="relative">
-             <ShareButton 
-                title={course.name} 
-                text={`Echa un vistazo a este curso: ${course.name}`} 
-                url={`${siteUrl}/courses/${course.slug}`}
-                className="absolute top-2 right-2 z-10 h-8 w-8"
-                size="icon"
-              />
-            <div className="aspect-[4/3] w-full bg-muted relative overflow-hidden rounded-t-lg">
-              {course.images?.[0]?.src ? (
-                  <Image
-                    src={course.images[0].src}
-                    alt={course.name}
-                    fill
-                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  />
+        <div className="relative">
+           <ShareButton 
+              title={course.name} 
+              text={`Echa un vistazo a este curso: ${course.name}`} 
+              url={`${siteUrl}/courses/${course.slug}`}
+              className="absolute top-2 right-2 z-20 h-8 w-8"
+              size="icon"
+            />
+          <Link href={`/courses/${course.slug}`} className="block" onClick={() => trackViewDetails(course.name, 'Curso')}>
+            <div className="aspect-[4/3] w-full bg-muted relative rounded-t-lg overflow-hidden">
+                {imageUrl ? (
+                    <Image
+                        src={imageUrl}
+                        alt={course.name}
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
                 ) : (
-                   <div className="w-full h-full bg-muted"></div>
+                    <div className="w-full h-full bg-muted"></div>
                 )}
-              </div>
-          </div>
+            </div>
+          </Link>
+        </div>
+         <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(course.name, 'Curso')}>
           <CardContent className="flex flex-col flex-grow p-6">
              <CardTitle className="font-card-title text-xl mb-2">{course.name}</CardTitle>
             <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: course.short_description || '' }} />

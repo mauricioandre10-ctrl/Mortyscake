@@ -49,13 +49,13 @@ export function ProductDetails({ product }: { product: Product }) {
                 product.images.map((image) => (
                   <CarouselItem key={image.id}>
                     <div className="aspect-square relative rounded-lg overflow-hidden border">
-                      <Image
-                        src={image.src}
-                        alt={image.alt || product.name}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 1024px) 100vw, 50vw"
-                      />
+                       <Image
+                          src={image.src}
+                          alt={image.alt || product.name}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 1024px) 100vw, 50vw"
+                       />
                     </div>
                   </CarouselItem>
                 ))

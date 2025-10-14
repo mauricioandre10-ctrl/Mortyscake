@@ -55,13 +55,13 @@ export function CourseDetails({ course }: { course: Course }) {
                 course.images.map((image) => (
                   <CarouselItem key={image.id}>
                     <div className="aspect-square relative rounded-lg overflow-hidden border">
-                      <Image
-                        src={image.src}
-                        alt={image.alt || course.name}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 1024px) 100vw, 50vw"
-                      />
+                       <Image
+                          src={image.src}
+                          alt={image.alt || course.name}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 1024px) 100vw, 50vw"
+                       />
                     </div>
                   </CarouselItem>
                 ))

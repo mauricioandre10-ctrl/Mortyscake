@@ -111,31 +111,35 @@ function FeaturedCourses() {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
-      {courses.map(course => (
+      {courses.map(course => {
+        const imageUrl = course.images?.[0]?.src;
+        return (
          <Card key={course.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
-          <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(course.name, 'Curso')}>
-              <div className="relative">
-                <ShareButton 
-                    title={course.name} 
-                    text={`Echa un vistazo a este curso: ${course.name}`} 
-                    url={`${siteUrl}/courses/${course.slug}`}
-                    className="absolute top-2 right-2 z-10 h-8 w-8"
-                    size="icon"
-                  />
+            <div className="relative">
+              <ShareButton 
+                  title={course.name} 
+                  text={`Echa un vistazo a este curso: ${course.name}`} 
+                  url={`${siteUrl}/courses/${course.slug}`}
+                  className="absolute top-2 right-2 z-20 h-8 w-8"
+                  size="icon"
+                />
+              <Link href={`/courses/${course.slug}`} className="block" onClick={() => trackViewDetails(course.name, 'Curso')}>
                 <div className="aspect-[4/3] w-full bg-muted relative rounded-t-lg overflow-hidden">
-                  {course.images?.[0]?.src ? (
+                  {imageUrl ? (
                       <Image
-                        src={course.images[0].src}
-                        alt={course.name}
-                        fill
-                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          src={imageUrl}
+                          alt={course.name}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       />
                     ) : (
                       <div className="w-full h-full bg-muted"></div>
                     )}
                   </div>
-              </div>
+                </Link>
+            </div>
+            <Link href={`/courses/${course.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(course.name, 'Curso')}>
               <CardContent className="p-6 flex flex-col flex-grow">
                 <CardTitle className="font-card-title text-xl mb-2">{course.name}</CardTitle>
                 <CardDescription className="flex-grow text-sm" dangerouslySetInnerHTML={{ __html: course.short_description || '' }} />
@@ -148,7 +152,7 @@ function FeaturedCourses() {
               </CardFooter>
             </Link>
         </Card>
-      ))}
+      )})}
     </div>
   );
 }
@@ -225,31 +229,35 @@ function FeaturedProducts() {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
-      {products.map(product => (
+      {products.map(product => {
+        const imageUrl = product.images?.[0]?.src;
+        return (
          <Card key={product.id} className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
-          <Link href={`/shop/${product.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(product.name, 'Producto')}>
-              <div className="relative">
-                <ShareButton 
-                    title={product.name} 
-                    text={`Echa un vistazo a este producto: ${product.name}`} 
-                    url={`${siteUrl}/shop/${product.slug}`}
-                    className="absolute top-2 right-2 z-10 h-8 w-8"
-                    size="icon"
-                  />
+            <div className="relative">
+              <ShareButton 
+                  title={product.name} 
+                  text={`Echa un vistazo a este producto: ${product.name}`} 
+                  url={`${siteUrl}/shop/${product.slug}`}
+                  className="absolute top-2 right-2 z-20 h-8 w-8"
+                  size="icon"
+                />
+              <Link href={`/shop/${product.slug}`} className="block" onClick={() => trackViewDetails(product.name, 'Producto')}>
                 <div className="aspect-[4/3] w-full bg-muted relative rounded-t-lg overflow-hidden">
-                  {product.images?.[0]?.src ? (
+                  {imageUrl ? (
                       <Image
-                        src={product.images[0].src}
-                        alt={product.name}
-                        fill
-                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          src={imageUrl}
+                          alt={product.name}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       />
                     ) : (
                       <div className="w-full h-full bg-muted"></div>
                     )}
                   </div>
-              </div>
+                </Link>
+            </div>
+            <Link href={`/shop/${product.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(product.name, 'Producto')}>
               <CardContent className="p-6 flex flex-col flex-grow">
                 <CardTitle className="font-card-title text-xl mb-2">{product.name}</CardTitle>
                 <CardDescription className="text-sm flex-grow" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
@@ -262,7 +270,7 @@ function FeaturedProducts() {
               </CardFooter>
             </Link>
         </Card>
-      ))}
+      )})}
     </div>
   );
 }
@@ -450,6 +458,7 @@ export default function Home() {
                             fill
                             className="object-cover"
                             data-ai-hint={customCakeImage.hint}
+                            sizes="(max-width: 768px) 100vw, 50vw"
                         />
                     )}
                 </div>
@@ -469,6 +478,7 @@ export default function Home() {
                         fill
                         className="object-cover"
                         data-ai-hint={chefImage.hint}
+                        sizes="(max-width: 768px) 100vw, 50vw"
                     />
                 )}
             </div>
@@ -644,5 +654,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

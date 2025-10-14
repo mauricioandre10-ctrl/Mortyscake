@@ -24,43 +24,46 @@ interface Product {
 }
 
 function ProductCard({ product, siteUrl }: { product: Product, siteUrl: string | undefined }) {
+  const imageUrl = product.images?.[0]?.src;
   return (
     <Card className="flex flex-col overflow-hidden shadow-md hover:shadow-primary/20 hover:shadow-xl transition-shadow duration-300 bg-card group">
-        <Link href={`/shop/${product.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(product.name, 'Producto')}>
         <div className="relative">
             <ShareButton 
                 title={product.name} 
                 text={`Echa un vistazo a este producto: ${product.name}`} 
                 url={`${siteUrl}/shop/${product.slug}`}
-                className="absolute top-2 right-2 z-10 h-8 w-8"
+                className="absolute top-2 right-2 z-20 h-8 w-8"
                 size="icon"
             />
-            <div className="aspect-square w-full bg-muted relative overflow-hidden rounded-t-lg">
-            {product.images?.[0]?.src ? (
-                <Image
-                    src={product.images[0].src}
-                    alt={product.name}
-                    fill
-                    className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                />
-                ) : (
-                <div className="w-full h-full bg-muted"></div>
-                )}
-            </div>
+            <Link href={`/shop/${product.slug}`} className="block" onClick={() => trackViewDetails(product.name, 'Producto')}>
+              <div className="aspect-square w-full bg-muted relative rounded-t-lg overflow-hidden">
+              {imageUrl ? (
+                  <Image
+                      src={imageUrl}
+                      alt={product.name}
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  />
+                  ) : (
+                  <div className="w-full h-full bg-muted"></div>
+                  )}
+              </div>
+            </Link>
         </div>
-        <CardContent className="flex flex-col flex-grow p-6">
-            <CardTitle className="font-card-title text-xl mb-2">
-                {product.name}
-            </CardTitle>
-            <CardDescription className="text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
-        </CardContent>
-        <CardFooter className="flex-col items-center gap-2 bg-muted/30 p-4 mt-auto">
-            <span className="text-2xl font-bold text-primary">
-            €{product.price}
-            </span>
-            <Button variant="secondary" size="sm" className="w-full">Ver Detalles</Button>
-        </CardFooter>
+         <Link href={`/shop/${product.slug}`} className="flex flex-col flex-grow" onClick={() => trackViewDetails(product.name, 'Producto')}>
+            <CardContent className="flex flex-col flex-grow p-6">
+                <CardTitle className="font-card-title text-xl mb-2">
+                    {product.name}
+                </CardTitle>
+                <CardDescription className="text-sm" dangerouslySetInnerHTML={{ __html: product.short_description || '' }} />
+            </CardContent>
+            <CardFooter className="flex-col items-center gap-2 bg-muted/30 p-4 mt-auto">
+                <span className="text-2xl font-bold text-primary">
+                €{product.price}
+                </span>
+                <Button variant="secondary" size="sm" className="w-full">Ver Detalles</Button>
+            </CardFooter>
         </Link>
     </Card>
   )
