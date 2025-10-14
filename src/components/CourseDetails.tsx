@@ -44,7 +44,7 @@ export function CourseDetails({ course }: { course: Course }) {
   const courseAttributes = Array.isArray(course.attributes) ? course.attributes : Object.values(course.attributes);
   const googleReviewUrl = "https://search.google.com/local/writereview?placeid=ChIJR8mR-xH_Lw0RQZ-CfPwZD-Q&source=g.page.m._&laa=merchant-review-solicitation";
 
-  const isOnSale = course.sale_price && course.regular_price && parseFloat(course.sale_price) < parseFloat(course.regular_price);
+  const isOnSale = course.sale_price && parseFloat(course.sale_price) < parseFloat(course.regular_price || course.price);
   const priceToUse = isOnSale ? course.sale_price : course.price;
   const priceAsNumber = parseFloat(priceToUse);
   const totalPrice = !isNaN(priceAsNumber) ? priceAsNumber * quantity : 0;
