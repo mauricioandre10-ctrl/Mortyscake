@@ -30,7 +30,7 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-24 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-           <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width="100" height="36" className="object-contain h-20 w-auto" data-ai-hint="logo" />
+           <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width="220" height="80" className="object-contain h-20 w-auto" data-ai-hint="logo" priority />
         </Link>
         
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
@@ -73,7 +73,7 @@ const Header = () => {
                 <SheetHeader>
                   <SheetTitle>
                      <Link href="/" className="flex items-center gap-2 mb-4">
-                       <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width="120" height="43" className="object-contain h-10 w-auto" data-ai-hint="logo" />
+                       <Image src="/image/Logo_mortys_cake.webp" alt="Pastelería de Morty" width="165" height="60" className="object-contain h-10 w-auto" data-ai-hint="logo" />
                     </Link>
                   </SheetTitle>
                 </SheetHeader>
