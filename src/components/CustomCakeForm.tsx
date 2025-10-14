@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, User, CalendarDays, Cake, Palette, Sparkles, Heart, Upload, FileCheck, Mail, MessageCircle } from 'lucide-react';
+import { Loader2, User, Cake, Palette, Sparkles, Heart, Upload, FileCheck, Mail, MessageCircle, CalendarDays } from 'lucide-react';
 import Link from 'next/link';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { cn } from '@/lib/utils';
@@ -102,7 +102,7 @@ export function CustomCakeForm() {
   const fillingFlavor1Value = form.watch('fillingFlavor1');
   const fillingFlavor2Value = form.watch('fillingFlavor2');
 
-  const onSubmit = async (data: FormData, openWhatsApp = false) => {
+  const onSubmit = async (data: FormData) => {
     setIsLoading(true);
 
     const formData = new FormData();
@@ -137,7 +137,23 @@ export function CustomCakeForm() {
         description: 'Hemos recibido tu solicitud y te hemos enviado un correo de confirmación. ¡Revisa tu bandeja de entrada!',
       });
       
-      if (openWhatsApp) {
+      form.reset();
+      setImagePreview(null);
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error al enviar',
+        description: error instanceof Error ? error.message : 'No se pudo enviar el formulario. Por favor, inténtalo de nuevo.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleWhatsAppSubmit = () => {
+    form.trigger().then(isValid => {
+      if (isValid) {
+        const data = form.getValues();
         const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
         if (!phoneNumber) {
             toast({
@@ -145,7 +161,6 @@ export function CustomCakeForm() {
                 title: 'Error de configuración',
                 description: 'El número de WhatsApp no está configurado.',
             });
-            setIsLoading(false);
             return;
         }
         
@@ -176,29 +191,18 @@ export function CustomCakeForm() {
         
         window.open(whatsappUrl, '_blank');
         
-        toast({
-            title: '¡Prepara tu mensaje!',
-            description: "Se ha abierto WhatsApp con tu solicitud. Si subiste una imagen, no olvides adjuntarla manualmente en el chat.",
-        });
-      }
+        if (data.referenceImage) {
+            toast({
+                title: '¡No olvides la imagen!',
+                description: "Se ha abierto WhatsApp. Por favor, adjunta la imagen de referencia manualmente en el chat.",
+                duration: 8000,
+            });
+        }
 
-      form.reset();
-      setImagePreview(null);
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Error al enviar',
-        description: error instanceof Error ? error.message : 'No se pudo enviar el formulario. Por favor, inténtalo de nuevo.',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        // We can optionally reset the form after preparing the WhatsApp message
+        form.reset();
+        setImagePreview(null);
 
-  const handleWhatsAppSubmit = () => {
-    form.trigger().then(isValid => {
-      if (isValid) {
-        onSubmit(form.getValues(), true);
       } else {
         toast({
           variant: "destructive",
@@ -227,7 +231,7 @@ export function CustomCakeForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit((data) => onSubmit(data, false))} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         
         <SectionWrapper icon={<User size={24} />} title="Información de Contacto" step={1}>
             <div className="grid md:grid-cols-2 gap-6">
