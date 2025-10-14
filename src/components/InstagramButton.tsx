@@ -12,16 +12,16 @@ const InstagramButton = () => {
     <Button
       asChild
       size="icon"
-      className="fixed bottom-6 right-6 h-[52px] w-[52px] rounded-full shadow-lg bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 hover:opacity-90 transition-opacity text-white p-2"
+      className="fixed bottom-6 right-6 h-[52px] w-[52px] rounded-full shadow-lg bg-black hover:opacity-90 transition-opacity text-white"
       aria-label="Ir al perfil de Instagram"
       onClick={() => trackSocialLink('Instagram')}
     >
-      <Link href={instagramUrl} target="_blank" rel="noopener noreferrer">
+      <Link href={instagramUrl} target="_blank" rel="noopener noreferrer" className="p-2">
         <Image 
             src="/image/instagram.webp" 
             alt="Instagram" 
-            width={44} 
-            height={44} 
+            width={35} 
+            height={35} 
         />
       </Link>
     </Button>
