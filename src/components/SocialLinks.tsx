@@ -1,18 +1,29 @@
-
 'use client';
 
 import Link from 'next/link';
-import { Facebook, Instagram } from 'lucide-react';
+import Image from 'next/image';
 import { trackSocialLink } from '@/lib/events';
 
 export function SocialLinks() {
   return (
-    <div className="flex gap-4">
-      <Link href="https://www.facebook.com/MortysCake/" target="_blank" rel="noopener noreferrer" className="text-white hover:opacity-80" onClick={() => trackSocialLink('Facebook')}>
-        <Facebook className="h-7 w-7" />
+    <div className="flex items-center gap-4">
+      <Link href="https://www.facebook.com/MortysCake/" target="_blank" rel="noopener noreferrer" className="text-white hover:opacity-80 transition-opacity" onClick={() => trackSocialLink('Facebook')}>
+        <Image 
+            src="/image/facebook.webp" 
+            alt="Facebook" 
+            width={28} 
+            height={28}
+            className="object-contain"
+        />
       </Link>
-      <Link href="https://www.instagram.com/mortyscake.ourense/" target="_blank" rel="noopener noreferrer" className="text-white hover:opacity-80" onClick={() => trackSocialLink('Instagram')}>
-        <Instagram className="h-7 w-7" />
+      <Link href="https://www.instagram.com/mortyscake.ourense/" target="_blank" rel="noopener noreferrer" className="text-white hover:opacity-80 transition-opacity" onClick={() => trackSocialLink('Instagram')}>
+        <Image 
+            src="/image/instagram.webp" 
+            alt="Instagram" 
+            width={28} 
+            height={28}
+            className="object-contain"
+        />
       </Link>
     </div>
   );

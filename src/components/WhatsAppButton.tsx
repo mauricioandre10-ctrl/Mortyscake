@@ -23,8 +23,8 @@ const WhatsAppButton = () => {
         <Image 
             src="/image/whatsapp.webp" 
             alt="WhatsApp" 
-            width={35} 
-            height={35} 
+            width={25} 
+            height={25} 
         />
       </Link>
     </Button>
