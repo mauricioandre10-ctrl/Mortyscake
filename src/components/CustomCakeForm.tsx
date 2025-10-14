@@ -42,6 +42,7 @@ const formSchema = z.object({
   cakeText: z.string().optional(),
   referenceImage: z
     .any()
+    .optional()
     .refine((file) => !file || file.size <= MAX_FILE_SIZE, `El tamaño máximo es 5MB.`)
     .refine((file) => !file || ACCEPTED_IMAGE_TYPES.includes(file.type), "Solo se aceptan formatos .jpg, .jpeg, .png, .webp y .gif."),
   allergies: z.string().optional(),
@@ -72,6 +73,7 @@ const SectionWrapper = ({ icon, title, step, children }: { icon: React.ReactNode
 
 export function CustomCakeForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isWhatsAppLoading, setIsWhatsAppLoading] = useState(false);
   const { toast } = useToast();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
@@ -101,29 +103,34 @@ export function CustomCakeForm() {
   const cakeFlavorValue = form.watch('cakeFlavor');
   const fillingFlavor1Value = form.watch('fillingFlavor1');
   const fillingFlavor2Value = form.watch('fillingFlavor2');
+  
+  const createApiFormData = (data: FormData, source: 'email' | 'whatsapp') => {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+            if (key === 'referenceImage' && value instanceof File) {
+                formData.append('reference-image', value);
+            } else if (key === 'deliveryDate' && value instanceof Date) {
+                formData.append(key, format(value, 'yyyy-MM-dd'));
+            } else if (typeof value === 'boolean') {
+                formData.append(key, value ? 'on' : 'off');
+            } else {
+                formData.append(key, value as string);
+            }
+        }
+    });
+    formData.append('source', source);
+    return formData;
+  };
 
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
-
-    const formData = new FormData();
-     Object.entries(data).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        if (key === 'referenceImage' && value instanceof File) {
-            formData.append('reference-image', value);
-        } else if (key === 'deliveryDate' && value instanceof Date) {
-            formData.append(key, format(value, 'yyyy-MM-dd'));
-        } else if (typeof value === 'boolean') {
-            formData.append(key, value ? 'on' : 'off');
-        } else {
-            formData.append(key, value as string);
-        }
-      }
-    });
+    const apiFormData = createApiFormData(data, 'email');
 
     try {
       const response = await fetch('/api/custom-cake-request', {
         method: 'POST',
-        body: formData,
+        body: apiFormData,
       });
 
       const result = await response.json();
@@ -150,10 +157,23 @@ export function CustomCakeForm() {
     }
   };
 
-  const handleWhatsAppSubmit = () => {
-    form.trigger().then(isValid => {
-      if (isValid) {
+  const handleWhatsAppSubmit = async () => {
+    setIsWhatsAppLoading(true);
+    const isValid = await form.trigger();
+
+    if (isValid) {
         const data = form.getValues();
+        const apiFormData = createApiFormData(data, 'whatsapp');
+
+        // Send notification email in the background
+        fetch('/api/custom-cake-request', {
+            method: 'POST',
+            body: apiFormData,
+        }).catch(error => {
+            console.error('Failed to send WhatsApp notification email:', error);
+            // We don't toast this error to not confuse the user, as the primary action (opening WhatsApp) will still work.
+        });
+
         const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
         if (!phoneNumber) {
             toast({
@@ -161,6 +181,7 @@ export function CustomCakeForm() {
                 title: 'Error de configuración',
                 description: 'El número de WhatsApp no está configurado.',
             });
+            setIsWhatsAppLoading(false);
             return;
         }
         
@@ -169,7 +190,7 @@ export function CustomCakeForm() {
         const finalFillingFlavor1 = data.fillingFlavor1 === 'Otro (especificar)' && data.otherFillingFlavor1 ? data.otherFillingFlavor1 : data.fillingFlavor1;
         const finalFillingFlavor2 = data.fillingFlavor2 === 'Otro (especificar)' && data.otherFillingFlavor2 ? data.otherFillingFlavor2 : data.fillingFlavor2;
 
-        const fillingFlavors = [finalFillingFlavor1, finalFillingFlavor2].filter(Boolean).join(' y ');
+        const fillingFlavors = [finalFillingFlavor1, finalFillingFlavor2].filter(Boolean).filter(f => f !== 'Ninguno').join(' y ');
 
         const messageParts = [
           `Hola Morty's Cake, esta es mi idea y quiero hacerla realidad:`,
@@ -180,7 +201,7 @@ export function CustomCakeForm() {
           `*Raciones:* ${data.servings}`,
           `*Evento:* ${finalEventType}`,
           `*Sabor bizcocho:* ${finalCakeFlavor}`,
-          `*Sabor relleno:* ${fillingFlavors}`,
+          fillingFlavors && `*Sabor relleno:* ${fillingFlavors}`,
           `*Descripción:* ${data.cakeDescription}`,
           data.cakeText && `*Texto en la tarta:* ${data.cakeText}`,
           data.allergies && `*Alergias:* ${data.allergies}`,
@@ -198,19 +219,18 @@ export function CustomCakeForm() {
                 duration: 8000,
             });
         }
-
-        // We can optionally reset the form after preparing the WhatsApp message
+        
         form.reset();
         setImagePreview(null);
 
-      } else {
+    } else {
         toast({
           variant: "destructive",
           title: "Formulario incompleto",
           description: "Por favor, rellena todos los campos obligatorios antes de continuar.",
         });
-      }
-    });
+    }
+    setIsWhatsAppLoading(false);
   };
 
   const addBusinessDays = (startDate: Date, days: number): Date => {
@@ -414,13 +434,13 @@ export function CustomCakeForm() {
             />
 
             <div className="flex flex-col sm:flex-row gap-4">
-                <Button type="submit" disabled={isLoading} className="w-full" size="lg">
+                <Button type="submit" disabled={isLoading || isWhatsAppLoading} className="w-full" size="lg">
                     {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Mail className="mr-2 h-5 w-5"/>}
                     {isLoading ? 'Enviando...' : 'Enviar por Email'}
                 </Button>
-                <Button type="button" variant="secondary" onClick={handleWhatsAppSubmit} disabled={isLoading} className="w-full bg-green-500 hover:bg-green-600 text-white" size="lg">
-                    {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <MessageCircle className="mr-2 h-5 w-5"/>}
-                    {isLoading ? 'Procesando...' : 'Enviar por WhatsApp'}
+                <Button type="button" variant="secondary" onClick={handleWhatsAppSubmit} disabled={isLoading || isWhatsAppLoading} className="w-full bg-green-500 hover:bg-green-600 text-white" size="lg">
+                    {isWhatsAppLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <MessageCircle className="mr-2 h-5 w-5"/>}
+                    {isWhatsAppLoading ? 'Procesando...' : 'Enviar por WhatsApp'}
                 </Button>
             </div>
         </div>

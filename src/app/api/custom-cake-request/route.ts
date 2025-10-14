@@ -25,6 +25,7 @@ const formSchema = z.object({
   privacyPolicy: z.union([z.literal('on'), z.boolean()]).refine(val => val === 'on' || val === true, {
     message: 'Debes aceptar la política de privacidad',
   }),
+  source: z.enum(['email', 'whatsapp']).optional().default('email'),
 });
 
 export async function POST(req: NextRequest) {
@@ -82,11 +83,16 @@ export async function POST(req: NextRequest) {
         : null;
 
     const fillingFlavors = [finalFillingFlavor1, finalFillingFlavor2].filter(Boolean).join(' y ');
+    
+    const subjectPrefix = validatedData.source === 'whatsapp' 
+        ? "Solicitud de tarta iniciada por WhatsApp" 
+        : "Nueva solicitud de tarta a medida";
 
     const adminEmailHtml = `
       <div style="font-family: sans-serif; line-height: 1.6;">
-        <h1 style="color: #D87093;">Nueva Solicitud de Tarta a Medida</h1>
+        <h1 style="color: #D87093;">${subjectPrefix}</h1>
         <p>Has recibido una nueva solicitud a través del formulario de la web.</p>
+        ${validatedData.source === 'whatsapp' ? '<p style="font-weight: bold; color: #16a34a;">El cliente ha continuado por WhatsApp. Por favor, revisa tu chat.</p>' : ''}
         <hr>
         
         <h2>Información de Contacto</h2>
@@ -124,7 +130,7 @@ export async function POST(req: NextRequest) {
       from: `"Formulario Web Morty's Cake" <${SMTP_USER}>`,
       to: ADMIN_EMAIL,
       replyTo: validatedData.email,
-      subject: `Nueva solicitud de tarta a medida de: ${validatedData.name}`,
+      subject: `[${validatedData.source.toUpperCase()}] ${subjectPrefix} de: ${validatedData.name}`,
       html: adminEmailHtml,
       text: adminEmailText,
       attachments: attachments,
@@ -133,45 +139,45 @@ export async function POST(req: NextRequest) {
       }
     });
     
-    // --- Send Confirmation Email to Customer ---
-    const customerEmailHtml = `
-        <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 12px; overflow: hidden;">
-            <div style="background-color: #513938; padding: 20px; text-align: center;">
-                <img src="https://mortyscake.com/image/Logo_mortys_cake.webp" alt="Morty's Cake Logo" style="height: 60px; width: auto;">
+    // Send confirmation email ONLY if the source is 'email'
+    if (validatedData.source === 'email') {
+        const customerEmailHtml = `
+            <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 12px; overflow: hidden;">
+                <div style="background-color: #513938; padding: 20px; text-align: center;">
+                    <img src="https://mortyscake.com/image/Logo_mortys_cake.webp" alt="Morty's Cake Logo" style="height: 60px; width: auto;">
+                </div>
+                <div style="padding: 30px 20px; line-height: 1.6;">
+                    <h1 style="color: #D87093; font-family: 'Pacifico', cursive;">¡Hemos recibido tu solicitud, ${validatedData.name}!</h1>
+                    <p>Muchas gracias por pensar en Morty's Cake para tu celebración. Hemos recibido correctamente los detalles de tu tarta soñada y estamos muy emocionados por la posibilidad de crear algo mágico para ti.</p>
+                    <p>Nos pondremos en contacto contigo a la mayor brevedad posible para revisar todos los detalles, darte un presupuesto y responder cualquier duda que puedas tener.</p>
+                    <p>Mientras tanto, si necesitas cualquier cosa, no dudes en responder a este correo.</p>
+                    <br>
+                    <p>Con mucho cariño,<br><strong>El equipo de Morty's Cake</strong></p>
+                </div>
+                <div style="background-color: #f7f7f7; padding: 20px; text-align: center; font-size: 12px; color: #777;">
+                    <p>Rúa Valle Inclán, 23, Bajo 11, 32004 Ourense</p>
+                    <p>&copy; ${new Date().getFullYear()} Morty's Cake. Todos los derechos reservados.</p>
+                </div>
             </div>
-            <div style="padding: 30px 20px; line-height: 1.6;">
-                <h1 style="color: #D87093; font-family: 'Pacifico', cursive;">¡Hemos recibido tu solicitud, ${validatedData.name}!</h1>
-                <p>Muchas gracias por pensar en Morty's Cake para tu celebración. Hemos recibido correctamente los detalles de tu tarta soñada y estamos muy emocionados por la posibilidad de crear algo mágico para ti.</p>
-                <p>Nos pondremos en contacto contigo a la mayor brevedad posible para revisar todos los detalles, darte un presupuesto y responder cualquier duda que puedas tener.</p>
-                <p>Mientras tanto, si necesitas cualquier cosa, no dudes en responder a este correo.</p>
-                <br>
-                <p>Con mucho cariño,<br><strong>El equipo de Morty's Cake</strong></p>
-            </div>
-            <div style="background-color: #f7f7f7; padding: 20px; text-align: center; font-size: 12px; color: #777;">
-                <p>Rúa Valle Inclán, 23, Bajo 11, 32004 Ourense</p>
-                <p>&copy; ${new Date().getFullYear()} Morty's Cake. Todos los derechos reservados.</p>
-            </div>
-        </div>
-    `;
+        `;
 
-    // Generate plain text version for customer email
-    const customerEmailText = htmlToText(customerEmailHtml);
-    const customerMessageId = `<${Date.now()}.${Math.random().toString(36).substring(2)}@mortyscake.com>`;
+        const customerEmailText = htmlToText(customerEmailHtml);
+        const customerMessageId = `<${Date.now()}.${Math.random().toString(36).substring(2)}@mortyscake.com>`;
 
-    await transporter.sendMail({
-        from: `"Morty's Cake" <${SMTP_USER}>`,
-        to: validatedData.email,
-        replyTo: ADMIN_EMAIL,
-        subject: "🧁 Confirmación de tu solicitud de tarta a medida",
-        html: customerEmailHtml,
-        text: customerEmailText,
-        headers: {
-            'Message-ID': customerMessageId
-        }
-    });
+        await transporter.sendMail({
+            from: `"Morty's Cake" <${SMTP_USER}>`,
+            to: validatedData.email,
+            replyTo: ADMIN_EMAIL,
+            subject: "🧁 Confirmación de tu solicitud de tarta a medida",
+            html: customerEmailHtml,
+            text: customerEmailText,
+            headers: {
+                'Message-ID': customerMessageId
+            }
+        });
+    }
 
-
-    return NextResponse.json({ message: 'Solicitud enviada con éxito. ¡Gracias por contactarnos!' });
+    return NextResponse.json({ message: 'Solicitud procesada con éxito.' });
 
   } catch (error) {
     if (error instanceof ZodError) {
@@ -181,6 +187,6 @@ export async function POST(req: NextRequest) {
     
     console.error('[API Error]', error);
     const errorMessage = (error instanceof Error) ? error.message : 'Un error inesperado ocurrió en el servidor.';
-    return NextResponse.json({ message: `Error al enviar la solicitud: ${errorMessage}` }, { status: 500 });
+    return NextResponse.json({ message: `Error al procesar la solicitud: ${errorMessage}` }, { status: 500 });
   }
 }
