@@ -1,8 +1,10 @@
+
 'use client';
 
 import { CartProvider as USCProvider } from 'use-shopping-cart';
 
 const stripePublicKey = process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY;
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -10,8 +12,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
       mode="payment"
       cartMode="client-only"
       stripe={stripePublicKey!}
-      successUrl={`${process.env.NEXT_PUBLIC_SITE_URL || ''}/?success=true`}
-      cancelUrl={`${process.env.NEXT_PUBLIC_SITE_URL || ''}/?canceled=true`}
+      successUrl={`${siteUrl || ''}/?success=true`}
+      cancelUrl={`${siteUrl || ''}/?canceled=true`}
       currency="EUR"
       allowedCountries={['ES']}
       billingAddressCollection={true}

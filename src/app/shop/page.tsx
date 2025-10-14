@@ -9,6 +9,7 @@ import { ShareButton } from '@/components/ShareButton';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { trackViewDetails } from '@/lib/events';
+import { apiUrl, siteUrl as configSiteUrl } from '@/lib/config';
 
 interface Product {
   id: number;
@@ -69,11 +70,10 @@ function ProductsList() {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+    const siteUrl = configSiteUrl;
 
     useEffect(() => {
         async function getProducts() {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL;
             if (!apiUrl) {
                 setError('La configuración del sitio no es correcta.');
                 setLoading(false);

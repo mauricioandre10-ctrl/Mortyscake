@@ -16,6 +16,7 @@ import { ScrollArea } from './ui/scroll-area';
 import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
+import { apiUrl } from '@/lib/config';
 
 export function CartSheet() {
   const {
@@ -34,7 +35,7 @@ export function CartSheet() {
 
   const handleCheckout = async () => {
     setIsRedirecting(true);
-    const storeUrl = process.env.NEXT_PUBLIC_API_URL;
+    const storeUrl = apiUrl;
 
     if (!storeUrl) {
       toast({

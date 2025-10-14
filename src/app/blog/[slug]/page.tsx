@@ -7,6 +7,7 @@ import { es } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, CalendarIcon, User } from 'lucide-react';
 import Link from 'next/link';
+import { apiUrl } from '@/lib/config';
 
 interface Post {
   id: number;
@@ -23,7 +24,6 @@ interface Post {
 
 // Función para obtener los datos de una entrada específica
 async function getPost(slug: string): Promise<Post | null> {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     if (!apiUrl) {
         console.error("[SERVER] Error: La variable de entorno NEXT_PUBLIC_API_URL no está configurada.");
         return null;

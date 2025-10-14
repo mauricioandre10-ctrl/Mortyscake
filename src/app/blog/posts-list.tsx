@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { apiUrl } from '@/lib/config';
 
 interface Post {
   id: number;
@@ -58,7 +59,6 @@ export function PostsList() {
 
     useEffect(() => {
         async function fetchPosts() {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL;
             if (!apiUrl) {
                 setError('La configuración del sitio no es correcta.');
                 setLoading(false);

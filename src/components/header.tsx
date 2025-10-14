@@ -9,9 +9,10 @@ import { Menu, User, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import { Separator } from './ui/separator';
 import { useShoppingCart } from 'use-shopping-cart';
+import { apiUrl } from '@/lib/config';
 
 const Header = () => {
-  const storeUrl = process.env.NEXT_PUBLIC_API_URL;
+  const storeUrl = apiUrl;
   const accountUrl = storeUrl ? `${storeUrl}/mi-cuenta` : '#';
   const { handleCartClick, cartCount } = useShoppingCart();
 

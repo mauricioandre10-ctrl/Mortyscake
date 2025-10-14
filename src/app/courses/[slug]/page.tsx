@@ -2,6 +2,7 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { CourseDetails } from '@/components/CourseDetails';
+import { apiUrl } from '@/lib/config';
 
 interface Course {
   id: number;
@@ -20,7 +21,6 @@ interface Course {
 }
 
 async function getCourse(slug: string): Promise<Course | null> {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     if (!apiUrl) {
         console.error("[SERVER] Error: La variable de entorno NEXT_PUBLIC_API_URL no está configurada.");
         return null;

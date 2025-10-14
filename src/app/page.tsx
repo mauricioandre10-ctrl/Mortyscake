@@ -13,6 +13,7 @@ import Autoplay from "embla-carousel-autoplay"
 import { Skeleton } from '@/components/ui/skeleton';
 import { ShareButton } from '@/components/ShareButton';
 import { trackViewDetails } from '@/lib/events';
+import { apiUrl, siteUrl as configSiteUrl } from '@/lib/config';
 
 interface Product {
   id: number;
@@ -46,15 +47,10 @@ const localGalleryImages = Array.from({ length: 9 }, (_, i) => ({
 function FeaturedCourses() {
   const [courses, setCourses] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [siteUrl, setSiteUrl] = useState('');
+  const siteUrl = configSiteUrl;
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setSiteUrl(window.location.origin);
-    }
-    
     async function fetchCourses() {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       if (!apiUrl) {
         setLoading(false);
         return;
@@ -160,15 +156,10 @@ function FeaturedCourses() {
 function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [siteUrl, setSiteUrl] = useState('');
+  const siteUrl = configSiteUrl;
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setSiteUrl(window.location.origin);
-    }
-    
     async function fetchProducts() {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       if (!apiUrl) {
         setLoading(false);
         return;
@@ -281,7 +272,6 @@ function FeaturedBlogPosts() {
 
   useEffect(() => {
     async function fetchPosts() {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       if (!apiUrl) {
         setLoading(false);
         return;
@@ -366,14 +356,6 @@ export default function Home() {
   const plugin = useRef(
     Autoplay({ delay: 10000, stopOnInteraction: true })
   )
-  const [siteUrl, setSiteUrl] = useState('');
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setSiteUrl(window.location.origin);
-    }
-  }, []);
-
 
   return (
     <div className="w-full">

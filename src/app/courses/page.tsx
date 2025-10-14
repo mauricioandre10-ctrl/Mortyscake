@@ -9,6 +9,7 @@ import { ShareButton } from '@/components/ShareButton';
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { trackViewDetails } from '@/lib/events';
+import { apiUrl, siteUrl as configSiteUrl } from '@/lib/config';
 
 interface Course {
   id: number;
@@ -68,11 +69,10 @@ function CoursesList() {
     const [courses, setCourses] = useState<Course[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+    const siteUrl = configSiteUrl;
 
     useEffect(() => {
         async function fetchCourses() {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL;
             if (!apiUrl) {
                 setError('La configuración del sitio no es correcta.');
                 setLoading(false);
